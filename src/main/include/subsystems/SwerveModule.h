@@ -12,11 +12,12 @@
 #include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/SwerveModulePosition.h>
 #include <frc/kinematics/SwerveModuleState.h>
-#include <ctre/Phoenix.h>
+#include <ctre/Phoenix6/TalonFX.hpp>
 #include <frc/trajectory/TrapezoidProfile.h>
 #include "frc/smartdashboard/Smartdashboard.h"
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <HardwareConfig.h>
+#include <ctre/phoenix6/controls/VelocityDutyCycle.hpp>
 
 #include "Constants.h"
 
@@ -39,6 +40,11 @@ class SwerveModule {
 
   void ResetEncoders();
 
+  HardwareConfig motorConfigs;
+
+  ctre::phoenix6::controls::VelocityVoltage m_request = ctre::phoenix6::controls::VelocityVoltage{0_tps}.WithSlot(0);
+
+
  private:
   // We have to use meters here instead of radians due to the fact that
   // ProfiledPIDController's constraints only take in meters per second and
@@ -49,17 +55,17 @@ class SwerveModule {
   static constexpr auto kModuleMaxAngularAcceleration =
       units::radians_per_second_squared_t{std::numbers::pi * 2.0};
 
-  WPI_TalonFX  m_driveMotor;
-  WPI_TalonFX  m_turningMotor;
+  ctre::phoenix6::hardware::TalonFX  m_driveMotor;
+  ctre::phoenix6::hardware::TalonFX  m_turningMotor;
   HardwareConfig m_Settings;
   frc::AnalogEncoder m_turningEncoder;
 
 
   double absEnc;
 
-  frc2::PIDController m_drivePIDController{
+  frc::PIDController m_drivePIDController{
       ModuleConstants::kPModuleDriveController, 0, 0};
-  frc2::PIDController steerPID{0.0075, 0.02, 0};
+  frc::PIDController steerPID{0.0075, 0.02, 0};
   frc::ProfiledPIDController<units::radians> m_turningPIDController{
       ModuleConstants::kPModuleTurningController,
       0.0,

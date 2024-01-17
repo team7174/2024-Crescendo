@@ -21,17 +21,21 @@ SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
   m_turningEncoder.SetPositionOffset(encoderOffset);
   steerPID.EnableContinuousInput(-180, 180);
 
-  m_driveMotor.ConfigFactoryDefault();
-  m_driveMotor.ConfigAllSettings(m_Settings.DriveMotorConfig);
-  m_driveMotor.SetInverted(false);  
-  m_driveMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
-  m_driveMotor.SetSelectedSensorPosition(0);
-  m_driveMotor.EnableVoltageCompensation(true);
 
-  m_turningMotor.ConfigFactoryDefault();
-  m_turningMotor.ConfigAllSettings(m_Settings.TurnMotorConfig);
+  m_driveMotor.GetConfigurator().Apply(ctre::phoenix6::configs::TalonFXConfiguration{});
+  m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveMotorConfig, 50_ms);
+  m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveCurrLimit, 50_ms);
+  m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveVoltageLimit, 50_ms);
+  m_driveMotor.SetInverted(false);  
+  m_driveMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
+  m_driveMotor.SetPosition(units::angle::turn_t(0));
+
+  m_turningMotor.GetConfigurator().Apply(ctre::phoenix6::configs::TalonFXConfiguration{});
+  m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnMotorConfig, 50_ms);
+  m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnCurrLimit, 50_ms);
+  m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnVoltageLimit, 50_ms);
   m_turningMotor.SetInverted(true);
-  m_turningMotor.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Coast);
+  m_turningMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
 }
 
 double SwerveModule::getTurnEncoderDistance() {
@@ -46,11 +50,11 @@ double SwerveModule::getTurnEncoderDistance() {
 }
 
 double SwerveModule::getDriveEncoderRate() {
-  return ((m_driveMotor.GetSelectedSensorVelocity(0) * 10 * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
+  return ((m_driveMotor.GetVelocity().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 double SwerveModule::getDriveEncoderDistance() {
-    return ((m_driveMotor.GetSelectedSensorPosition(0) * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
+    return ((m_driveMotor.GetPosition().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 frc::SwerveModuleState SwerveModule::GetState() {
@@ -67,23 +71,23 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceState)
   // Optimize the reference state to avoid spinning further than 90 degrees
   const auto state = frc::SwerveModuleState::Optimize(referenceState, units::degree_t{getTurnEncoderDistance()});
 
-  const auto targetMotorSpeed = (state.speed.value() * ModuleConstants::driveEncoderCPR / (ModuleConstants::kWheelCircumference * 10));
+  units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * (ModuleConstants::driveEncoderCPR));
 
   // Calculate the turning motor output from the turning PID controller.
   auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Velocity", targetMotorSpeed);
-  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Velocity", m_driveMotor.GetSelectedSensorVelocity(0));
+  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Velocity", targetMotorSpeed.value());
+  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Velocity", m_driveMotor.GetVelocity().GetValueAsDouble());
   // Set the motor outputs.
   //m_turningMotor.Set(0);
   //m_driveMotor.Set(0);
 
   m_turningMotor.Set(turnOutput);
-  m_driveMotor.Set(ctre::phoenix::motorcontrol::ControlMode::Velocity, targetMotorSpeed);
+  m_driveMotor.SetControl(m_request.WithVelocity(targetMotorSpeed));
 }
 
 void SwerveModule::ResetEncoders() {
-  m_driveMotor.SetSelectedSensorPosition(0);
+  m_driveMotor.SetPosition(units::angle::turn_t(0));
 }

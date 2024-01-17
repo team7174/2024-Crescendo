@@ -90,7 +90,7 @@ void DriveSubsystem::ResetEncoders() {
   m_rearRight.ResetEncoders();
 }
 
-units::degree_t DriveSubsystem::GetHeading() const {
+units::degree_t DriveSubsystem::GetHeading() {
   return m_gyro.GetRotation2d().Degrees();
 }
 

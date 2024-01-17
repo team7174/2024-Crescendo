@@ -87,7 +87,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand()
   // Set up config for trajectory
   auto selectedPath = m_chooser.GetSelected();
 
-  auto selectedTrajectory = frc::TrajectoryUtil::FromPathweaverJson(selectedPath);
+  //auto selectedTrajectory = frc::TrajectoryUtil::FromPathweaverJson(selectedPath);
 
   frc::TrajectoryConfig config(AutoConstants::kMaxSpeed,
                                AutoConstants::kMaxAcceleration);
@@ -96,15 +96,15 @@ frc2::Command *RobotContainer::GetAutonomousCommand()
   config.SetKinematics(m_drive.kDriveKinematics);
 
   // An example trajectory to follow.  All units in meters.
-  //   auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
-  //       // Start at the origin facing the +X direction
-  //       frc::Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass through these two interior waypoints, making an 's' curve path
-  //       {frc::Translation2d{1_m, 0_m}, frc::Translation2d{1_m, 1_m}, frc::Translation2d{0_m, 1_m}},
-  //       // End 3 meters straight ahead of where we started, facing forward
-  //       frc::Pose2d{0_m, 0_m, 0_deg},
-  //       // Pass the config
-  //       config);
+    auto selectedTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
+        // Start at the origin facing the +X direction
+        frc::Pose2d{0_m, 0_m, 0_deg},
+        // Pass through these two interior waypoints, making an 's' curve path
+        {frc::Translation2d{1_m, 0_m}, frc::Translation2d{1_m, 1_m}, frc::Translation2d{0_m, 1_m}},
+        // End 3 meters straight ahead of where we started, facing forward
+        frc::Pose2d{0_m, 0_m, 0_deg},
+        // Pass the config
+        config);
 
   frc::ProfiledPIDController<units::radians> thetaController{
       AutoConstants::kPThetaController, 0, 0,
@@ -119,8 +119,8 @@ frc2::Command *RobotContainer::GetAutonomousCommand()
 
       m_drive.kDriveKinematics,
 
-      frc2::PIDController{AutoConstants::kPXController, 0, 0},
-      frc2::PIDController{AutoConstants::kPYController, 0, 0}, thetaController,
+      frc::PIDController{AutoConstants::kPXController, 0, 0},
+      frc::PIDController{AutoConstants::kPYController, 0, 0}, thetaController,
 
       [this](auto moduleStates)
       { m_drive.SetModuleStates(moduleStates); },
