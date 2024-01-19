@@ -2,21 +2,24 @@
 #include <ctre/phoenix6/configs/Configurator.hpp>
 
 #include "Constants.h"
-class HardwareConfig{
-    public:
+
+class HardwareConfig
+{
+public:
     ctre::phoenix6::configs::Slot0Configs TurnMotorConfig{};
     ctre::phoenix6::configs::Slot0Configs DriveMotorConfig{};
     ctre::phoenix6::configs::CurrentLimitsConfigs DriveCurrLimit{};
     ctre::phoenix6::configs::CurrentLimitsConfigs TurnCurrLimit{};
     ctre::phoenix6::configs::VoltageConfigs DriveVoltageLimit{};
     ctre::phoenix6::configs::VoltageConfigs TurnVoltageLimit{};
-    HardwareConfig(){
+    HardwareConfig()
+    {
         /*Swerve Drive Motor Config*/
         DriveMotorConfig.kP = 0.1;
         DriveMotorConfig.kI = 0;
         DriveMotorConfig.kD = 0.01;
         DriveMotorConfig.kV = 1023.0 / 21700;
-        
+
         DriveCurrLimit.StatorCurrentLimitEnable = true;
         DriveCurrLimit.SupplyCurrentLimit = 35;
         DriveCurrLimit.SupplyCurrentThreshold = 40;
@@ -25,7 +28,7 @@ class HardwareConfig{
         DriveVoltageLimit.PeakForwardVoltage = 12;
         DriveVoltageLimit.PeakReverseVoltage = 12;
 
-        //DriveMotorConfig.initializationStrategy = ctre::phoenix6::configs::BootToZero;
+        // DriveMotorConfig.initializationStrategy = ctre::phoenix6::configs::BootToZero;
 
         /*Swerve Angle Motor Config*/
         TurnMotorConfig.kP = 0.5;
@@ -40,10 +43,6 @@ class HardwareConfig{
         TurnVoltageLimit.PeakForwardVoltage = 12;
         TurnVoltageLimit.PeakReverseVoltage = 12;
 
-        //TurnMotorConfig.initializationStrategy = ctre::phoenix::sensors::SensorInitializationStrategy::BootToZero;
-
+        // TurnMotorConfig.initializationStrategy = ctre::phoenix::sensors::SensorInitializationStrategy::BootToZero;
     }
-    
-
-
 };

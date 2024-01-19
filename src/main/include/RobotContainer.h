@@ -5,17 +5,16 @@
 #pragma once
 
 #include <frc/XboxController.h>
-#include <frc/controller/PIDController.h>
-#include <frc/controller/ProfiledPIDController.h>
 #include <frc/smartdashboard/SendableChooser.h>
-#include <frc2/command/Command.h>
-#include <frc2/command/InstantCommand.h>
-#include <frc2/command/PIDCommand.h>
-#include <frc2/command/ParallelRaceGroup.h>
+
+#include <frc2/command/Commands.h>
+// #include <frc2/command/Command.h>
+#include <frc2/command/CommandPtr.h>
 #include <frc2/command/RunCommand.h>
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
+#include "subsystems/VisionSubsystem.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -24,21 +23,18 @@
  * scheduler calls).  Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-class RobotContainer {
- public:
+class RobotContainer
+{
+public:
   RobotContainer();
 
-  frc2::Command* GetAutonomousCommand();
+  frc2::CommandPtr GetAutonomousCommand();
 
-  void GetLimelightPose();
-
-  // The robot's subsystems
-  DriveSubsystem m_drive;
-  
   // The chooser for the autonomous routines
-  frc::SendableChooser<std::string> m_chooser;
+  // frc::SendableChooser<std::string> autonChooser;
+  frc::SendableChooser<std::string> pathPlannerChooser;
 
- private:
+private:
   // The driver's controller
   frc::XboxController m_driverController{OIConstants::kDriverControllerPort};
 
@@ -46,6 +42,8 @@ class RobotContainer {
   frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
 
   // The robot's subsystems and commands are defined here...
+  DriveSubsystem m_drive;
+  VisionSubsystem m_vision;
 
   void ConfigureButtonBindings();
 };

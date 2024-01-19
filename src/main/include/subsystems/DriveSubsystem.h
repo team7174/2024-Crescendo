@@ -5,23 +5,16 @@
 #pragma once
 
 #include <AHRS.h>
-#include <frc/Encoder.h>
-#include <frc/drive/MecanumDrive.h>
-#include <frc/geometry/Pose2d.h>
-#include <frc/geometry/Rotation2d.h>
-#include <frc/interfaces/Gyro.h>
-#include <frc/kinematics/ChassisSpeeds.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/kinematics/SwerveDriveOdometry.h>
-#include <frc/motorcontrol/PWMSparkMax.h>
-#include <frc2/command/SubsystemBase.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+#include <frc/smartdashboard/Field2d.h>
+#include <frc2/command/SubsystemBase.h>
 
 #include "Constants.h"
 #include "SwerveModule.h"
 
-class DriveSubsystem : public frc2::SubsystemBase {
- public:
+class DriveSubsystem : public frc2::SubsystemBase
+{
+public:
   DriveSubsystem();
 
   /**
@@ -52,6 +45,8 @@ class DriveSubsystem : public frc2::SubsystemBase {
   void ResetEncoders();
 
   void UpdatePoseLimelight(frc::Translation2d pose);
+
+  wpi::array<frc::SwerveModuleState, 4> GetModuleStates();
 
   /**
    * Sets the drive MotorControllers to a power from -1 to 1.
@@ -92,9 +87,11 @@ class DriveSubsystem : public frc2::SubsystemBase {
   void ResetOdometry(frc::Pose2d pose);
 
   units::meter_t kTrackWidth =
-      0.2032_m;  // Distance between centers of right and left wheels on robot
+      0.2032_m; // Distance between centers of right and left wheels on robot
   units::meter_t kWheelBase =
-      0.2032_m;  // Distance between centers of front and back wheels on robot
+      0.2032_m; // Distance between centers of front and back wheels on robot
+  units::meter_t kModuleRadius =
+      units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)));
 
   frc::SwerveDriveKinematics<4> kDriveKinematics{
       frc::Translation2d{kWheelBase / 2, kTrackWidth / 2},
@@ -102,9 +99,10 @@ class DriveSubsystem : public frc2::SubsystemBase {
       frc::Translation2d{-kWheelBase / 2, kTrackWidth / 2},
       frc::Translation2d{-kWheelBase / 2, -kTrackWidth / 2}};
 
- private:
+private:
   // Components (e.g. motor controllers and sensors) should generally be
   // declared private and exposed only through public methods.
+  frc::Field2d m_field;
 
   SwerveModule m_frontLeft;
   SwerveModule m_rearLeft;

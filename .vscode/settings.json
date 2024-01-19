@@ -16,8 +16,13 @@
   },
   "C_Cpp.default.configurationProvider": "vscode-wpilib",
   "files.associations": {
-    "any": "cpp",
     "array": "cpp",
+    "string_view": "cpp",
+    "initializer_list": "cpp",
+    "system_error": "cpp",
+    "*.inc": "cpp",
+    "iostream": "cpp",
+    "any": "cpp",
     "atomic": "cpp",
     "bit": "cpp",
     "*.tcc": "cpp",
@@ -61,17 +66,13 @@
     "random": "cpp",
     "ratio": "cpp",
     "regex": "cpp",
-    "string_view": "cpp",
-    "system_error": "cpp",
     "tuple": "cpp",
     "type_traits": "cpp",
     "utility": "cpp",
     "fstream": "cpp",
     "future": "cpp",
-    "initializer_list": "cpp",
     "iomanip": "cpp",
     "iosfwd": "cpp",
-    "iostream": "cpp",
     "istream": "cpp",
     "limits": "cpp",
     "mutex": "cpp",
@@ -91,5 +92,6 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp"
-  }
+  },
+  "C_Cpp.errorSquiggles": "enabled"
 }

@@ -1,4 +1,4 @@
-plugins {
+ plugins {
     id "cpp"
     id "google-test-test-suite"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
