@@ -26,9 +26,9 @@ RobotContainer::RobotContainer() : m_drive(), m_vision()
 
   // Register Named Commands.
   auto testCmd = frc2::cmd::Print("TESTING A COMMAND");
-  // TODO: Test this
-  pathplanner::NamedCommands::registerCommand("TEST", std::move(testCmd)); // <- This example method returns CommandPtr
 
+  // TODO: Test this
+  pathplanner::NamedCommands::registerCommand("TEST CMD", std::move(testCmd)); // <- This example method returns CommandPtr
   // Set up default drive command
   // The left stick controls translation of the robot.
   // Turning is controlled by the X axis of the right stick.

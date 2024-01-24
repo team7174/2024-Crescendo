@@ -14,6 +14,8 @@ void Robot::RobotInit()
   // Setup Auton Selector
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   deployDirectory = deployDirectory / "pathplanner/autos";
+
+  auto firstOption = true;
   // Iterate over all files in the folder
   for (const auto &entry : fs::directory_iterator(deployDirectory))
   {
@@ -23,9 +25,15 @@ void Robot::RobotInit()
       auto autoName = entry.path().stem().string();
       // // If the file has a ".auto" extension, create a command from it and add it to the possible auton paths
       // auto cmdPtr = pathplanner::PathPlannerAuto(autoName).ToPtr();
-      m_container.pathPlannerChooser.AddOption(autoName, autoName);
-      // TODO: if first one set as default? or use a default name maybe?
-      // m_chooser.SetDefaultOption("Simple Auto", m_simpleAuto.get());
+      if (firstOption)
+      {
+        m_container.pathPlannerChooser.SetDefaultOption(autoName, autoName);
+        firstOption = false;
+      }
+      else
+      {
+        m_container.pathPlannerChooser.AddOption(autoName, autoName);
+      }
     }
   }
   frc::SmartDashboard::PutData("Auto Chooser", &m_container.pathPlannerChooser);

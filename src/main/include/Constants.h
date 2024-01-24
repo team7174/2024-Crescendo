@@ -43,13 +43,13 @@ namespace DriveConstants
 
 namespace ModuleConstants
 {
-    constexpr int driveEncoderCPR = 12288;
-    constexpr int turnEncoderCPR = 24576;
     constexpr double encToAngle = 0.0146484375;
     constexpr double kWheelDiameterMeters = 0.1016;
     constexpr double kWheelCircumference = kWheelDiameterMeters * std::numbers::pi;
     constexpr double driveGearRatio = 6;
     constexpr double turnGearRatio = 12;
+    constexpr int driveEncoderCPR = 2048*driveGearRatio;
+    constexpr int turnEncoderCPR = 2048*turnGearRatio;
 
     constexpr double kPModuleTurningController = 1;
     constexpr double kPModuleDriveController = 1;

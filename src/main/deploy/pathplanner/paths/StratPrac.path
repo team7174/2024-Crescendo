@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.014062450516759,
-        "y": 6.820191553869114
+        "x": 1.9306931140552677,
+        "y": 5.52155524239874
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.014062450516759,
-        "y": 6.320191553869114
+        "x": 2.4176027474237634,
+        "y": 5.55076982040085
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 5.0
+        "x": 3.6348768308450023,
+        "y": 5.52155524239874
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 2.914250573459629,
+        "y": 5.55076982040085
       },
       "nextControl": {
-        "x": 6.0,
-        "y": 4.0
+        "x": 5.047929668745373,
+        "y": 5.464269316537915
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.0,
-        "y": 1.0
+        "x": 6.916647759748663,
+        "y": 5.52155524239874
       },
       "prevControl": {
-        "x": 6.75,
-        "y": 2.5
+        "x": 6.273927043702249,
+        "y": 5.472864279061892
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,19 +48,12 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.55,
+      "name": "testevent",
+      "waypointRelativePos": 1.0,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
-          "commands": [
-            {
-              "type": "wait",
-              "data": {
-                "waitTime": 1.0
-              }
-            }
-          ]
+          "commands": []
         }
       }
     }
