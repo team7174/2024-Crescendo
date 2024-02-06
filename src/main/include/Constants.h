@@ -35,35 +35,52 @@ namespace DriveConstants
     constexpr int kFrontRightTurningEncoderPorts = 0;
     constexpr int kRearRightTurningEncoderPorts = 3;
 
-    constexpr double kFrontLeftEncoderOffset = 0.82260926218418;
-    constexpr double kRearLeftEncoderOffset = 0.315686777968225;
-    constexpr double kFrontRightEncoderOffset = 0.145569385478036;
-    constexpr double kRearRightEncoderOffset = 0.505396518062415;
+    constexpr double kFrontLeftEncoderOffset = 0.01107894677394;
+    constexpr double kRearLeftEncoderOffset = 0.34623807543156;
+    constexpr double kFrontRightEncoderOffset = 0.0924851208955030;
+    constexpr double kRearRightEncoderOffset = 0.922683588934038;
+
 } // namespace DriveConstants
 
 namespace ModuleConstants
 {
-    constexpr double encToAngle = 0.0146484375;
     constexpr double kWheelDiameterMeters = 0.1016;
     constexpr double kWheelCircumference = kWheelDiameterMeters * std::numbers::pi;
-    constexpr double driveGearRatio = 6;
-    constexpr double turnGearRatio = 12;
-    constexpr int driveEncoderCPR = 2048*driveGearRatio;
-    constexpr int turnEncoderCPR = 2048*turnGearRatio;
+    constexpr double driveGearRatio = 6.12;
 
     constexpr double kPModuleTurningController = 1;
     constexpr double kPModuleDriveController = 1;
 } // namespace ModuleConstants
 
+namespace StormbreakerConstants
+{
+    constexpr int armEncoderID = 0;
+    constexpr int leftArmID = 50;
+    constexpr int rightArmID = 51;
+    constexpr double armEncoderOffset = 0.588154189703855;
+    constexpr double armkP = 0.025;
+    constexpr double armkI = 0.0;
+    constexpr double armkD = 0.0;
+} // namespace StormbreakerConstants
+
+namespace ClimberConstants
+{
+    constexpr int leftClimbID = 60;
+    constexpr int rightClimbID = 61;
+    constexpr double climbkP = 0.025;
+    constexpr double climbkI = 0.0;
+    constexpr double climbkD = 0.0;
+} // namespace StormbreakerConstants
+
 namespace AutoConstants
 {
-    constexpr auto kMaxSpeed = 1_mps;
-    constexpr auto kMaxAcceleration = 1_mps_sq;
-    constexpr auto kMaxAngularSpeed = 3.142_rad_per_s;
-    constexpr auto kMaxAngularAcceleration = 3.142_rad_per_s_sq;
+    constexpr auto kMaxSpeed = 5.5_mps;
+    constexpr auto kMaxAcceleration = 5_mps_sq;
+    constexpr auto kMaxAngularSpeed = 18_rad_per_s;
+    constexpr auto kMaxAngularAcceleration = 15_rad_per_s_sq;
 
-    constexpr double kPXController = 1;
-    constexpr double kPYController = 1;
+    constexpr double kPXController = 1.35;
+    constexpr double kPYController = 1.15;
     constexpr double kPThetaController = 2;
 
     extern const frc::TrapezoidProfile<units::radians>::Constraints

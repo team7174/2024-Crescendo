@@ -15,6 +15,8 @@
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
+#include <subsystems/ArmSubsystem.h>
+#include <subsystems/ClimbSubsystem.h>
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -33,6 +35,9 @@ public:
   // The chooser for the autonomous routines
   // frc::SendableChooser<std::string> autonChooser;
   frc::SendableChooser<std::string> pathPlannerChooser;
+
+  std::shared_ptr<ArmSubsystem> m_armSubsystem;
+  std::shared_ptr<ClimbSubsystem> m_climbSubsystem;
 
 private:
   // The driver's controller

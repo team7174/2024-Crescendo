@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9306931140552677,
-        "y": 5.52155524239874
+        "x": 2.0,
+        "y": 5.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4176027474237634,
-        "y": 5.55076982040085
+        "x": 2.41,
+        "y": 5.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6348768308450023,
-        "y": 5.52155524239874
+        "x": 3.0,
+        "y": 4.5
       },
       "prevControl": {
-        "x": 2.914250573459629,
-        "y": 5.55076982040085
-      },
-      "nextControl": {
-        "x": 5.047929668745373,
-        "y": 5.464269316537915
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.916647759748663,
-        "y": 5.52155524239874
-      },
-      "prevControl": {
-        "x": 6.273927043702249,
-        "y": 5.472864279061892
+        "x": 2.55,
+        "y": 4.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,24 +33,31 @@
   "eventMarkers": [
     {
       "name": "testevent",
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "NewTest"
+              }
+            }
+          ]
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 0.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,

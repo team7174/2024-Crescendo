@@ -104,6 +104,9 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
                            units::radians_per_second_t rot,
                            bool fieldRelative)
 {
+  frc::SmartDashboard::PutNumber("Drive X", xSpeed.value());
+  frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
+
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
                           xSpeed, ySpeed, rot, m_gyro.GetRotation2d())

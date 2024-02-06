@@ -7,20 +7,29 @@ class HardwareConfig
 {
 public:
     ctre::phoenix6::configs::Slot0Configs TurnMotorConfig{};
-    ctre::phoenix6::configs::Slot0Configs DriveMotorConfig{};
-    ctre::phoenix6::configs::CurrentLimitsConfigs DriveCurrLimit{};
+    ctre::phoenix6::configs::TalonFXConfiguration DriveMotorConfig{};
     ctre::phoenix6::configs::CurrentLimitsConfigs TurnCurrLimit{};
     ctre::phoenix6::configs::VoltageConfigs DriveVoltageLimit{};
     ctre::phoenix6::configs::VoltageConfigs TurnVoltageLimit{};
     HardwareConfig()
     {
         /*Swerve Drive Motor Config*/
-        DriveMotorConfig.kP = 0.1;
-        DriveMotorConfig.kI = 0;
-        DriveMotorConfig.kD = 0.01;
-        DriveMotorConfig.kV = 1023.0 / 21700;
+        auto &slot0Configs = DriveMotorConfig.Slot0;
+        slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
+        slot0Configs.kV = 0.11; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kP = 0.1;  // An error of 1 rps results in 0.11 V output
+        slot0Configs.kI = 0;    // no output for integrated error
+        slot0Configs.kD = 0;    // no output for error derivative
+                                //  DriveMotorConfig.kS = 0.05; // static friction
 
-        DriveCurrLimit.StatorCurrentLimit = 10;
+        // // set Motion Magic Velocity settings
+        // auto &motionMagicConfigs = DriveMotorConfig.MotionMagic;
+        // motionMagicConfigs.MotionMagicAcceleration = 400; // Target acceleration of 400 rps/s (0.25 seconds to max)
+        // motionMagicConfigs.MotionMagicJerk = 4000;        // Target jerk of 4000 rps/s/s (0.1 seconds)
+
+        auto &DriveCurrLimit = DriveMotorConfig.CurrentLimits;
+        DriveCurrLimit.StatorCurrentLimit = 35;
         DriveCurrLimit.StatorCurrentLimitEnable = true;
 
         DriveCurrLimit.SupplyCurrentLimitEnable = true;
@@ -34,9 +43,10 @@ public:
         // DriveMotorConfig.initializationStrategy = ctre::phoenix6::configs::BootToZero;
 
         /*Swerve Angle Motor Config*/
-        TurnMotorConfig.kP = 0.5;
+        TurnMotorConfig.kP = 1;
         TurnMotorConfig.kI = 0;
-        TurnMotorConfig.kD = 15;
+        TurnMotorConfig.kD = 0;
+        TurnMotorConfig.kV = 0;
 
         TurnCurrLimit.StatorCurrentLimit = 10;
         TurnCurrLimit.StatorCurrentLimitEnable = true;

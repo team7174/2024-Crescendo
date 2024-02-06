@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "subsystems/SwerveModule.h"
-
 #include <numbers>
 
 #include <frc/geometry/Rotation2d.h>
@@ -24,8 +23,6 @@ SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
 
   m_driveMotor.GetConfigurator().Apply(ctre::phoenix6::configs::TalonFXConfiguration{});
   m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveMotorConfig, 50_ms);
-  m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveCurrLimit, 50_ms);
-  m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveVoltageLimit, 50_ms);
   m_driveMotor.SetInverted(false);
   m_driveMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_driveMotor.SetPosition(units::angle::turn_t(0));
@@ -34,8 +31,14 @@ SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
   m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnMotorConfig, 50_ms);
   m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnCurrLimit, 50_ms);
   m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnVoltageLimit, 50_ms);
-  m_turningMotor.SetInverted(true);
-  m_turningMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
+  m_turningMotor.SetInverted(false);
+  m_turningMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+
+  m_driveMotor.GetVelocity().SetUpdateFrequency(50_Hz);
+  m_turningMotor.GetVelocity().SetUpdateFrequency(50_Hz);
+
+  m_driveMotor.GetPosition().SetUpdateFrequency(50_Hz);
+  m_turningMotor.GetPosition().SetUpdateFrequency(50_Hz);
 }
 
 double SwerveModule::getTurnEncoderDistance()
@@ -54,12 +57,16 @@ double SwerveModule::getTurnEncoderDistance()
 
 double SwerveModule::getDriveEncoderRate()
 {
-  return ((m_driveMotor.GetVelocity().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
+  // return m_driveMotor.getvelocity
+  return m_driveMotor.GetVelocity().GetValueAsDouble() / ModuleConstants::driveGearRatio * ModuleConstants::kWheelCircumference;
+  // return ((m_driveMotor.GetVelocity().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 double SwerveModule::getDriveEncoderDistance()
 {
-  return ((m_driveMotor.GetPosition().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
+  return m_driveMotor.GetPosition().GetValueAsDouble() / ModuleConstants::driveGearRatio * ModuleConstants::kWheelCircumference;
+
+  // return ((m_driveMotor.GetPosition().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 frc::SwerveModuleState SwerveModule::GetState()
@@ -79,21 +86,21 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   // Optimize the reference state to avoid spinning further than 90 degrees
   const auto state = frc::SwerveModuleState::Optimize(referenceState, units::degree_t{getTurnEncoderDistance()});
 
-  units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * (ModuleConstants::driveEncoderCPR));
+  units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * ModuleConstants::driveGearRatio);
 
   // Calculate the turning motor output from the turning PID controller.
   auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Velocity", targetMotorSpeed.value());
-  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Velocity", m_driveMotor.GetVelocity().GetValueAsDouble());
-  // Set the motor outputs.
-  // m_turningMotor.Set(0);
-  // m_driveMotor.Set(0);
+  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Motor Speed", targetMotorSpeed.value());
+  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Motor Speed", m_driveMotor.GetVelocity().GetValueAsDouble());
+
+  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Desired Pos", double{state.angle.Degrees()});
+  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Pos", getTurnEncoderDistance());
 
   m_turningMotor.Set(turnOutput);
-  m_driveMotor.SetControl(m_request.WithVelocity(targetMotorSpeed));
+  m_driveMotor.SetControl(m_driveRequest.WithVelocity(targetMotorSpeed));
 }
 
 void SwerveModule::ResetEncoders()

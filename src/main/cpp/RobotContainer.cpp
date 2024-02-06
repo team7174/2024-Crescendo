@@ -26,9 +26,11 @@ RobotContainer::RobotContainer() : m_drive(), m_vision()
 
   // Register Named Commands.
   auto testCmd = frc2::cmd::Print("TESTING A COMMAND");
+  auto eventCmd = frc2::cmd::Print("EVENT MARKER");
 
   // TODO: Test this
   pathplanner::NamedCommands::registerCommand("TEST CMD", std::move(testCmd)); // <- This example method returns CommandPtr
+  pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
   // Set up default drive command
   // The left stick controls translation of the robot.
   // Turning is controlled by the X axis of the right stick.
@@ -36,12 +38,22 @@ RobotContainer::RobotContainer() : m_drive(), m_vision()
       [this]
       {
         m_drive.Drive(
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.08) * AutoConstants::kMaxSpeed},
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.08) * AutoConstants::kMaxSpeed},
-            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.08)} * AutoConstants::kMaxAngularSpeed.value(),
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.08) * AutoConstants::kMaxSpeed.value()},
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.08) * AutoConstants::kMaxSpeed.value()},
+            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.08) * AutoConstants::kMaxAngularSpeed.value()},
             true);
       },
       {&m_drive}));
+
+  m_armSubsystem = std::make_shared<ArmSubsystem>(&m_secondaryController);
+  m_armSubsystem->SetDefaultCommand(frc2::RunCommand([this]
+                                                     { m_armSubsystem->SetDesiredAngle(&m_secondaryController); },
+                                                     {m_armSubsystem.get()}));
+
+  m_climbSubsystem = std::make_shared<ClimbSubsystem>(&m_secondaryController);
+  m_climbSubsystem->SetDefaultCommand(frc2::RunCommand([this]
+                                                       { m_climbSubsystem->SetDesiredPosition(&m_secondaryController); },
+                                                       {m_climbSubsystem.get()}));
 
   // Configure the button bindings
   ConfigureButtonBindings();
