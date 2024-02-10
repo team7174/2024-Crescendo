@@ -10,19 +10,23 @@
 class ClimbSubsystem : public frc2::SubsystemBase
 {
 public:
-    ClimbSubsystem(frc::XboxController *m_secondaryController);
+    ClimbSubsystem();
 
     /**
      * Will be called periodically whenever the CommandScheduler runs.
      */
     void Periodic() override;
-    void SetDesiredPosition(frc::XboxController *m_secondaryController);
+    enum ClimbStates
+    {
+        retract,
+        extend,
+        hold
+    };
+    void SetClimbState(ClimbStates DesiredClimbState);
     void Stop();
 
 private:
     ctre::phoenix6::hardware::TalonFX m_climbMotorLeft;
     ctre::phoenix6::hardware::TalonFX m_climbMotorRight;
     frc::PIDController m_climbPIDController;
-    frc::XboxController *m_armController;
-    bool climbUp;
 };

@@ -1,44 +1,38 @@
 #include "subsystems/ClimbSubsystem.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-ClimbSubsystem::ClimbSubsystem(frc::XboxController *m_secondaryController)
+ClimbSubsystem::ClimbSubsystem()
     : m_climbMotorLeft(ClimberConstants::leftClimbID), // Replace with your TalonFX device ID
       m_climbMotorRight(ClimberConstants::rightClimbID),
-      m_climbPIDController(ClimberConstants::climbkP, ClimberConstants::climbkI, ClimberConstants::climbkD),
-      m_armController(m_secondaryController)
+      m_climbPIDController(ClimberConstants::climbkP, ClimberConstants::climbkI, ClimberConstants::climbkD)
 {
+    m_climbMotorRight.SetInverted(true);
 }
 
 void ClimbSubsystem::Periodic()
 {
-    if (climbUp)
-    {
-        m_climbMotorLeft.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorLeft.GetPosition().GetValueAsDouble(), 825.0), -1.0, 1.0));
-        m_climbMotorRight.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorRight.GetPosition().GetValueAsDouble(), -825.0), -1.0, 1.0));
-    }
-    else
-    {
-        m_climbMotorLeft.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorLeft.GetPosition().GetValueAsDouble(), 0), -1.0, 1.0));
-        m_climbMotorRight.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorRight.GetPosition().GetValueAsDouble(), 0), -1.0, 1.0));
-    }
+    m_climbMotorLeft.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorLeft.GetPosition().GetValueAsDouble()), -1.0, 1.0));
+    m_climbMotorRight.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorRight.GetPosition().GetValueAsDouble()), -1.0, 1.0));
 }
 
-void ClimbSubsystem::SetDesiredPosition(frc::XboxController *m_secondaryController)
+void ClimbSubsystem::SetClimbState(ClimbStates DesiredClimbState)
 {
-    // Update the setpoint of the PID controller
-    if (m_secondaryController->GetYButton())
+    switch (DesiredClimbState)
     {
-        climbUp = true;
+    case ClimbStates::extend:
+        m_climbPIDController.SetSetpoint(825.0);
+        break;
+
+    case ClimbStates::hold:
+        m_climbPIDController.SetSetpoint((m_climbMotorLeft.GetPosition().GetValueAsDouble() + m_climbMotorRight.GetPosition().GetValueAsDouble()) / 2);
+        break;
+
+    default:
+        m_climbPIDController.SetSetpoint(0);
+        break;
     }
-    else if (m_secondaryController->GetAButton())
-    {
-        climbUp = false;
-    }
-    if (m_secondaryController->GetRightBumper())
-    {
-        m_climbMotorLeft.SetPosition(units::angle::turn_t(0));
-        m_climbMotorRight.SetPosition(units::angle::turn_t(0));
-    }
+
+    m_climbPIDController.SetSetpoint(std::clamp(m_climbPIDController.GetSetpoint(), 0.0, 825.0));
 }
 
 void ClimbSubsystem::Stop()

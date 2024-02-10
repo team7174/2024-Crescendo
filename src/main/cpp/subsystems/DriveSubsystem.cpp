@@ -17,7 +17,7 @@
 
 using namespace DriveConstants;
 
-DriveSubsystem::DriveSubsystem()
+DriveSubsystem::DriveSubsystem(VisionSubsystem* passedVisionSubsystem)
     : m_frontLeft{kFrontLeftDriveMotorPort,
                   kFrontLeftTurningMotorPort,
                   kFrontLeftTurningEncoderPorts,
@@ -44,6 +44,7 @@ DriveSubsystem::DriveSubsystem()
                   m_rearLeft.GetPosition(), m_rearRight.GetPosition()},
                  frc::Pose2d{}}
 {
+  m_visionSubsystem = passedVisionSubsystem;
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -86,6 +87,10 @@ void DriveSubsystem::Periodic()
   m_odometry.Update(m_gyro.GetRotation2d(),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
+
+  UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
+  UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
+
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
 
   // /*
@@ -172,8 +177,11 @@ frc::Pose2d DriveSubsystem::GetPose()
 
 void DriveSubsystem::UpdatePoseLimelight(frc::Translation2d pose)
 {
-  frc::Pose2d robotPose(pose, m_gyro.GetRotation2d());
-  m_odometry.AddVisionMeasurement(robotPose, frc::Timer::GetFPGATimestamp());
+  if (pose != ignorePose)
+  {
+    frc::Pose2d robotPose(pose, m_gyro.GetRotation2d());
+    m_odometry.AddVisionMeasurement(robotPose, frc::Timer::GetFPGATimestamp());
+  }
 }
 
 void DriveSubsystem::ResetOdometry(frc::Pose2d pose)

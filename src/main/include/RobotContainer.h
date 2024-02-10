@@ -14,9 +14,10 @@
 
 #include "Constants.h"
 #include "subsystems/DriveSubsystem.h"
-#include "subsystems/VisionSubsystem.h"
 #include <subsystems/ArmSubsystem.h>
 #include <subsystems/ClimbSubsystem.h>
+#include <subsystems/ShooterSubsystem.h>
+#include <subsystems/VisionSubsystem.h>
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -36,8 +37,12 @@ public:
   // frc::SendableChooser<std::string> autonChooser;
   frc::SendableChooser<std::string> pathPlannerChooser;
 
-  std::shared_ptr<ArmSubsystem> m_armSubsystem;
-  std::shared_ptr<ClimbSubsystem> m_climbSubsystem;
+  // The robot's subsystems and commands are defined here...
+  DriveSubsystem m_drive;
+  ArmSubsystem m_armSubsystem;
+  ClimbSubsystem m_climbSubsystem;
+  ShooterSubsystem m_shooterSubsystem;
+  VisionSubsystem m_visionSubsystem;
 
 private:
   // The driver's controller
@@ -45,10 +50,6 @@ private:
 
   // The secondary controller
   frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
-
-  // The robot's subsystems and commands are defined here...
-  DriveSubsystem m_drive;
-  VisionSubsystem m_vision;
 
   void ConfigureButtonBindings();
 };

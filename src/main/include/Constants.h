@@ -54,10 +54,10 @@ namespace ModuleConstants
 
 namespace StormbreakerConstants
 {
-    constexpr int armEncoderID = 0;
+    constexpr int armEncoderID = 8;
     constexpr int leftArmID = 50;
     constexpr int rightArmID = 51;
-    constexpr double armEncoderOffset = 0.588154189703855;
+    constexpr double armEncoderOffset = 0.41582161039554;
     constexpr double armkP = 0.025;
     constexpr double armkI = 0.0;
     constexpr double armkD = 0.0;
@@ -70,6 +70,16 @@ namespace ClimberConstants
     constexpr double climbkP = 0.025;
     constexpr double climbkI = 0.0;
     constexpr double climbkD = 0.0;
+} // namespace StormbreakerConstants
+
+namespace ShooterConstants
+{
+    constexpr int leftShooterID = 55;
+    constexpr int rightShooterID = 56;
+    constexpr int intakeID = 57;
+    constexpr double shooterkP = 0.025;
+    constexpr double shooterkI = 0.0;
+    constexpr double shooterkD = 0.0;
 } // namespace StormbreakerConstants
 
 namespace AutoConstants

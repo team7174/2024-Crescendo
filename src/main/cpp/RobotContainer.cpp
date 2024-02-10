@@ -20,7 +20,7 @@
 
 using namespace DriveConstants;
 
-RobotContainer::RobotContainer() : m_drive(), m_vision()
+RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_shooterSubsystem(&m_armSubsystem)
 {
   // Initialize all of your commands and subsystems here
 
@@ -45,16 +45,6 @@ RobotContainer::RobotContainer() : m_drive(), m_vision()
       },
       {&m_drive}));
 
-  m_armSubsystem = std::make_shared<ArmSubsystem>(&m_secondaryController);
-  m_armSubsystem->SetDefaultCommand(frc2::RunCommand([this]
-                                                     { m_armSubsystem->SetDesiredAngle(&m_secondaryController); },
-                                                     {m_armSubsystem.get()}));
-
-  m_climbSubsystem = std::make_shared<ClimbSubsystem>(&m_secondaryController);
-  m_climbSubsystem->SetDefaultCommand(frc2::RunCommand([this]
-                                                       { m_climbSubsystem->SetDesiredPosition(&m_secondaryController); },
-                                                       {m_climbSubsystem.get()}));
-
   // Configure the button bindings
   ConfigureButtonBindings();
 }
@@ -62,26 +52,51 @@ RobotContainer::RobotContainer() : m_drive(), m_vision()
 void RobotContainer::ConfigureButtonBindings()
 {
   frc2::Trigger{[this]()
-                { return m_driverController.GetAButtonPressed(); }}
-      .OnTrue(frc2::cmd::RunOnce([this]
-                                 { 
-        auto position = m_vision.GetPosition(); 
-        m_drive.UpdatePoseLimelight(position); }));
-
-  frc2::Trigger{[this]()
                 { return m_driverController.GetYButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
                                  { m_drive.ZeroHeading(); }));
 
-  // frc2::JoystickButton(
-  //   &m_driverController,
-  //   frc::XboxController::Button::kA).OnTrue(
-  //     frc2::cmd::RunOnce([this]{ GetLimelightPose(); }));
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetXButtonPressed(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
-  // frc2::JoystickButton(
-  //   &m_driverController,
-  //   frc::XboxController::Button::kY).OnTrue(
-  //     frc2::cmd::RunOnce([this]{ m_drive.ZeroHeading(); }));
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetLeftBumper(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject);
+                                   m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
+
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetBButtonPressed(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
+
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetLeftTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); }));
+
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetRightTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); }));
+
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetRightBumper(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); }));
+
+  frc2::Trigger{[this]()
+                { return m_secondaryController.GetYButton(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::extend); }));
+
+  frc2::Trigger{[this]()
+
+                { return m_secondaryController.GetAButton(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::retract); }));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()

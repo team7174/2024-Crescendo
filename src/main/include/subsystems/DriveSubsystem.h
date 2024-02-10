@@ -11,16 +11,17 @@
 
 #include "Constants.h"
 #include "SwerveModule.h"
-
+#include <subsystems/VisionSubsystem.h>
 class DriveSubsystem : public frc2::SubsystemBase
 {
 public:
-    DriveSubsystem();
+    DriveSubsystem(VisionSubsystem*);
 
     /**
      * Will be called periodically whenever the CommandScheduler runs.
      */
     void Periodic() override;
+    VisionSubsystem* m_visionSubsystem;
 
     // Subsystem methods go here.
 
@@ -115,4 +116,5 @@ private:
     // Odometry class for tracking robot pose
     // 4 defines the number of modules
     frc::SwerveDrivePoseEstimator<4> m_odometry;
+    frc::Translation2d ignorePose{0_m, 0_m};
 };

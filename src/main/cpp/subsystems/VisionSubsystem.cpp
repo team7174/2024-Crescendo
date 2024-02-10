@@ -1,25 +1,34 @@
 #include "subsystems/VisionSubsystem.h"
 
 VisionSubsystem::VisionSubsystem()
+{}
+
+frc::Translation2d VisionSubsystem::GetPoseLL3()
 {
-  this->limelight = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+  limelight3 = nt::NetworkTableInstance::GetDefault().GetTable("LL3");
+  auto limelight3BotPose = limelight3->GetNumberArray("botpose_wpiblue", {});
+  return ConvertToTranslation2d(limelight3BotPose);
 }
 
-frc::Translation2d VisionSubsystem::GetPosition()
+frc::Translation2d VisionSubsystem::GetPoseLL2()
 {
-  auto limelight3BotPose = this->limelight->GetNumberArray("botpose_wpiblue", {});
-  if (limelight3BotPose.size() >= 2)
+  limelight2 = nt::NetworkTableInstance::GetDefault().GetTable("LL2");
+  auto limelight2BotPose = limelight2->GetNumberArray("botpose_wpiblue", {});
+  return ConvertToTranslation2d(limelight2BotPose);
+}
+
+frc::Translation2d VisionSubsystem::ConvertToTranslation2d(std::vector<double> pose)
+{
+  if (pose.size() >= 2)
   {
-    double x = limelight3BotPose[0];
-    double y = limelight3BotPose[1];
-    frc::SmartDashboard::PutNumber("Limelight: botpose x", x);
-    frc::SmartDashboard::PutNumber("Limelight: botpose y", y);
-
-    units::meter_t xMeters(x);
-    units::meter_t yMeters(y);
-
+    units::meter_t xMeters(pose[0]);
+    units::meter_t yMeters(pose[1]);
     frc::Translation2d position(xMeters, yMeters);
-    // TODO: FIXME always return something even if size < 2??? Maybe pair with a boolean as the first obj?
+    return position;
+  }
+  else
+  {
+    frc::Translation2d position(0_m, 0_m);
     return position;
   }
 }
