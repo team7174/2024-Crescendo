@@ -35,11 +35,13 @@ public:
 
     void ResetEncoders();
 
+    units::angle::turn_t DegreesToFalcon(units::degree_t angle);
+
     HardwareConfig motorConfigs;
 
     ctre::phoenix6::controls::VelocityVoltage m_driveRequest = ctre::phoenix6::controls::VelocityVoltage{0_tps};
     //    ctre::phoenix6::controls::MotionMagicVelocityVoltage m_driveRequest{0_tps};
-    ctre::phoenix6::controls::PositionVoltage m_turnRequest = ctre::phoenix6::controls::PositionVoltage{0_tr, 0_tps};
+    ctre::phoenix6::controls::PositionVoltage m_turnRequest = ctre::phoenix6::controls::PositionVoltage{0_tr};
 
 private:
     // We have to use meters here instead of radians due to the fact that

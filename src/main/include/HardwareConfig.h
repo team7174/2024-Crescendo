@@ -6,11 +6,8 @@
 class HardwareConfig
 {
 public:
-    ctre::phoenix6::configs::Slot0Configs TurnMotorConfig{};
+    ctre::phoenix6::configs::TalonFXConfiguration TurnMotorConfig{};
     ctre::phoenix6::configs::TalonFXConfiguration DriveMotorConfig{};
-    ctre::phoenix6::configs::CurrentLimitsConfigs TurnCurrLimit{};
-    ctre::phoenix6::configs::VoltageConfigs DriveVoltageLimit{};
-    ctre::phoenix6::configs::VoltageConfigs TurnVoltageLimit{};
     HardwareConfig()
     {
         /*Swerve Drive Motor Config*/
@@ -37,18 +34,23 @@ public:
         DriveCurrLimit.SupplyCurrentThreshold = 40;
         DriveCurrLimit.SupplyTimeThreshold = 0.1;
 
-        DriveVoltageLimit.PeakForwardVoltage = 12;
-        DriveVoltageLimit.PeakReverseVoltage = -12;
+        auto &DriveVoltLimit = DriveMotorConfig.Voltage;
+        DriveVoltLimit.PeakForwardVoltage = 12;
+        DriveVoltLimit.PeakReverseVoltage = -12;
 
         // DriveMotorConfig.initializationStrategy = ctre::phoenix6::configs::BootToZero;
 
         /*Swerve Angle Motor Config*/
-        // TurnMotorConfig.kP = 1;
-        // TurnMotorConfig.kI = 0;
-        // TurnMotorConfig.kD = 0;
-        // TurnMotorConfig.kV = 0;
-
-        TurnCurrLimit.StatorCurrentLimit = 10;
+        auto &slot0ConfigsTurn = TurnMotorConfig.Slot0;
+        slot0ConfigsTurn.kS = 0.25; // Add 0.25 V output to overcome static friction
+        slot0ConfigsTurn.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
+        slot0ConfigsTurn.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0ConfigsTurn.kP = 1.2;  // An error of 1 rps results in 0.11 V output
+        slot0ConfigsTurn.kI = 0;    // no output for integrated error
+        slot0ConfigsTurn.kD = 0;    // no output for error derivative
+        
+        auto &TurnCurrLimit = TurnMotorConfig.CurrentLimits;
+        TurnCurrLimit.StatorCurrentLimit = 35;
         TurnCurrLimit.StatorCurrentLimitEnable = true;
 
         TurnCurrLimit.SupplyCurrentLimitEnable = true;
@@ -56,8 +58,9 @@ public:
         TurnCurrLimit.SupplyCurrentThreshold = 40;
         TurnCurrLimit.SupplyTimeThreshold = 0.1;
 
-        TurnVoltageLimit.PeakForwardVoltage = 12;
-        TurnVoltageLimit.PeakReverseVoltage = -12;
+        auto &TurnVoltLimit = TurnMotorConfig.Voltage;
+        TurnVoltLimit.PeakForwardVoltage = 12;
+        TurnVoltLimit.PeakReverseVoltage = -12;
 
         // TurnMotorConfig.initializationStrategy = ctre::phoenix::sensors::SensorInitializationStrategy::BootToZero;
     }

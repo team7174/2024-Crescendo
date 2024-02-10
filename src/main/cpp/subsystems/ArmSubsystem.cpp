@@ -79,7 +79,7 @@ double ArmSubsystem::CalculateAngle()
   }
   auto m_robotPose = m_driveSubsystem->GetPose();
   double distanceToSpeaker = sqrt(pow(speakerX - m_robotPose.X().value(), 2) + pow(5.547868 - m_robotPose.Y().value(), 2)) - 0.2032;
-  double speakerHeight = 2;
+  double speakerHeight = 1.88;
 
   double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * 0.6858) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
 

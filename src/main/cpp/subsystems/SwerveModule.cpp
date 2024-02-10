@@ -29,16 +29,9 @@ SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
 
   m_turningMotor.GetConfigurator().Apply(ctre::phoenix6::configs::TalonFXConfiguration{});
   m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnMotorConfig, 50_ms);
-  m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnCurrLimit, 50_ms);
-  m_turningMotor.GetConfigurator().Apply(motorConfigs.TurnVoltageLimit, 50_ms);
   m_turningMotor.SetInverted(false);
   m_turningMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
-
-  m_driveMotor.GetVelocity().SetUpdateFrequency(50_Hz);
-  m_turningMotor.GetVelocity().SetUpdateFrequency(50_Hz);
-
-  m_driveMotor.GetPosition().SetUpdateFrequency(50_Hz);
-  m_turningMotor.GetPosition().SetUpdateFrequency(50_Hz);
+  m_turningMotor.SetPosition(DegreesToFalcon(units::degree_t(getTurnEncoderDistance())));
 }
 
 double SwerveModule::getTurnEncoderDistance()
@@ -81,6 +74,11 @@ frc::SwerveModulePosition SwerveModule::GetPosition()
           units::degree_t{getTurnEncoderDistance()}};
 }
 
+units::angle::turn_t SwerveModule::DegreesToFalcon(units::degree_t angle)
+{
+  return units::angle::turn_t(angle.value() / (360.0 / (ModuleConstants::angleGearRatio)));
+}
+
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
 {
   // Optimize the reference state to avoid spinning further than 90 degrees
@@ -91,6 +89,9 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   // Calculate the turning motor output from the turning PID controller.
   auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
+  units::degree_t Angle = state.angle.Degrees();
+  m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
+
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Motor Speed", targetMotorSpeed.value());
@@ -99,7 +100,7 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Desired Pos", double{state.angle.Degrees()});
   frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Pos", getTurnEncoderDistance());
 
-  m_turningMotor.Set(turnOutput);
+  //m_turningMotor.Set(turnOutput);
   m_driveMotor.SetControl(m_driveRequest.WithVelocity(targetMotorSpeed));
 }
 

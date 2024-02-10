@@ -47,6 +47,7 @@ namespace ModuleConstants
     constexpr double kWheelDiameterMeters = 0.1016;
     constexpr double kWheelCircumference = kWheelDiameterMeters * std::numbers::pi;
     constexpr double driveGearRatio = 6.12;
+    constexpr double angleGearRatio = 12.8;
 
     constexpr double kPModuleTurningController = 1;
     constexpr double kPModuleDriveController = 1;
