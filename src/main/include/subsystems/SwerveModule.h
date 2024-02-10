@@ -60,7 +60,7 @@ private:
 
     frc::PIDController m_drivePIDController{
         ModuleConstants::kPModuleDriveController, 0, 0};
-    frc::PIDController steerPID{0.0075, 0.02, 0};
+    frc::PIDController steerPID{0.0075, 0, 0};
     frc::ProfiledPIDController<units::radians> m_turningPIDController{
         ModuleConstants::kPModuleTurningController,
         0.0,

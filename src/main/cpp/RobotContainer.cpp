@@ -20,7 +20,7 @@
 
 using namespace DriveConstants;
 
-RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_shooterSubsystem(&m_armSubsystem)
+RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem)
 {
   // Initialize all of your commands and subsystems here
 
@@ -80,7 +80,8 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); }));
+                                 { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+                                   m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetRightBumper(); }}

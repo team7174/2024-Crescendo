@@ -43,17 +43,17 @@ public:
         // DriveMotorConfig.initializationStrategy = ctre::phoenix6::configs::BootToZero;
 
         /*Swerve Angle Motor Config*/
-        TurnMotorConfig.kP = 1;
-        TurnMotorConfig.kI = 0;
-        TurnMotorConfig.kD = 0;
-        TurnMotorConfig.kV = 0;
+        // TurnMotorConfig.kP = 1;
+        // TurnMotorConfig.kI = 0;
+        // TurnMotorConfig.kD = 0;
+        // TurnMotorConfig.kV = 0;
 
         TurnCurrLimit.StatorCurrentLimit = 10;
         TurnCurrLimit.StatorCurrentLimitEnable = true;
 
         TurnCurrLimit.SupplyCurrentLimitEnable = true;
-        TurnCurrLimit.SupplyCurrentLimit = 10;
-        TurnCurrLimit.SupplyCurrentThreshold = 20;
+        TurnCurrLimit.SupplyCurrentLimit = 35;
+        TurnCurrLimit.SupplyCurrentThreshold = 40;
         TurnCurrLimit.SupplyTimeThreshold = 0.1;
 
         TurnVoltageLimit.PeakForwardVoltage = 12;

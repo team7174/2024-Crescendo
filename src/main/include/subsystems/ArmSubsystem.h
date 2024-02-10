@@ -7,11 +7,13 @@
 #include "Constants.h"
 #include <frc/XboxController.h>
 #include <frc/DriverStation.h>
+#include <subsystems/DriveSubsystem.h>
 
 class ArmSubsystem : public frc2::SubsystemBase
 {
 public:
-  ArmSubsystem();
+  ArmSubsystem(DriveSubsystem*);
+  DriveSubsystem* m_driveSubsystem;
 
   /**
    * Will be called periodically whenever the CommandScheduler runs.
@@ -37,4 +39,5 @@ private:
   frc::PIDController m_armPIDController;
   // DriveSubsystem m_driveSubsystem;
   double speakerX;
+  double angleOffset = 10;
 };

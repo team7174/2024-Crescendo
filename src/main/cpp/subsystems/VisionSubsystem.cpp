@@ -5,14 +5,14 @@ VisionSubsystem::VisionSubsystem()
 
 frc::Translation2d VisionSubsystem::GetPoseLL3()
 {
-  limelight3 = nt::NetworkTableInstance::GetDefault().GetTable("LL3");
+  limelight3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
   auto limelight3BotPose = limelight3->GetNumberArray("botpose_wpiblue", {});
   return ConvertToTranslation2d(limelight3BotPose);
 }
 
 frc::Translation2d VisionSubsystem::GetPoseLL2()
 {
-  limelight2 = nt::NetworkTableInstance::GetDefault().GetTable("LL2");
+  limelight2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
   auto limelight2BotPose = limelight2->GetNumberArray("botpose_wpiblue", {});
   return ConvertToTranslation2d(limelight2BotPose);
 }

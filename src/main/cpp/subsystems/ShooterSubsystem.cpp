@@ -25,7 +25,7 @@ void ShooterSubsystem::Periodic()
   {
     SetIntakeState(intakeStates::stop);
   }
-
+  frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle())
   {
     SetIntakeState(intakeStates::shoot);
@@ -109,7 +109,7 @@ bool ShooterSubsystem::NotePresent()
 
 bool ShooterSubsystem::ShooterAtSpeed()
 {
-  return (leftShooterEnc.GetVelocity() > (shooterSpeed * 6500) && rightShooterEnc.GetVelocity() > (shooterSpeed * 6500));
+  return (leftShooterEnc.GetVelocity() > (shooterSpeed * 6000) && rightShooterEnc.GetVelocity() > (shooterSpeed * 6000));
 }
 
 void ShooterSubsystem::Stop()
