@@ -12,10 +12,10 @@ public:
     {
         /*Swerve Drive Motor Config*/
         auto &slot0Configs = DriveMotorConfig.Slot0;
-        slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-        slot0Configs.kV = 0.11; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-        slot0Configs.kP = 0.1;  // An error of 1 rps results in 0.11 V output
+        slot0Configs.kS = 0.3; // Add 0.25 V output to overcome static friction
+        slot0Configs.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0.015; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kP = 0.12;  // An error of 1 rps results in 0.11 V output
         slot0Configs.kI = 0;    // no output for integrated error
         slot0Configs.kD = 0;    // no output for error derivative
                                 //  DriveMotorConfig.kS = 0.05; // static friction
@@ -61,7 +61,6 @@ public:
         auto &TurnVoltLimit = TurnMotorConfig.Voltage;
         TurnVoltLimit.PeakForwardVoltage = 12;
         TurnVoltLimit.PeakReverseVoltage = -12;
-
         // TurnMotorConfig.initializationStrategy = ctre::phoenix::sensors::SensorInitializationStrategy::BootToZero;
     }
 };

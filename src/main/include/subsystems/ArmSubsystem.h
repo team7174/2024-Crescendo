@@ -31,6 +31,7 @@ public:
   void UpdateDesiredAngleFromJoystick();
   double CalculateAngle();
   bool ReachedDesiredAngle();
+  units::angle::turn_t AngleToFalcon(double angle);
 
 private:
   ctre::phoenix6::hardware::TalonFX m_armMotorLeft;
@@ -39,5 +40,7 @@ private:
   frc::PIDController m_armPIDController;
   // DriveSubsystem m_driveSubsystem;
   double speakerX;
-  double angleOffset = 10;
+  double angleOffset = 7.5;
+
+  double armGearRatio = 0.0023;
 };

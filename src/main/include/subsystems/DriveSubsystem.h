@@ -12,10 +12,17 @@
 #include "Constants.h"
 #include "SwerveModule.h"
 #include <subsystems/VisionSubsystem.h>
+#include <frc/controller/PIDController.h>
 class DriveSubsystem : public frc2::SubsystemBase
 {
 public:
     DriveSubsystem(VisionSubsystem*);
+
+    enum DriveStates
+    {
+        joyStickDrive,
+        aimDrive
+    };
 
     /**
      * Will be called periodically whenever the CommandScheduler runs.
@@ -80,6 +87,11 @@ public:
      */
     frc::Pose2d GetPose();
 
+    void SetDriveState(DriveStates state);
+    DriveStates m_desiredDriveState;
+    void getAimAngle();
+    double speakerX;
+
     /**
      * Resets the odometry to the specified pose.
      *
@@ -112,6 +124,8 @@ private:
 
     // The gyro sensor
     AHRS m_gyro{frc::SPI::kMXP};
+
+    frc::PIDController m_aimController{0.1, 0.0, 0.0};
 
     // Odometry class for tracking robot pose
     // 4 defines the number of modules

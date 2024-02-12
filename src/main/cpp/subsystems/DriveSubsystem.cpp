@@ -45,6 +45,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem* passedVisionSubsystem)
                  frc::Pose2d{}}
 {
   m_visionSubsystem = passedVisionSubsystem;
+  m_aimController.SetTolerance(1);
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -92,6 +93,7 @@ void DriveSubsystem::Periodic()
   UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
+  getAimAngle();
 
   // /*
   //  * This will get the simulated sensor readings that we set
@@ -112,6 +114,11 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   frc::SmartDashboard::PutNumber("Drive X", xSpeed.value());
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
 
+  if (m_desiredDriveState == DriveStates::aimDrive)
+  {
+    rot = units::radians_per_second_t(std::clamp(m_aimController.Calculate(m_gyro.GetRotation2d().Degrees().value()), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+  }
+
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
                           xSpeed, ySpeed, rot, m_gyro.GetRotation2d())
@@ -125,6 +132,11 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   m_frontRight.SetDesiredState(fr);
   m_rearLeft.SetDesiredState(bl);
   m_rearRight.SetDesiredState(br);
+}
+
+void DriveSubsystem::SetDriveState(DriveStates desiredDriveState)
+{
+  m_desiredDriveState = desiredDriveState;
 }
 
 void DriveSubsystem::SetModuleStates(
@@ -173,6 +185,32 @@ double DriveSubsystem::GetTurnRate()
 frc::Pose2d DriveSubsystem::GetPose()
 {
   return m_odometry.GetEstimatedPosition();
+}
+
+void DriveSubsystem::getAimAngle()
+{
+  if (auto ally = frc::DriverStation::GetAlliance())
+  {
+    if (ally.value() == frc::DriverStation::Alliance::kRed)
+    {
+      speakerX = 16.579342;
+    }
+    else
+    {
+      speakerX = 0;
+    }
+  }
+  auto m_robotPose = GetPose();
+  auto xOffset = m_robotPose.X().value() - speakerX;
+  auto yOffset = m_robotPose.Y().value() - 5.547868;
+  auto angle = atan(abs(yOffset)/abs(xOffset));
+  angle = angle * (180 / M_PI);
+  if (yOffset < 0)
+  {
+    angle = -angle;
+  }
+  frc::SmartDashboard::PutNumber("Aim Angle", angle);
+  m_aimController.SetSetpoint(angle);
 }
 
 void DriveSubsystem::UpdatePoseLimelight(frc::Translation2d pose)

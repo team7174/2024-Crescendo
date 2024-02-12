@@ -58,7 +58,7 @@ namespace StormbreakerConstants
     constexpr int armEncoderID = 8;
     constexpr int leftArmID = 50;
     constexpr int rightArmID = 51;
-    constexpr double armEncoderOffset = 0.41582161039554;
+    constexpr double armEncoderOffset = 0.58956601473915;
     constexpr double armkP = 0.025;
     constexpr double armkI = 0.0;
     constexpr double armkD = 0.0;

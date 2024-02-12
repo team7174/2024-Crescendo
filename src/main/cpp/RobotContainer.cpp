@@ -57,6 +57,16 @@ void RobotContainer::ConfigureButtonBindings()
                                  { m_drive.ZeroHeading(); }));
 
   frc2::Trigger{[this]()
+                { return m_driverController.GetRightTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); }));
+
+  frc2::Trigger{[this]()
+                { return !m_driverController.GetRightTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this]
+                                 { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
+
+  frc2::Trigger{[this]()
                 { return m_secondaryController.GetXButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
                                  { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));

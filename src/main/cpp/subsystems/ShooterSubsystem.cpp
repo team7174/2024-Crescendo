@@ -26,12 +26,13 @@ void ShooterSubsystem::Periodic()
     SetIntakeState(intakeStates::stop);
   }
   frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
+  frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle())
   {
     SetIntakeState(intakeStates::shoot);
   }
 
-  if (!NotePresent() && currShooterState == shooterStates::shooterOn)
+  if (!NotePresent() && currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot)
   {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
@@ -84,11 +85,11 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   switch (shooterState)
   {
   case shooterStates::shooterOn:
-    shooterSpeed = 0.6;
+    shooterSpeed = 0.8;
     break;
 
   case shooterStates::shooterStop:
-    shooterSpeed = 0;
+    shooterSpeed = 0.2;
     break;
 
   case shooterStates::shooterEject:
