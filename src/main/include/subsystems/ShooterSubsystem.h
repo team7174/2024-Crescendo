@@ -7,6 +7,8 @@
 #include <frc/controller/PIDController.h>
 #include <frc/DigitalInput.h>
 #include <subsystems/ArmSubsystem.h>
+#include <frc/controller/SimpleMotorFeedforward.h>
+
 class ShooterSubsystem : public frc2::SubsystemBase
 {
 public:
@@ -37,6 +39,8 @@ public:
   void SetShooterState(shooterStates shooterState);
   bool NotePresent();
   bool ShooterAtSpeed();
+  void runVelocity(double rpm);
+  void setPID();
 
   frc::DigitalInput intakeBeamBreak{1};
   frc::DigitalInput shooterBeamBreak{2};
@@ -52,6 +56,13 @@ private:
   rev::SparkRelativeEncoder rightShooterEnc;
   rev::SparkRelativeEncoder leftShooterEnc;
 
+  rev::SparkPIDController leftShooterPID;
+  rev::SparkPIDController rightShooterPID;
+
   double intakeSpeed;
   double shooterSpeed;
+
+  double kP = 0.0;
+  double kI = 0.0;
+  double kD = 0.0;
 };

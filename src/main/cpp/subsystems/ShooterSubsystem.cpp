@@ -7,14 +7,42 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem)
       m_rightShooterMotor(ShooterConstants::rightShooterID, rev::CANSparkFlex::MotorType::kBrushless), // Replace with your TalonFX device ID
       m_intakeMotor(ShooterConstants::intakeID, rev::CANSparkFlex::MotorType::kBrushless),             // Replace with your TalonFX device ID
       rightShooterEnc(m_rightShooterMotor.GetEncoder()),
-      leftShooterEnc(m_leftShooterMotor.GetEncoder())
-// m_vortexPID(ShooterConstants::shooterkP, ShooterConstants::shooterkI, ShooterConstants::shooterkD),
+      leftShooterEnc(m_leftShooterMotor.GetEncoder()),
+      leftShooterPID(m_leftShooterMotor.GetPIDController()),
+      rightShooterPID(m_rightShooterMotor.GetPIDController())
 {
   // Motor, encoder, and PID controller initialization can be done here
   // Set the PID controller's setpoint to the initial position
+  m_armSubsystem = passedArmSubsystem;
+
+  m_leftShooterMotor.RestoreFactoryDefaults();
+  m_rightShooterMotor.RestoreFactoryDefaults();
+
+  // Limits
+  m_leftShooterMotor.SetSmartCurrentLimit(60);
+  m_rightShooterMotor.SetSmartCurrentLimit(60);
+  m_leftShooterMotor.EnableVoltageCompensation(12.0);
+  m_rightShooterMotor.EnableVoltageCompensation(12.0);
+
+  // Reset encoders
+  leftShooterEnc.SetPosition(0.0);
+  rightShooterEnc.SetPosition(0.0);
+  leftShooterEnc.SetMeasurementPeriod(10);
+  rightShooterEnc.SetMeasurementPeriod(10);
+  leftShooterEnc.SetAverageDepth(2);
+  rightShooterEnc.SetAverageDepth(2);
+
+  // Get controllers
+  setPID();
+
+  // Disable brake mode
+  m_leftShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
+  m_rightShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
   m_rightShooterMotor.SetInverted(true);
   m_leftShooterMotor.SetInverted(true);
-  m_armSubsystem = passedArmSubsystem;
+
+  m_leftShooterMotor.BurnFlash();
+  m_rightShooterMotor.BurnFlash();
 }
 
 void ShooterSubsystem::Periodic()
@@ -48,8 +76,7 @@ void ShooterSubsystem::Periodic()
   frc::SmartDashboard::PutNumber("Shooter State", currShooterState);
   frc::SmartDashboard::PutNumber("Intake State", currIntakeState);
 
-  m_leftShooterMotor.Set(shooterSpeed);
-  m_rightShooterMotor.Set(shooterSpeed);
+  runVelocity(shooterSpeed);
   m_intakeMotor.Set(intakeSpeed);
 }
 
@@ -85,15 +112,15 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   switch (shooterState)
   {
   case shooterStates::shooterOn:
-    shooterSpeed = 0.8;
+    shooterSpeed = 6500;
     break;
 
   case shooterStates::shooterStop:
-    shooterSpeed = 0.2;
+    shooterSpeed = 2000;
     break;
 
   case shooterStates::shooterEject:
-    shooterSpeed = -0.5;
+    shooterSpeed = -3000;
     break;
 
   default:
@@ -110,7 +137,24 @@ bool ShooterSubsystem::NotePresent()
 
 bool ShooterSubsystem::ShooterAtSpeed()
 {
-  return (leftShooterEnc.GetVelocity() > (shooterSpeed * 6000) && rightShooterEnc.GetVelocity() > (shooterSpeed * 6000));
+  return (leftShooterEnc.GetVelocity() > (shooterSpeed - 200) && rightShooterEnc.GetVelocity() > (shooterSpeed - 200));
+}
+
+void ShooterSubsystem::runVelocity(double rpm)
+{
+  leftShooterPID.SetReference(rpm, rev::CANSparkBase::ControlType::kVelocity);
+  rightShooterPID.SetReference(rpm, rev::CANSparkBase::ControlType::kVelocity);
+}
+
+void ShooterSubsystem::setPID()
+{
+  leftShooterPID.SetP(kP);
+  leftShooterPID.SetI(kI);
+  leftShooterPID.SetD(kD);
+
+  rightShooterPID.SetP(kP);
+  rightShooterPID.SetI(kI);
+  rightShooterPID.SetD(kD);
 }
 
 void ShooterSubsystem::Stop()

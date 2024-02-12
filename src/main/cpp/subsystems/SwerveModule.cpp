@@ -87,7 +87,7 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * ModuleConstants::driveGearRatio);
 
   // Calculate the turning motor output from the turning PID controller.
-  auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
+  //auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
   units::degree_t Angle = state.angle.Degrees();
   m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
