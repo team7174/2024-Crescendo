@@ -8,12 +8,13 @@
 #include <frc/DigitalInput.h>
 #include <subsystems/ArmSubsystem.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/timer.h>
 
 class ShooterSubsystem : public frc2::SubsystemBase
 {
 public:
-  ShooterSubsystem(ArmSubsystem*);
-  ArmSubsystem* m_armSubsystem;
+  ShooterSubsystem(ArmSubsystem *);
+  ArmSubsystem *m_armSubsystem;
 
   /**
    * Will be called periodically whenever the CommandScheduler runs.
@@ -52,7 +53,7 @@ private:
   rev::CANSparkFlex m_leftShooterMotor;
   rev::CANSparkFlex m_rightShooterMotor;
   rev::CANSparkFlex m_intakeMotor;
-  
+
   rev::SparkRelativeEncoder rightShooterEnc;
   rev::SparkRelativeEncoder leftShooterEnc;
 
@@ -62,7 +63,10 @@ private:
   double intakeSpeed;
   double shooterSpeed;
 
-  double kP = 0.0;
-  double kI = 0.0;
+  double kP = 0.00004;
+  double kI = 0.0000003;
   double kD = 0.0;
+  double kff = 0.000012;
+
+  units::time::second_t currentTime;
 };

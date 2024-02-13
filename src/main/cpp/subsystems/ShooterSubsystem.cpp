@@ -57,10 +57,10 @@ void ShooterSubsystem::Periodic()
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle())
   {
+    currentTime = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::shoot);
   }
-
-  if (!NotePresent() && currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot)
+  if (!NotePresent() && currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - currentTime) > 5_s)
   {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
@@ -137,7 +137,7 @@ bool ShooterSubsystem::NotePresent()
 
 bool ShooterSubsystem::ShooterAtSpeed()
 {
-  return (leftShooterEnc.GetVelocity() > (shooterSpeed - 200) && rightShooterEnc.GetVelocity() > (shooterSpeed - 200));
+  return (leftShooterEnc.GetVelocity() > (shooterSpeed - 100) && rightShooterEnc.GetVelocity() > (shooterSpeed - 100));
 }
 
 void ShooterSubsystem::runVelocity(double rpm)
@@ -155,6 +155,9 @@ void ShooterSubsystem::setPID()
   rightShooterPID.SetP(kP);
   rightShooterPID.SetI(kI);
   rightShooterPID.SetD(kD);
+
+  leftShooterPID.SetFF(kff);
+  rightShooterPID.SetFF(kff);
 }
 
 void ShooterSubsystem::Stop()

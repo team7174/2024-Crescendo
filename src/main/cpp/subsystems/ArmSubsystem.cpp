@@ -60,7 +60,6 @@ void ArmSubsystem::Periodic()
   m_armMotorRight.Set(speed);
   frc::SmartDashboard::PutNumber("Motor Encoder Angle", m_armMotorLeft.GetPosition().GetValueAsDouble() * armGearRatio * 360);
   frc::SmartDashboard::PutNumber("Enc to Motor", AngleToFalcon(GetAbsArmAngle()).value());
-  
 }
 
 double ArmSubsystem::GetAbsArmAngle()
@@ -81,7 +80,8 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   }
   else if (DesiredArmState == ArmStates::autoAngle)
   {
-    m_armPIDController.SetSetpoint(CalculateAngle());
+    // m_armPIDController.SetSetpoint(CalculateAngle());
+    m_armPIDController.SetSetpoint(45);
   }
 
   m_armPIDController.SetSetpoint(std::clamp(m_armPIDController.GetSetpoint(), 0.0, 100.0));
@@ -131,8 +131,9 @@ bool ArmSubsystem::ReachedDesiredAngle()
   return m_armPIDController.AtSetpoint();
 }
 
-units::angle::turn_t ArmSubsystem::AngleToFalcon(double angle){
-  return units::angle::turn_t((angle/360) / armGearRatio);
+units::angle::turn_t ArmSubsystem::AngleToFalcon(double angle)
+{
+  return units::angle::turn_t((angle / 360) / armGearRatio);
 }
 
 void ArmSubsystem::Stop()
