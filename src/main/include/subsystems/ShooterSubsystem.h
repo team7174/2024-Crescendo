@@ -24,6 +24,7 @@ public:
   enum intakeStates
   {
     shoot,
+    slow,
     stop,
     eject,
     intake

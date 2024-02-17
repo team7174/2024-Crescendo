@@ -46,6 +46,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
 {
   m_visionSubsystem = passedVisionSubsystem;
   m_aimController.SetTolerance(1);
+  m_aimController.EnableContinuousInput(-180, 180);
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -189,26 +190,43 @@ frc::Pose2d DriveSubsystem::GetPose()
 
 void DriveSubsystem::getAimAngle()
 {
-  if (auto ally = frc::DriverStation::GetAlliance())
+  auto ally = frc::DriverStation::GetAlliance();
+  // if (auto ally = frc::DriverStation::GetAlliance())
+  // {
+  if (ally.value() == frc::DriverStation::Alliance::kRed)
   {
-    if (ally.value() == frc::DriverStation::Alliance::kRed)
-    {
-      speakerX = 16.579342;
-    }
-    else
-    {
-      speakerX = 0;
-    }
+    speakerX = 16.579342;
   }
+  else
+  {
+    speakerX = 0;
+  }
+  // }
   auto m_robotPose = GetPose();
   auto xOffset = m_robotPose.X().value() - speakerX;
   auto yOffset = m_robotPose.Y().value() - 5.547868;
   auto angle = atan(abs(yOffset) / abs(xOffset));
   angle = angle * (180 / M_PI);
-  if (yOffset < 0)
+
+  if (ally.value() == frc::DriverStation::Alliance::kRed)
   {
-    angle = -angle;
+    if (yOffset > 0) // only on red side
+    {
+      angle = -angle;
+    }
   }
+  else
+  {
+    if (yOffset < 0) // only on blue side
+    {
+      angle = -angle;
+    }
+  }
+
+  // if (yOffset < 0) // only on blue side
+  // {
+  //   angle = -angle;
+  // }
   frc::SmartDashboard::PutNumber("Aim Angle", angle);
   m_aimController.SetSetpoint(angle);
 }

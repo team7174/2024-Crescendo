@@ -25,12 +25,26 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   // Initialize all of your commands and subsystems here
 
   // Register Named Commands.
+  auto resetYaw = frc2::cmd::RunOnce([this]
+                                     { m_drive.ZeroHeading(); });
+
+  auto intakeDrop = frc2::cmd::RunOnce([this]
+                                       {m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
+                                        m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
+
+  auto aimDrive = frc2::cmd::RunOnce([this]
+                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); });
+
   auto shootSpeaker = frc2::cmd::RunOnce([this]
-                                         {m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
-                                  m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
+                                         {m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); });
 
   // TODO: Test this
-  pathplanner::NamedCommands::registerCommand("Shoot Speaker", std::move(shootSpeaker)); // <- This example method returns CommandPtr
+  pathplanner::NamedCommands::registerCommand("Intake Drop", std::move(resetYaw)); // <- This example method returns CommandPtr
+  pathplanner::NamedCommands::registerCommand("Intake Drop", std::move(intakeDrop));
+  pathplanner::NamedCommands::registerCommand("Aim Drive", std::move(aimDrive));
+  pathplanner::NamedCommands::registerCommand("Shoot Speaker", std::move(shootSpeaker));
+
   // pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
   //  Set up default drive command
   //  The left stick controls translation of the robot.
@@ -94,6 +108,7 @@ void RobotContainer::ConfigureButtonBindings()
                                  { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
                                    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
 
+  // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetRightBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
@@ -105,10 +120,15 @@ void RobotContainer::ConfigureButtonBindings()
                                  { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::extend); }));
 
   frc2::Trigger{[this]()
-
                 { return m_secondaryController.GetAButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
                                  { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::retract); }));
+  // amp code - were trying to figure out which controller to put it on
+  // frc2::Trigger{[this]()
+  //               { return m_secondaryController.GetRightBumper(); }}
+  //     .OnTrue(frc2::cmd::RunOnce([this]
+  //                                { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+  //                                  m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand()

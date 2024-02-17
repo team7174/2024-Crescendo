@@ -51,7 +51,8 @@ void ShooterSubsystem::Periodic()
 
   if (currIntakeState == intakeStates::intake && NotePresent())
   {
-    SetIntakeState(intakeStates::stop);
+    SetIntakeState(intakeStates::stop); // changed stop->slow
+    // SetIntakeState(intakeStates::slow);
   }
   frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
@@ -61,6 +62,7 @@ void ShooterSubsystem::Periodic()
   if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && NotePresent())
   {
     currentTime = frc::Timer::GetFPGATimestamp();
+    // SetIntakeState(intakeStates::stop); // added to stop intake when 2nd beam detected
     SetIntakeState(intakeStates::shoot);
   }
   if (!NotePresent() && currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - currentTime) > 1_s)
@@ -95,6 +97,10 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState)
   case intakeStates::shoot:
     intakeSpeed = 1.0;
     break;
+
+    // case intakeStates::slow: // slow state (Hitansh text)
+    //   intakeSpeed = 0.2;
+    //   break;
 
   case intakeStates::eject:
     intakeSpeed = -0.5;
