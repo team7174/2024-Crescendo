@@ -20,7 +20,8 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   slot0ConfigsArm.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
   slot0ConfigsArm.kP = 1.2;  // An error of 1 rps results in 0.11 V output
   slot0ConfigsArm.kI = 0;    // no output for integrated error
-  slot0ConfigsArm.kD = 0;    // no output for error derivative
+  slot0ConfigsArm.kD = 0;
+    // no output for error derivative
 
   auto &Armslot0ConfigsArmCurrLimit = ArmMotorConfig.CurrentLimits;
   Armslot0ConfigsArmCurrLimit.StatorCurrentLimit = 35;
@@ -80,8 +81,8 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   }
   else if (DesiredArmState == ArmStates::autoAngle)
   {
-    // m_armPIDController.SetSetpoint(CalculateAngle());
-    m_armPIDController.SetSetpoint(45);
+    m_armPIDController.SetSetpoint(CalculateAngle());
+    // m_armPIDController.SetSetpoint(45);
   }
 
   m_armPIDController.SetSetpoint(std::clamp(m_armPIDController.GetSetpoint(), 0.0, 100.0));

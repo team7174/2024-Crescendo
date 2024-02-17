@@ -17,7 +17,7 @@
 
 using namespace DriveConstants;
 
-DriveSubsystem::DriveSubsystem(VisionSubsystem* passedVisionSubsystem)
+DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
     : m_frontLeft{kFrontLeftDriveMotorPort,
                   kFrontLeftTurningMotorPort,
                   kFrontLeftTurningEncoderPorts,
@@ -89,7 +89,7 @@ void DriveSubsystem::Periodic()
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
 
-  //UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
+  UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
   UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
@@ -203,7 +203,7 @@ void DriveSubsystem::getAimAngle()
   auto m_robotPose = GetPose();
   auto xOffset = m_robotPose.X().value() - speakerX;
   auto yOffset = m_robotPose.Y().value() - 5.547868;
-  auto angle = atan(abs(yOffset)/abs(xOffset));
+  auto angle = atan(abs(yOffset) / abs(xOffset));
   angle = angle * (180 / M_PI);
   if (yOffset < 0)
   {

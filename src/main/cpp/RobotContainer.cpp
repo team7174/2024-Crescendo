@@ -25,15 +25,16 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   // Initialize all of your commands and subsystems here
 
   // Register Named Commands.
-  auto testCmd = frc2::cmd::Print("TESTING A COMMAND");
-  auto eventCmd = frc2::cmd::Print("EVENT MARKER");
+  auto shootSpeaker = frc2::cmd::RunOnce([this]
+                                         {m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
+                                  m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
 
   // TODO: Test this
-  pathplanner::NamedCommands::registerCommand("TEST CMD", std::move(testCmd)); // <- This example method returns CommandPtr
-  pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
-  // Set up default drive command
-  // The left stick controls translation of the robot.
-  // Turning is controlled by the X axis of the right stick.
+  pathplanner::NamedCommands::registerCommand("Shoot Speaker", std::move(shootSpeaker)); // <- This example method returns CommandPtr
+  // pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
+  //  Set up default drive command
+  //  The left stick controls translation of the robot.
+  //  Turning is controlled by the X axis of the right stick.
   m_drive.SetDefaultCommand(frc2::RunCommand(
       [this]
       {

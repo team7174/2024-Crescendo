@@ -66,7 +66,7 @@ private:
   double kP = 0.00004;
   double kI = 0.0000003;
   double kD = 0.0;
-  double kff = 0.000012;
+  double kff = 0.00002;
 
   units::time::second_t currentTime;
 };
