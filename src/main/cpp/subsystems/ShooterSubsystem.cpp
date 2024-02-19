@@ -19,8 +19,8 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem)
   m_rightShooterMotor.RestoreFactoryDefaults();
 
   // Limits
-  m_leftShooterMotor.SetSmartCurrentLimit(60);
-  m_rightShooterMotor.SetSmartCurrentLimit(60);
+  m_leftShooterMotor.SetSmartCurrentLimit(40);
+  m_rightShooterMotor.SetSmartCurrentLimit(40);
   m_leftShooterMotor.EnableVoltageCompensation(12.0);
   m_rightShooterMotor.EnableVoltageCompensation(12.0);
 
@@ -48,31 +48,35 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem)
 void ShooterSubsystem::Periodic()
 {
   frc::SmartDashboard::PutNumber("Left Shooter Velocity", double(leftShooterEnc.GetVelocity()));
-
-  if (currIntakeState == intakeStates::intake && NotePresent())
-  {
-    SetIntakeState(intakeStates::stop); // changed stop->slow
-    // SetIntakeState(intakeStates::slow);
-  }
   frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
-  frc::SmartDashboard::PutNumber("CurrTime", currentTime.value());
-  frc::SmartDashboard::PutNumber("Time Stamp", frc::Timer::GetFPGATimestamp().value());
 
-  if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && NotePresent())
+  if (currIntakeState == intakeStates::intake && NoteInIntake())
+  {
+    if (!NoteInShooter())
+    {
+        intakeSpeed = 0.2;
+    }
+    else
+    {
+        intakeSpeed = 0.0;
+    }
+  }
+
+  if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && NoteInShooter())
   {
     currentTime = frc::Timer::GetFPGATimestamp();
-    // SetIntakeState(intakeStates::stop); // added to stop intake when 2nd beam detected
     SetIntakeState(intakeStates::shoot);
   }
-  if (!NotePresent() && currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - currentTime) > 1_s)
+
+  if (currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - currentTime) > 1_s)
   {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
     m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
   }
 
-  if (!NotePresent() && currShooterState == shooterStates::shooterEject)
+  if (!NoteInIntake() && currShooterState == shooterStates::shooterEject)
   {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
@@ -137,11 +141,21 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   }
 }
 
-bool ShooterSubsystem::NotePresent()
+bool ShooterSubsystem::NoteInIntake()
+{
+  frc::SmartDashboard::PutBoolean("Intake Beam Break", !intakeBeamBreak.Get());
+  return (!intakeBeamBreak.Get());
+}
+
+bool ShooterSubsystem::NoteInShooter()
 {
   frc::SmartDashboard::PutBoolean("Shooter Beam Break", !shooterBeamBreak.Get());
-  frc::SmartDashboard::PutBoolean("Intake Beam Break", !intakeBeamBreak.Get());
-  return (!intakeBeamBreak.Get() || !shooterBeamBreak.Get());
+  return (!shooterBeamBreak.Get());
+}
+
+bool ShooterSubsystem::NoteInBoth()
+{
+  return (NoteInIntake() && NoteInShooter());
 }
 
 bool ShooterSubsystem::ShooterAtSpeed()

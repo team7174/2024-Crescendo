@@ -48,6 +48,19 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
   m_aimController.SetTolerance(1);
   m_aimController.EnableContinuousInput(-180, 180);
 
+  allianceColor = frc::DriverStation::GetAlliance().value();
+
+  speakerCenter.Y() = 0.5 * (topLeftSpeaker.Y() + bottomRightSpeaker.Y());
+  speakerCenter.Z() = 0.5 * (topLeftSpeaker.Z() + bottomRightSpeaker.Z());
+  if(allianceColor == frc::DriverStation::Alliance::kRed)
+  {
+    speakerCenter.X() = 16.5410642_m - (0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X()));
+  }
+  else
+  {
+    speakerCenter.X() = 0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X());
+  }
+
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
       [this]()
@@ -94,7 +107,7 @@ void DriveSubsystem::Periodic()
   UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
-  getAimAngle();
+  getShootingValues();
 
   // /*
   //  * This will get the simulated sensor readings that we set
@@ -188,47 +201,42 @@ frc::Pose2d DriveSubsystem::GetPose()
   return m_odometry.GetEstimatedPosition();
 }
 
-void DriveSubsystem::getAimAngle()
+std::pair<double, double> DriveSubsystem::getShootingValues()
 {
-  auto ally = frc::DriverStation::GetAlliance();
-  // if (auto ally = frc::DriverStation::GetAlliance())
-  // {
-  if (ally.value() == frc::DriverStation::Alliance::kRed)
-  {
-    speakerX = 16.579342;
-  }
-  else
-  {
-    speakerX = 0;
-  }
-  // }
-  auto m_robotPose = GetPose();
-  auto xOffset = m_robotPose.X().value() - speakerX;
-  auto yOffset = m_robotPose.Y().value() - 5.547868;
-  auto angle = atan(abs(yOffset) / abs(xOffset));
-  angle = angle * (180 / M_PI);
+  frc::Transform2d fieldToTarget(speakerCenter.ToTranslation2d(), 0.0_rad);
+  frc::Translation2d robotToSpeaker = GetPose().TransformBy(fieldToTarget).Translation();
+  double shootingDistance = robotToSpeaker.Norm().value();
+  double aimAngle = robotToSpeaker.Angle().Degrees().value();
 
-  if (ally.value() == frc::DriverStation::Alliance::kRed)
-  {
-    if (yOffset > 0) // only on red side
-    {
-      angle = -angle;
-    }
-  }
-  else
-  {
-    if (yOffset < 0) // only on blue side
-    {
-      angle = -angle;
-    }
-  }
+  // auto m_robotPose = GetPose();
+  // auto xOffset = m_robotPose.X().value() - speakerX;
+  // auto yOffset = m_robotPose.Y().value() - 5.547868;
+  // auto angle = atan(abs(yOffset) / abs(xOffset));
+  // angle = angle * (180 / M_PI);
+
+  // if (allianceColor == frc::DriverStation::Alliance::kRed)
+  // {
+  //   if (yOffset > 0) // only on red side
+  //   {
+  //     angle = -angle;
+  //   }
+  // }
+  // else
+  // {
+  //   if (yOffset < 0) // only on blue side
+  //   {
+  //     angle = -angle;
+  //   }
+  // }
 
   // if (yOffset < 0) // only on blue side
   // {
   //   angle = -angle;
   // }
-  frc::SmartDashboard::PutNumber("Aim Angle", angle);
-  m_aimController.SetSetpoint(angle);
+  frc::SmartDashboard::PutNumber("Aim Angle", aimAngle);
+  frc::SmartDashboard::PutNumber("Shooting Distance", shootingDistance);
+  m_aimController.SetSetpoint(0);
+  return std::pair<double, double>(shootingDistance, aimAngle);
 }
 
 void DriveSubsystem::UpdatePoseLimelight(frc::Translation2d pose)

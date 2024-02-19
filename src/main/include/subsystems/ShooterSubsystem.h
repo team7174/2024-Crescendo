@@ -39,7 +39,9 @@ public:
 
   void SetIntakeState(intakeStates intakeState);
   void SetShooterState(shooterStates shooterState);
-  bool NotePresent();
+  bool NoteInIntake();
+  bool NoteInShooter();
+  bool NoteInBoth();
   bool ShooterAtSpeed();
   void runVelocity(double rpm);
   void setPID();

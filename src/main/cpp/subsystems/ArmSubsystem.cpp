@@ -88,35 +88,12 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   m_armPIDController.SetSetpoint(std::clamp(m_armPIDController.GetSetpoint(), 0.0, 100.0));
 }
 
-// void ArmSubsystem::UpdateDesiredAngleFromJoystick()
-// {
-//   double joystickInput = -m_armController->GetLeftY();
-//   double currentAngle = m_armPIDController.GetSetpoint();
-
-//   if (joystickInput < -0.1 || joystickInput > 0.1)
-//   {
-//     currentAngle = currentAngle + (joystickInput * 0.5);
-//   }
-
-//   m_armPIDController.SetSetpoint(currentAngle);
-// }
-
 double ArmSubsystem::CalculateAngle()
 {
-  if (auto ally = frc::DriverStation::GetAlliance())
-  {
-    if (ally.value() == frc::DriverStation::Alliance::kRed)
-    {
-      speakerX = 16.579342;
-    }
-    else
-    {
-      speakerX = 0;
-    }
-  }
   auto m_robotPose = m_driveSubsystem->GetPose();
-  double distanceToSpeaker = sqrt(pow(speakerX - m_robotPose.X().value(), 2) + pow(5.547868 - m_robotPose.Y().value(), 2)) - 0.2032;
-  double speakerHeight = 1.88;
+  ;
+  double distanceToSpeaker = m_driveSubsystem->getShootingValues().first;
+  double speakerHeight = m_driveSubsystem->speakerCenter.Z().value();
 
   double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * 0.6858) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
 

@@ -13,10 +13,15 @@
 #include "SwerveModule.h"
 #include <subsystems/VisionSubsystem.h>
 #include <frc/controller/PIDController.h>
+#include <frc/geometry/Translation3d.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/geometry/Transform2d.h>
+#include <frc/geometry/Transform3d.h>
+#include <frc/geometry/Rotation2d.h>
 class DriveSubsystem : public frc2::SubsystemBase
 {
 public:
-    DriveSubsystem(VisionSubsystem*);
+    DriveSubsystem(VisionSubsystem *);
 
     enum DriveStates
     {
@@ -28,7 +33,7 @@ public:
      * Will be called periodically whenever the CommandScheduler runs.
      */
     void Periodic() override;
-    VisionSubsystem* m_visionSubsystem;
+    VisionSubsystem *m_visionSubsystem;
 
     // Subsystem methods go here.
 
@@ -89,8 +94,7 @@ public:
 
     void SetDriveState(DriveStates state);
     DriveStates m_desiredDriveState;
-    void getAimAngle();
-    double speakerX;
+    std::pair<double, double> getShootingValues();
 
     /**
      * Resets the odometry to the specified pose.
@@ -111,6 +115,15 @@ public:
         frc::Translation2d{kWheelBase / 2, -kTrackWidth / 2},
         frc::Translation2d{-kWheelBase / 2, kTrackWidth / 2},
         frc::Translation2d{-kWheelBase / 2, -kTrackWidth / 2}};
+
+    frc::Translation3d topRightSpeaker = frc::Translation3d(0.458597_m, 6.065901_m, 2.1105114_m);
+    frc::Translation3d topLeftSpeaker = frc::Translation3d(0.458597_m, 5.023231_m, 2.1105114_m);
+
+    frc::Translation3d bottomRightSpeaker = frc::Translation3d(0_m, 6.065901_m, 1.9894296_m);
+    frc::Translation3d bottomLeftSpeaker = frc::Translation3d(0_m, 5.023231_m, 1.9894296_m);
+
+    frc::Translation3d speakerCenter;
+    frc::DriverStation::Alliance allianceColor;
 
 private:
     // Components (e.g. motor controllers and sensors) should generally be
