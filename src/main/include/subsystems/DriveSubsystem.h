@@ -92,6 +92,8 @@ public:
      */
     frc::Pose2d GetPose();
 
+    frc::Translation3d GetSpeakerCenter();
+
     void SetDriveState(DriveStates state);
     DriveStates m_desiredDriveState;
     std::pair<double, double> getShootingValues();
@@ -122,8 +124,7 @@ public:
     frc::Translation3d bottomRightSpeaker = frc::Translation3d(0_m, 6.065901_m, 1.9894296_m);
     frc::Translation3d bottomLeftSpeaker = frc::Translation3d(0_m, 5.023231_m, 1.9894296_m);
 
-    frc::Translation3d speakerCenter;
-    frc::DriverStation::Alliance allianceColor;
+    bool allianceColorBlue;
 
 private:
     // Components (e.g. motor controllers and sensors) should generally be

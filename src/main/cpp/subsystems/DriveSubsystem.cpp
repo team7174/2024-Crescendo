@@ -13,6 +13,8 @@
 #include <pathplanner/lib/util/PIDConstants.h>
 #include <pathplanner/lib/util/ReplanningConfig.h>
 
+#include <frc/geometry/Rotation2d.h>
+
 #include "Constants.h"
 
 using namespace DriveConstants;
@@ -47,19 +49,6 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
   m_visionSubsystem = passedVisionSubsystem;
   m_aimController.SetTolerance(1);
   m_aimController.EnableContinuousInput(-180, 180);
-
-  allianceColor = frc::DriverStation::GetAlliance().value();
-
-  speakerCenter.Y() = 0.5 * (topLeftSpeaker.Y() + bottomRightSpeaker.Y());
-  speakerCenter.Z() = 0.5 * (topLeftSpeaker.Z() + bottomRightSpeaker.Z());
-  if(allianceColor == frc::DriverStation::Alliance::kRed)
-  {
-    speakerCenter.X() = 16.5410642_m - (0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X()));
-  }
-  else
-  {
-    speakerCenter.X() = 0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X());
-  }
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -201,12 +190,40 @@ frc::Pose2d DriveSubsystem::GetPose()
   return m_odometry.GetEstimatedPosition();
 }
 
+frc::Translation3d DriveSubsystem::GetSpeakerCenter()
+{
+  frc::Translation3d speakerCenter;
+  if (auto ally = frc::DriverStation::GetAlliance())
+  {
+    if (ally.value() == frc::DriverStation::Alliance::kRed)
+    {
+      allianceColorBlue = false;
+    }
+    else
+    {
+      allianceColorBlue = true;
+    }
+  }
+  units::meter_t X = 0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X());
+  units::meter_t Y = 0.5 * (topLeftSpeaker.Y() + bottomRightSpeaker.Y());
+  units::meter_t Z = 0.5 * (topLeftSpeaker.Z() + bottomRightSpeaker.Z());
+  if (!allianceColorBlue)
+  {
+    X = 16.5410642_m - (0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X()));
+  }
+  frc::SmartDashboard::PutNumber("Speaker X", X.value());
+  frc::SmartDashboard::PutNumber("Speaker Y", Y.value());
+  frc::SmartDashboard::PutNumber("Speaker Z", Z.value());
+  return {X, Y, Z};
+}
+
 std::pair<double, double> DriveSubsystem::getShootingValues()
 {
-  frc::Transform2d fieldToTarget(speakerCenter.ToTranslation2d(), 0.0_rad);
-  frc::Translation2d robotToSpeaker = GetPose().TransformBy(fieldToTarget).Translation();
-  double shootingDistance = robotToSpeaker.Norm().value();
-  double aimAngle = robotToSpeaker.Angle().Degrees().value();
+  auto speakerCenter = GetSpeakerCenter();
+  frc::Transform2d robotToSpeaker = frc::Transform2d{GetPose(), frc::Pose2d(speakerCenter.ToTranslation2d(), frc::Rotation2d())};
+  frc::Translation2d robotToSpeakerTranslation = robotToSpeaker.Translation();
+  double shootingDistance = robotToSpeakerTranslation.Norm().value();
+  double aimAngle = robotToSpeakerTranslation.Angle().Degrees().value();
 
   // auto m_robotPose = GetPose();
   // auto xOffset = m_robotPose.X().value() - speakerX;

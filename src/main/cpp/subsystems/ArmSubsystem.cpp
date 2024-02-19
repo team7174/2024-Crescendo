@@ -90,10 +90,8 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
 
 double ArmSubsystem::CalculateAngle()
 {
-  auto m_robotPose = m_driveSubsystem->GetPose();
-  ;
   double distanceToSpeaker = m_driveSubsystem->getShootingValues().first;
-  double speakerHeight = m_driveSubsystem->speakerCenter.Z().value();
+  double speakerHeight = m_driveSubsystem->GetSpeakerCenter().Z().value();
 
   double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * 0.6858) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
 
