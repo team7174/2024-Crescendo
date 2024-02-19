@@ -219,8 +219,7 @@ frc::Translation3d DriveSubsystem::GetSpeakerCenter()
 
 std::pair<double, double> DriveSubsystem::getShootingValues()
 {
-  auto speakerCenter = GetSpeakerCenter();
-  frc::Transform2d robotToSpeaker = frc::Transform2d{GetPose(), frc::Pose2d(speakerCenter.ToTranslation2d(), frc::Rotation2d())};
+  frc::Transform2d robotToSpeaker = frc::Transform2d{GetPose(), frc::Pose2d(GetSpeakerCenter().ToTranslation2d(), frc::Rotation2d())};
   frc::Translation2d robotToSpeakerTranslation = robotToSpeaker.Translation();
   double shootingDistance = robotToSpeakerTranslation.Norm().value();
   double aimAngle = robotToSpeakerTranslation.Angle().Degrees().value();
