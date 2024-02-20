@@ -38,9 +38,5 @@ private:
   ctre::phoenix6::hardware::TalonFX m_armMotorRight;
   frc::DutyCycleEncoder m_armEncoder;
   frc::PIDController m_armPIDController;
-  // DriveSubsystem m_driveSubsystem;
-  double speakerX;
   double angleOffset = 7.5;
-
-  double armGearRatio = 0.0023;
 };

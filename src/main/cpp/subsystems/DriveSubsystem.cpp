@@ -97,16 +97,6 @@ void DriveSubsystem::Periodic()
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
   getShootingValues();
-
-  // /*
-  //  * This will get the simulated sensor readings that we set
-  //  * in the previous article while in simulation, but will use
-  //  * real values on the robot itself.
-  //  */
-  // m_odometry.Update(m_gyro.GetRotation2d(),
-  //                   rotationsToMeters(m_leftLeader.GetPosition().GetValue()),
-  //                   rotationsToMeters(m_rightLeader.GetPosition().GetValue()));
-  // m_field.SetRobotPose(m_odometry.GetPose());
 }
 
 void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
@@ -119,7 +109,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
   if (m_desiredDriveState == DriveStates::aimDrive)
   {
-    rot = units::radians_per_second_t(std::clamp(m_aimController.Calculate(m_gyro.GetRotation2d().Degrees().value()), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+    rot = units::radians_per_second_t(std::clamp(m_aimController.Calculate(getShootingValues().second, 180.0), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
@@ -211,9 +201,6 @@ frc::Translation3d DriveSubsystem::GetSpeakerCenter()
   {
     X = 16.5410642_m - (0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X()));
   }
-  frc::SmartDashboard::PutNumber("Speaker X", X.value());
-  frc::SmartDashboard::PutNumber("Speaker Y", Y.value());
-  frc::SmartDashboard::PutNumber("Speaker Z", Z.value());
   return {X, Y, Z};
 }
 
@@ -223,32 +210,6 @@ std::pair<double, double> DriveSubsystem::getShootingValues()
   frc::Translation2d robotToSpeakerTranslation = robotToSpeaker.Translation();
   double shootingDistance = robotToSpeakerTranslation.Norm().value();
   double aimAngle = robotToSpeakerTranslation.Angle().Degrees().value();
-
-  // auto m_robotPose = GetPose();
-  // auto xOffset = m_robotPose.X().value() - speakerX;
-  // auto yOffset = m_robotPose.Y().value() - 5.547868;
-  // auto angle = atan(abs(yOffset) / abs(xOffset));
-  // angle = angle * (180 / M_PI);
-
-  // if (allianceColor == frc::DriverStation::Alliance::kRed)
-  // {
-  //   if (yOffset > 0) // only on red side
-  //   {
-  //     angle = -angle;
-  //   }
-  // }
-  // else
-  // {
-  //   if (yOffset < 0) // only on blue side
-  //   {
-  //     angle = -angle;
-  //   }
-  // }
-
-  // if (yOffset < 0) // only on blue side
-  // {
-  //   angle = -angle;
-  // }
   frc::SmartDashboard::PutNumber("Aim Angle", aimAngle);
   frc::SmartDashboard::PutNumber("Shooting Distance", shootingDistance);
   m_aimController.SetSetpoint(0);

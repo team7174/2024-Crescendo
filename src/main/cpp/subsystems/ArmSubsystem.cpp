@@ -7,8 +7,6 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
       m_armEncoder(StormbreakerConstants::armEncoderID),
       m_armPIDController(StormbreakerConstants::armkP, StormbreakerConstants::armkI, StormbreakerConstants::armkD)
 {
-  // Motor, encoder, and PID controller initialization can be done here
-  // Set the PID controller's setpoint to the initial position
   m_driveSubsystem = passedDriveSubsystem;
 
   ctre::phoenix6::configs::TalonFXConfiguration ArmMotorConfig{};
@@ -20,8 +18,7 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   slot0ConfigsArm.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
   slot0ConfigsArm.kP = 1.2;  // An error of 1 rps results in 0.11 V output
   slot0ConfigsArm.kI = 0;    // no output for integrated error
-  slot0ConfigsArm.kD = 0;
-    // no output for error derivative
+  slot0ConfigsArm.kD = 0;    // No output for change in error
 
   auto &Armslot0ConfigsArmCurrLimit = ArmMotorConfig.CurrentLimits;
   Armslot0ConfigsArmCurrLimit.StatorCurrentLimit = 35;
@@ -54,12 +51,11 @@ void ArmSubsystem::Periodic()
 {
   double speed = std::clamp(m_armPIDController.Calculate(GetAbsArmAngle()), -1.0, 1.0);
   frc::SmartDashboard::PutNumber("Through Bore Angle", GetAbsArmAngle());
-  frc::SmartDashboard::PutNumber("Raw Angle", m_armEncoder.GetAbsolutePosition());
   frc::SmartDashboard::PutNumber("Desired Angle", m_armPIDController.GetSetpoint());
   frc::SmartDashboard::PutNumber("Calculated Angle", CalculateAngle());
   m_armMotorLeft.Set(speed);
   m_armMotorRight.Set(speed);
-  frc::SmartDashboard::PutNumber("Motor Encoder Angle", m_armMotorLeft.GetPosition().GetValueAsDouble() * armGearRatio * 360);
+  frc::SmartDashboard::PutNumber("Motor Encoder Angle", m_armMotorLeft.GetPosition().GetValueAsDouble() * StormbreakerConstants::armGearRatio * 360);
   frc::SmartDashboard::PutNumber("Enc to Motor", AngleToFalcon(GetAbsArmAngle()).value());
 }
 
@@ -82,7 +78,6 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   else if (DesiredArmState == ArmStates::autoAngle)
   {
     m_armPIDController.SetSetpoint(CalculateAngle());
-    // m_armPIDController.SetSetpoint(45);
   }
 
   m_armPIDController.SetSetpoint(std::clamp(m_armPIDController.GetSetpoint(), 0.0, 100.0));
@@ -93,7 +88,7 @@ double ArmSubsystem::CalculateAngle()
   double distanceToSpeaker = m_driveSubsystem->getShootingValues().first;
   double speakerHeight = m_driveSubsystem->GetSpeakerCenter().Z().value();
 
-  double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * 0.6858) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
+  double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * StormbreakerConstants::armLength) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
 
   shootingAngle = fmod(shootingAngle * (180 / M_PI), 360.0);
   shootingAngle = shootingAngle - frc::SmartDashboard::GetNumber("Angle Offset", 10);
@@ -109,7 +104,7 @@ bool ArmSubsystem::ReachedDesiredAngle()
 
 units::angle::turn_t ArmSubsystem::AngleToFalcon(double angle)
 {
-  return units::angle::turn_t((angle / 360) / armGearRatio);
+  return units::angle::turn_t((angle / 360) / StormbreakerConstants::armGearRatio);
 }
 
 void ArmSubsystem::Stop()

@@ -50,16 +50,12 @@ double SwerveModule::getTurnEncoderDistance()
 
 double SwerveModule::getDriveEncoderRate()
 {
-  // return m_driveMotor.getvelocity
   return m_driveMotor.GetVelocity().GetValueAsDouble() / ModuleConstants::driveGearRatio * ModuleConstants::kWheelCircumference;
-  // return ((m_driveMotor.GetVelocity().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 double SwerveModule::getDriveEncoderDistance()
 {
   return m_driveMotor.GetPosition().GetValueAsDouble() / ModuleConstants::driveGearRatio * ModuleConstants::kWheelCircumference;
-
-  // return ((m_driveMotor.GetPosition().GetValueAsDouble() * ModuleConstants::kWheelCircumference) / (ModuleConstants::driveEncoderCPR));
 }
 
 frc::SwerveModuleState SwerveModule::GetState()
@@ -90,7 +86,6 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   //auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
   units::degree_t Angle = state.angle.Degrees();
-  m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
 
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
   frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
@@ -101,6 +96,7 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Pos", getTurnEncoderDistance());
 
   //m_turningMotor.Set(turnOutput);
+  m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
   m_driveMotor.SetControl(m_driveRequest.WithVelocity(targetMotorSpeed));
 }
 

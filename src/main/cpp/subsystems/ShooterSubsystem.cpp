@@ -9,10 +9,10 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem)
       rightShooterEnc(m_rightShooterMotor.GetEncoder()),
       leftShooterEnc(m_leftShooterMotor.GetEncoder()),
       leftShooterPID(m_leftShooterMotor.GetPIDController()),
-      rightShooterPID(m_rightShooterMotor.GetPIDController())
+      rightShooterPID(m_rightShooterMotor.GetPIDController()),
+      intakeBeamBreak(ShooterConstants::intakeBeamBreakID),
+      shooterBeamBreak(ShooterConstants::shooterBeamBreakID)
 {
-  // Motor, encoder, and PID controller initialization can be done here
-  // Set the PID controller's setpoint to the initial position
   m_armSubsystem = passedArmSubsystem;
 
   m_leftShooterMotor.RestoreFactoryDefaults();
@@ -81,10 +81,6 @@ void ShooterSubsystem::Periodic()
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
   }
-
-  frc::SmartDashboard::PutNumber("Shooter State", currShooterState);
-  frc::SmartDashboard::PutNumber("Intake State", currIntakeState);
-
   runVelocity(shooterSpeed);
   m_intakeMotor.Set(intakeSpeed);
 }
@@ -101,10 +97,6 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState)
   case intakeStates::shoot:
     intakeSpeed = 1.0;
     break;
-
-    // case intakeStates::slow: // slow state (Hitansh text)
-    //   intakeSpeed = 0.2;
-    //   break;
 
   case intakeStates::eject:
     intakeSpeed = -0.5;
@@ -171,16 +163,16 @@ void ShooterSubsystem::runVelocity(double rpm)
 
 void ShooterSubsystem::setPID()
 {
-  leftShooterPID.SetP(kP);
-  leftShooterPID.SetI(kI);
-  leftShooterPID.SetD(kD);
+  leftShooterPID.SetP(ShooterConstants::shooterkP);
+  leftShooterPID.SetI(ShooterConstants::shooterkI);
+  leftShooterPID.SetD(ShooterConstants::shooterkD);
 
-  rightShooterPID.SetP(kP);
-  rightShooterPID.SetI(kI);
-  rightShooterPID.SetD(kD);
+  rightShooterPID.SetP(ShooterConstants::shooterkP);
+  rightShooterPID.SetI(ShooterConstants::shooterkI);
+  rightShooterPID.SetD(ShooterConstants::shooterkD);
 
-  leftShooterPID.SetFF(kff);
-  rightShooterPID.SetFF(kff);
+  leftShooterPID.SetFF(ShooterConstants::shooterkFF);
+  rightShooterPID.SetFF(ShooterConstants::shooterkFF);
 }
 
 void ShooterSubsystem::Stop()

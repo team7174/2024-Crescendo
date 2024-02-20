@@ -62,6 +62,8 @@ namespace StormbreakerConstants
     constexpr double armkP = 0.025;
     constexpr double armkI = 0.0;
     constexpr double armkD = 0.0;
+    constexpr double armGearRatio = 0.0023;
+    constexpr double armLength = 0.70377;
 } // namespace StormbreakerConstants
 
 namespace ClimberConstants
@@ -71,22 +73,25 @@ namespace ClimberConstants
     constexpr double climbkP = 0.025;
     constexpr double climbkI = 0.0;
     constexpr double climbkD = 0.0;
-} // namespace StormbreakerConstants
+} // namespace ClimberConstants
 
 namespace ShooterConstants
 {
     constexpr int leftShooterID = 55;
     constexpr int rightShooterID = 56;
     constexpr int intakeID = 57;
-    constexpr double shooterkP = 0.025;
-    constexpr double shooterkI = 0.0;
+    constexpr double shooterkP = 0.00004;
+    constexpr double shooterkI = 0.0000003;
     constexpr double shooterkD = 0.0;
-} // namespace StormbreakerConstants
+    constexpr double shooterkFF = 0.00002;
+    constexpr double intakeBeamBreakID = 1;
+    constexpr double shooterBeamBreakID = 2;
+} // namespace ShooterConstants
 
 namespace AutoConstants
 {
     constexpr auto kMaxSpeed = 5.5_mps;
-    constexpr auto kMaxAcceleration = 5_mps_sq;
+    //constexpr auto kMaxAcceleration = 5_mps_sq;
     constexpr auto kMaxAngularSpeed = 18_rad_per_s;
     constexpr auto kMaxAngularAcceleration = 15_rad_per_s_sq;
 
