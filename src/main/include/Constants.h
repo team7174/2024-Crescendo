@@ -59,11 +59,13 @@ namespace StormbreakerConstants
     constexpr int leftArmID = 50;
     constexpr int rightArmID = 51;
     constexpr double armEncoderOffset = 0.58956601473915;
-    constexpr double armkP = 0.025;
+    constexpr double armkP = 0.02;
     constexpr double armkI = 0.0;
     constexpr double armkD = 0.0;
-    constexpr double armGearRatio = 0.0023;
+    constexpr double armGearRatio = 433.3333333333;
     constexpr double armLength = 0.70377;
+    constexpr auto kArmAngleSpeed = 18_deg_per_s;
+    constexpr auto kArmAngleAcceleration = 15_deg_per_s_sq;
 } // namespace StormbreakerConstants
 
 namespace ClimberConstants
@@ -91,9 +93,9 @@ namespace ShooterConstants
 namespace AutoConstants
 {
     constexpr auto kMaxSpeed = 5.5_mps;
-    //constexpr auto kMaxAcceleration = 5_mps_sq;
+    // constexpr auto kMaxAcceleration = 5_mps_sq;
     constexpr auto kMaxAngularSpeed = 18_rad_per_s;
-    constexpr auto kMaxAngularAcceleration = 15_rad_per_s_sq;
+    constexpr auto kMaxAngularAcceleration = 10_rad_per_s_sq;
 
     constexpr double kPXController = 1.35;
     constexpr double kPYController = 1.15;

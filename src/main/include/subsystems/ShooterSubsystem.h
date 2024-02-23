@@ -46,9 +46,6 @@ public:
   void runVelocity(double rpm);
   void setPID();
 
-  frc::DigitalInput intakeBeamBreak;
-  frc::DigitalInput shooterBeamBreak;
-
   intakeStates currIntakeState;
   shooterStates currShooterState;
 
@@ -66,5 +63,9 @@ private:
   double intakeSpeed;
   double shooterSpeed;
 
-  units::time::second_t currentTime;
+  units::time::second_t shooterTimeStamp;
+  units::time::second_t intakeTimeStamp;
+
+  frc::DigitalInput intakeBeamBreak;
+  frc::DigitalInput shooterBeamBreak;
 };

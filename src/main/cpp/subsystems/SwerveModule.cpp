@@ -75,10 +75,15 @@ units::angle::turn_t SwerveModule::DegreesToFalcon(units::degree_t angle)
   return units::angle::turn_t(angle.value() / (360.0 / (ModuleConstants::angleGearRatio)));
 }
 
+units::angle::degree_t SwerveModule::FalconToDegrees(double turns)
+{
+  return units::angle::degree_t(turns * (360.0 / (ModuleConstants::angleGearRatio)));
+}
+
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
 {
   // Optimize the reference state to avoid spinning further than 90 degrees
-  const auto state = frc::SwerveModuleState::Optimize(referenceState, units::degree_t{getTurnEncoderDistance()});
+  const auto state = frc::SwerveModuleState::Optimize(referenceState, FalconToDegrees(m_turningMotor.GetPosition().GetValueAsDouble()));
 
   units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * ModuleConstants::driveGearRatio);
 

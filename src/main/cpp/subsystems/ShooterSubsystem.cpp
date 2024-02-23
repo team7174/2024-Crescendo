@@ -50,6 +50,8 @@ void ShooterSubsystem::Periodic()
   frc::SmartDashboard::PutNumber("Left Shooter Velocity", double(leftShooterEnc.GetVelocity()));
   frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
+  NoteInIntake();
+  NoteInShooter();
 
   if (currIntakeState == intakeStates::intake && NoteInIntake())
   {
@@ -65,11 +67,11 @@ void ShooterSubsystem::Periodic()
 
   if (currShooterState == shooterStates::shooterOn && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && NoteInShooter())
   {
-    currentTime = frc::Timer::GetFPGATimestamp();
+    shooterTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::shoot);
   }
 
-  if (currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - currentTime) > 1_s)
+  if (currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - shooterTimeStamp) > 1_s)
   {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
@@ -91,7 +93,7 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState)
   switch (intakeState)
   {
   case intakeStates::intake:
-    intakeSpeed = 0.5;
+    intakeSpeed = 1.0;
     break;
 
   case intakeStates::shoot:
@@ -117,7 +119,7 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   switch (shooterState)
   {
   case shooterStates::shooterOn:
-    shooterSpeed = 5500;
+    shooterSpeed = 6000;
     break;
 
   case shooterStates::shooterStop:

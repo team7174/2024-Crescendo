@@ -40,6 +40,12 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                   kRearRightTurningEncoderPorts,
                   kRearRightEncoderOffset},
 
+      profiledAimController(
+          1.0, // Placeholder for proportional gain
+          0.0, // Placeholder for integral gain
+          0.0, // Placeholder for derivative gain
+          frc::TrapezoidProfile<units::radian>::Constraints(AutoConstants::kMaxAngularSpeed, AutoConstants::kMaxAngularAcceleration)),
+
       m_odometry{kDriveKinematics,
                  m_gyro.GetRotation2d(),
                  {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
@@ -49,6 +55,9 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
   m_visionSubsystem = passedVisionSubsystem;
   m_aimController.SetTolerance(1);
   m_aimController.EnableContinuousInput(-180, 180);
+
+  profiledAimController.EnableContinuousInput(-180_deg, 180.0_deg);
+  profiledAimController.SetTolerance(1.0_deg);
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -92,8 +101,14 @@ void DriveSubsystem::Periodic()
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
 
-  UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
-  UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
+  if (m_visionSubsystem->GetPoseLL3() != ignorePose)
+  {
+    UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
+  }
+  else
+  {
+    UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
+  }
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
   getShootingValues();
@@ -106,6 +121,10 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 {
   frc::SmartDashboard::PutNumber("Drive X", xSpeed.value());
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
+  frc::SmartDashboard::PutNumber("Drive Z", rot.value());
+
+  frc::SmartDashboard::PutNumber("Profiled Aim Rot", std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second), 180.0_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+  frc::SmartDashboard::PutNumber("Non-Profiled Aim Rot", std::clamp(m_aimController.Calculate(getShootingValues().second, 180.0), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
 
   if (m_desiredDriveState == DriveStates::aimDrive)
   {

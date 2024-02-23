@@ -36,6 +36,7 @@ public:
     void ResetEncoders();
 
     units::angle::turn_t DegreesToFalcon(units::degree_t angle);
+    units::angle::degree_t FalconToDegrees(double turn);
 
     HardwareConfig motorConfigs;
 

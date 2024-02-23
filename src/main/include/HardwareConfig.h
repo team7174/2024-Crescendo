@@ -12,18 +12,18 @@ public:
     {
         /*Swerve Drive Motor Config*/
         auto &slot0Configs = DriveMotorConfig.Slot0;
-        slot0Configs.kS = 0.3; // Add 0.25 V output to overcome static friction
-        slot0Configs.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kA = 0.015; // An acceleration of 1 rps/s requires 0.01 V output
-        slot0Configs.kP = 0.12;  // An error of 1 rps results in 0.11 V output
+        slot0Configs.kS = 0.5; // Add 0.25 V output to overcome static friction
+        slot0Configs.kV = 0.25; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0.025; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kP = 0.2;  // An error of 1 rps results in 0.11 V output
         slot0Configs.kI = 0;    // no output for integrated error
         slot0Configs.kD = 0;    // no output for error derivative
                                 //  DriveMotorConfig.kS = 0.05; // static friction
 
         // // set Motion Magic Velocity settings
-        // auto &motionMagicConfigs = DriveMotorConfig.MotionMagic;
-        // motionMagicConfigs.MotionMagicAcceleration = 400; // Target acceleration of 400 rps/s (0.25 seconds to max)
-        // motionMagicConfigs.MotionMagicJerk = 4000;        // Target jerk of 4000 rps/s/s (0.1 seconds)
+        auto &motionMagicConfigs = DriveMotorConfig.MotionMagic;
+        motionMagicConfigs.MotionMagicAcceleration = 800; // Target acceleration of 400 rps/s (0.25 seconds to max)
+        motionMagicConfigs.MotionMagicJerk = 8000;        // Target jerk of 4000 rps/s/s (0.1 seconds)
 
         auto &DriveCurrLimit = DriveMotorConfig.CurrentLimits;
         DriveCurrLimit.StatorCurrentLimit = 35;

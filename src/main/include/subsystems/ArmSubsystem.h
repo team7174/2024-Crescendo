@@ -12,8 +12,8 @@
 class ArmSubsystem : public frc2::SubsystemBase
 {
 public:
-  ArmSubsystem(DriveSubsystem*);
-  DriveSubsystem* m_driveSubsystem;
+  ArmSubsystem(DriveSubsystem *);
+  DriveSubsystem *m_driveSubsystem;
 
   /**
    * Will be called periodically whenever the CommandScheduler runs.
@@ -25,18 +25,20 @@ public:
     autoAngle,
     upright
   };
+  ArmStates currArmState;
   void SetDesiredAngle(ArmStates DesiredArmState);
   void Stop();
   double GetAbsArmAngle();
   void UpdateDesiredAngleFromJoystick();
   double CalculateAngle();
   bool ReachedDesiredAngle();
-  units::angle::turn_t AngleToFalcon(double angle);
+  static constexpr units::degrees_per_second_t kMaxAngularSpeed = 100.0_deg_per_s;
+  static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 80.0_deg_per_s_sq;
 
 private:
   ctre::phoenix6::hardware::TalonFX m_armMotorLeft;
   ctre::phoenix6::hardware::TalonFX m_armMotorRight;
   frc::DutyCycleEncoder m_armEncoder;
-  frc::PIDController m_armPIDController;
-  double angleOffset = 7.5;
+  frc::ProfiledPIDController<units::degrees> profiledController;
+  double angleOffset = 0;
 };

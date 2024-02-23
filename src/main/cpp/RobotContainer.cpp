@@ -29,15 +29,15 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
                                      { m_drive.ZeroHeading(); });
 
   auto intakeDrop = frc2::cmd::RunOnce([this]
-                                       {m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
+                                       { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
                                         m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
 
   auto aimDrive = frc2::cmd::RunOnce([this]
                                      { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); });
 
   auto shootSpeaker = frc2::cmd::RunOnce([this]
-                                         {m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
-                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); });
+                                         { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
+                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
   // TODO: Test this
   pathplanner::NamedCommands::registerCommand("Intake Drop", std::move(resetYaw)); // <- This example method returns CommandPtr
