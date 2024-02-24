@@ -8,6 +8,7 @@
 #include <frc/XboxController.h>
 #include <frc/DriverStation.h>
 #include <subsystems/DriveSubsystem.h>
+#include <frc/DigitalInput.h>
 
 class ArmSubsystem : public frc2::SubsystemBase
 {
@@ -32,8 +33,10 @@ public:
   void UpdateDesiredAngleFromJoystick();
   double CalculateAngle();
   bool ReachedDesiredAngle();
-  static constexpr units::degrees_per_second_t kMaxAngularSpeed = 100.0_deg_per_s;
-  static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 80.0_deg_per_s_sq;
+  void brakeModeOff();
+  void brakeModeOn();
+  static constexpr units::degrees_per_second_t kMaxAngularSpeed = 180.0_deg_per_s;
+  static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 360.0_deg_per_s_sq;
 
 private:
   ctre::phoenix6::hardware::TalonFX m_armMotorLeft;
@@ -41,4 +44,6 @@ private:
   frc::DutyCycleEncoder m_armEncoder;
   frc::ProfiledPIDController<units::degrees> profiledController;
   double angleOffset = 0;
+  frc::DigitalInput armSwitch{5};
+  bool brakeMode = true;
 };

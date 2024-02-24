@@ -58,8 +58,8 @@ namespace StormbreakerConstants
     constexpr int armEncoderID = 8;
     constexpr int leftArmID = 50;
     constexpr int rightArmID = 51;
-    constexpr double armEncoderOffset = 0.58956601473915;
-    constexpr double armkP = 0.02;
+    constexpr double armEncoderOffset = 0.5901480147537;
+    constexpr double armkP = 0.03;
     constexpr double armkI = 0.0;
     constexpr double armkD = 0.0;
     constexpr double armGearRatio = 433.3333333333;
@@ -82,7 +82,7 @@ namespace ShooterConstants
     constexpr int leftShooterID = 55;
     constexpr int rightShooterID = 56;
     constexpr int intakeID = 57;
-    constexpr double shooterkP = 0.00004;
+    constexpr double shooterkP = 0.0001;
     constexpr double shooterkI = 0.0000003;
     constexpr double shooterkD = 0.0;
     constexpr double shooterkFF = 0.00002;
@@ -95,9 +95,9 @@ namespace AutoConstants
     constexpr auto kMaxSpeed = 5.5_mps;
     // constexpr auto kMaxAcceleration = 5_mps_sq;
     constexpr auto kMaxAngularSpeed = 18_rad_per_s;
-    constexpr auto kMaxAngularAcceleration = 10_rad_per_s_sq;
+    constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
 
-    constexpr double kPXController = 1.35;
+    constexpr double kPXController = 1.25;
     constexpr double kPYController = 1.15;
     constexpr double kPThetaController = 2;
 

@@ -51,17 +51,38 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
 
 void ArmSubsystem::Periodic()
 {
-  if(currArmState == ArmStates::autoAngle)
+  if (armSwitch.Get() && brakeMode == true)
+  {
+    brakeModeOff();
+  }
+  else if(!armSwitch.Get() && brakeMode == false)
+  {
+    brakeModeOn();
+  }
+  if (currArmState == ArmStates::autoAngle)
   {
     SetDesiredAngle(ArmStates::autoAngle);
   }
-  // double speed = std::clamp(m_armPIDController.Calculate((GetAbsArmAngle())), -1.0, 1.0);
   double speed = std::clamp(profiledController.Calculate(units::degree_t(GetAbsArmAngle())), -1.0, 1.0);
   frc::SmartDashboard::PutNumber("Through Bore Angle", GetAbsArmAngle());
   frc::SmartDashboard::PutNumber("Desired Angle", profiledController.GetGoal().position());
   frc::SmartDashboard::PutNumber("Calculated Angle", CalculateAngle());
   m_armMotorLeft.Set(speed);
   m_armMotorRight.Set(speed);
+}
+
+void ArmSubsystem::brakeModeOff()
+{
+  brakeMode = false;
+  m_armMotorRight.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+  m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+}
+
+void ArmSubsystem::brakeModeOn()
+{
+  brakeMode = true;
+  m_armMotorRight.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
+  m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
 }
 
 double ArmSubsystem::GetAbsArmAngle()
@@ -84,6 +105,7 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   else if (DesiredArmState == ArmStates::autoAngle)
   {
     profiledController.SetGoal(units::degree_t(CalculateAngle()));
+    //profiledController.SetGoal(units::degree_t(0));
   }
   profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 100.0)));
 }

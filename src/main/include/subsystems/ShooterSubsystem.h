@@ -13,8 +13,9 @@
 class ShooterSubsystem : public frc2::SubsystemBase
 {
 public:
-  ShooterSubsystem(ArmSubsystem *);
+  ShooterSubsystem(ArmSubsystem *, DriveSubsystem *);
   ArmSubsystem *m_armSubsystem;
+  DriveSubsystem *m_drive;
 
   /**
    * Will be called periodically whenever the CommandScheduler runs.

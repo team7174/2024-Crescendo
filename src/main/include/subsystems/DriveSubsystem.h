@@ -92,6 +92,8 @@ public:
      */
     frc::Pose2d GetPose();
 
+    bool atShootingAngle();
+
     frc::Translation3d GetSpeakerCenter();
 
     void SetDriveState(DriveStates state);
@@ -138,8 +140,6 @@ private:
 
     // The gyro sensor
     AHRS m_gyro{frc::SPI::kMXP};
-
-    frc::PIDController m_aimController{0.1, 0.0, 0.0};
     frc::ProfiledPIDController<units::radian> profiledAimController;
 
     // Odometry class for tracking robot pose

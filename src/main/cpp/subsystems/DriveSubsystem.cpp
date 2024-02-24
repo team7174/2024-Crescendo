@@ -41,7 +41,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                   kRearRightEncoderOffset},
 
       profiledAimController(
-          1.0, // Placeholder for proportional gain
+          1.2, // Placeholder for proportional gain
           0.0, // Placeholder for integral gain
           0.0, // Placeholder for derivative gain
           frc::TrapezoidProfile<units::radian>::Constraints(AutoConstants::kMaxAngularSpeed, AutoConstants::kMaxAngularAcceleration)),
@@ -53,11 +53,10 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                  frc::Pose2d{}}
 {
   m_visionSubsystem = passedVisionSubsystem;
-  m_aimController.SetTolerance(1);
-  m_aimController.EnableContinuousInput(-180, 180);
 
   profiledAimController.EnableContinuousInput(-180_deg, 180.0_deg);
-  profiledAimController.SetTolerance(1.0_deg);
+  profiledAimController.SetTolerance(5.0_deg);
+  profiledAimController.SetGoal(180_deg);
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -96,6 +95,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
 
 void DriveSubsystem::Periodic()
 {
+  atShootingAngle();
   // Implementation of subsystem periodic method goes here.
   m_odometry.Update(m_gyro.GetRotation2d(),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
@@ -108,6 +108,11 @@ void DriveSubsystem::Periodic()
   else
   {
     UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
+  }
+
+  if(m_desiredDriveState == aimDrive)
+  {
+    Drive(units::meters_per_second_t(0), units::meters_per_second_t(0), units::radians_per_second_t(0), true);
   }
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
@@ -123,12 +128,11 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
   frc::SmartDashboard::PutNumber("Drive Z", rot.value());
 
-  frc::SmartDashboard::PutNumber("Profiled Aim Rot", std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second), 180.0_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
-  frc::SmartDashboard::PutNumber("Non-Profiled Aim Rot", std::clamp(m_aimController.Calculate(getShootingValues().second, 180.0), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+  frc::SmartDashboard::PutNumber("Profiled Aim Rot", -std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
 
   if (m_desiredDriveState == DriveStates::aimDrive)
   {
-    rot = units::radians_per_second_t(std::clamp(m_aimController.Calculate(getShootingValues().second, 180.0), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+    rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.03));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
@@ -199,6 +203,16 @@ frc::Pose2d DriveSubsystem::GetPose()
   return m_odometry.GetEstimatedPosition();
 }
 
+bool DriveSubsystem::atShootingAngle()
+{
+  double angleOffset = 180 - abs(getShootingValues().second);
+  if (angleOffset < 5)
+  {
+    return true;
+  }
+  return false;
+}
+
 frc::Translation3d DriveSubsystem::GetSpeakerCenter()
 {
   frc::Translation3d speakerCenter;
@@ -231,7 +245,6 @@ std::pair<double, double> DriveSubsystem::getShootingValues()
   double aimAngle = robotToSpeakerTranslation.Angle().Degrees().value();
   frc::SmartDashboard::PutNumber("Aim Angle", aimAngle);
   frc::SmartDashboard::PutNumber("Shooting Distance", shootingDistance);
-  m_aimController.SetSetpoint(0);
   return std::pair<double, double>(shootingDistance, aimAngle);
 }
 

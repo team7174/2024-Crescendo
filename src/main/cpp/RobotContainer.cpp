@@ -8,6 +8,7 @@
 
 #include <frc2/command/button/Trigger.h>
 #include <frc2/command/button/JoystickButton.h>
+#include <frc2/command/WaitUntilCommand.h>
 
 #include <units/angle.h>
 #include <units/velocity.h>
@@ -20,7 +21,7 @@
 
 using namespace DriveConstants;
 
-RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem)
+RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem, &m_drive)
 {
   // Initialize all of your commands and subsystems here
 
@@ -32,18 +33,35 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
                                        { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
                                         m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
 
-  auto aimDrive = frc2::cmd::RunOnce([this]
-                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); });
+  auto aimDrive = frc2::cmd::WaitUntil([this]
+                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); 
+                                       return m_drive.atShootingAngle(); });
+
+  auto regularDrive = frc2::cmd::RunOnce([this]
+                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); });
 
   auto shootSpeaker = frc2::cmd::RunOnce([this]
                                          { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
+  auto waitShoot = frc2::cmd::WaitUntil([this] 
+                                          { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); });
+
+  auto waitIntake = frc2::cmd::WaitUntil([this] 
+                                          { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); });
+
+  auto waitAngle = frc2::cmd::WaitUntil([this] 
+                                          { return (m_armSubsystem.ReachedDesiredAngle()); });
+
   // TODO: Test this
-  pathplanner::NamedCommands::registerCommand("Intake Drop", std::move(resetYaw)); // <- This example method returns CommandPtr
+  pathplanner::NamedCommands::registerCommand("Reset Yaw", std::move(resetYaw)); // <- This example method returns CommandPtr
   pathplanner::NamedCommands::registerCommand("Intake Drop", std::move(intakeDrop));
   pathplanner::NamedCommands::registerCommand("Aim Drive", std::move(aimDrive));
   pathplanner::NamedCommands::registerCommand("Shoot Speaker", std::move(shootSpeaker));
+  pathplanner::NamedCommands::registerCommand("Wait Shoot", std::move(waitShoot));
+  pathplanner::NamedCommands::registerCommand("Wait Intake", std::move(waitIntake));
+  pathplanner::NamedCommands::registerCommand("Wait Angle", std::move(waitAngle));
+  pathplanner::NamedCommands::registerCommand("Regular Drive", std::move(regularDrive));
 
   // pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
   //  Set up default drive command
