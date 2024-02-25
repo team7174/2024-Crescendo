@@ -10,6 +10,8 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
       leftShooterEnc(m_leftShooterMotor.GetEncoder()),
       leftShooterPID(m_leftShooterMotor.GetPIDController()),
       rightShooterPID(m_rightShooterMotor.GetPIDController()),
+      intakeEnc(m_intakeMotor.GetEncoder()),
+      intakePID(m_intakeMotor.GetPIDController()),
       intakeBeamBreak(ShooterConstants::intakeBeamBreakID),
       shooterBeamBreak(ShooterConstants::shooterBeamBreakID)
 {
@@ -23,17 +25,20 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   // Limits
   m_leftShooterMotor.SetSmartCurrentLimit(30);
   m_rightShooterMotor.SetSmartCurrentLimit(30);
-  m_intakeMotor.SetSmartCurrentLimit(30);
+  //m_intakeMotor.SetSmartCurrentLimit(30);
   // m_leftShooterMotor.EnableVoltageCompensation(12.0);
   // m_rightShooterMotor.EnableVoltageCompensation(12.0);
 
   // Reset encoders
   leftShooterEnc.SetPosition(0.0);
   rightShooterEnc.SetPosition(0.0);
+  intakeEnc.SetPosition(0.0);
   leftShooterEnc.SetMeasurementPeriod(10);
   rightShooterEnc.SetMeasurementPeriod(10);
+  intakeEnc.SetMeasurementPeriod(10);
   leftShooterEnc.SetAverageDepth(2);
   rightShooterEnc.SetAverageDepth(2);
+  intakeEnc.SetAverageDepth(2);
 
   // Get controllers
   setPID();
@@ -53,6 +58,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
 void ShooterSubsystem::Periodic()
 {
   frc::SmartDashboard::PutNumber("Left Shooter Velocity", double(leftShooterEnc.GetVelocity()));
+  frc::SmartDashboard::PutNumber("Intake Velocity", double(intakeEnc.GetVelocity()));
   frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   NoteInIntake();
@@ -95,6 +101,7 @@ void ShooterSubsystem::Periodic()
   }
   runVelocity(shooterSpeed);
   m_intakeMotor.Set(intakeSpeed);
+  //intakePID.SetReference(intakeSpeed, rev::CANSparkBase::ControlType::kVelocity);
 }
 
 void ShooterSubsystem::SetIntakeState(intakeStates intakeState)
@@ -103,11 +110,11 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState)
   switch (intakeState)
   {
   case intakeStates::intake:
-    intakeSpeed = 1.0;
+    intakeSpeed = 1;
     break;
 
   case intakeStates::shoot:
-    intakeSpeed = 1.0;
+    intakeSpeed = 1;
     break;
 
   case intakeStates::eject:
@@ -129,13 +136,13 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   switch (shooterState)
   {
   case shooterStates::shooterOn:
-    shooterSpeed = 4500;
+    shooterSpeed = 5000;
     break;
 
   case shooterStates::shooterStop:
     if (frc::DriverStation::IsAutonomous())
     {
-      shooterSpeed = 4500;
+      shooterSpeed = 5000;
     }
     else
     {
@@ -171,7 +178,7 @@ bool ShooterSubsystem::NoteInBoth()
 
 bool ShooterSubsystem::ShooterAtSpeed()
 {
-  return (leftShooterEnc.GetVelocity() > (shooterSpeed - 200) && rightShooterEnc.GetVelocity() > (shooterSpeed - 200));
+  return (leftShooterEnc.GetVelocity() > (shooterSpeed - 150) && rightShooterEnc.GetVelocity() > (shooterSpeed - 150));
 }
 
 void ShooterSubsystem::runVelocity(double rpm)
@@ -190,8 +197,13 @@ void ShooterSubsystem::setPID()
   rightShooterPID.SetI(ShooterConstants::shooterkI);
   rightShooterPID.SetD(ShooterConstants::shooterkD);
 
+  intakePID.SetP(ShooterConstants::intakekP);
+  intakePID.SetI(ShooterConstants::intakekI);
+  intakePID.SetD(ShooterConstants::intakekD);
+
   leftShooterPID.SetFF(ShooterConstants::shooterkFF);
   rightShooterPID.SetFF(ShooterConstants::shooterkFF);
+  intakePID.SetFF(ShooterConstants::intakekFF);
 }
 
 void ShooterSubsystem::Stop()

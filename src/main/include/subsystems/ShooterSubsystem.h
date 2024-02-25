@@ -61,6 +61,10 @@ private:
   rev::SparkPIDController leftShooterPID;
   rev::SparkPIDController rightShooterPID;
 
+  
+  rev::SparkRelativeEncoder intakeEnc;
+  rev::SparkPIDController intakePID;
+
   double intakeSpeed;
   double shooterSpeed;
 

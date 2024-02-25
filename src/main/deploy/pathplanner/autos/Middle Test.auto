@@ -96,12 +96,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Wait Angle"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Go Middle"

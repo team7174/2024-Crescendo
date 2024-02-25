@@ -35,8 +35,8 @@ public:
   bool ReachedDesiredAngle();
   void brakeModeOff();
   void brakeModeOn();
-  static constexpr units::degrees_per_second_t kMaxAngularSpeed = 180.0_deg_per_s;
-  static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 360.0_deg_per_s_sq;
+  static constexpr units::degrees_per_second_t kMaxAngularSpeed = 360.0_deg_per_s;
+  static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 720.0_deg_per_s_sq;
 
 private:
   ctre::phoenix6::hardware::TalonFX m_armMotorLeft;

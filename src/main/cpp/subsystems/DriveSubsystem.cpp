@@ -40,7 +40,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                   kRearRightTurningEncoderPorts,
                   kRearRightEncoderOffset},
 
-      profiledAimController(
+profiledAimController(
           1.2, // Placeholder for proportional gain
           0.0, // Placeholder for integral gain
           0.0, // Placeholder for derivative gain
@@ -53,7 +53,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                  frc::Pose2d{}}
 {
   m_visionSubsystem = passedVisionSubsystem;
-
+  
   profiledAimController.EnableContinuousInput(-180_deg, 180.0_deg);
   profiledAimController.SetTolerance(5.0_deg);
   profiledAimController.SetGoal(180_deg);
@@ -77,9 +77,9 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           ),
       []()
       {
-        auto ally = frc::DriverStation::GetAlliance();
-        return ally.value() == frc::DriverStation::Alliance::kRed;
-      },
+                auto ally = frc::DriverStation::GetAlliance();
+                  return ally.value() == frc::DriverStation::Alliance::kRed;
+              },
       this // Reference to this subsystem to set requirements
   );
 
@@ -88,27 +88,19 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
 
 void DriveSubsystem::Periodic()
 {
-  atShootingAngle();
+atShootingAngle();
   // Implementation of subsystem periodic method goes here.
   m_odometry.Update(GetHeading(),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
 
-  if (m_desiredDriveState == aimDrive)
+  m_visionSubsystem->SetPoseLL3(&m_odometry);
+  m_visionSubsystem->SetPoseLL2(&m_odometry);
+if (m_desiredDriveState == aimDrive)
   {
     Drive(units::meters_per_second_t(0), units::meters_per_second_t(0), units::radians_per_second_t(0), true);
-
-    if (m_visionSubsystem->GetPoseLL3() != ignorePose)
-    {
-      UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
-    }
-    else
-    {
-      UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
-    }
   }
-
-  m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
+  m_field.SetRobotPose(GetPose());
   getShootingValues();
 }
 
@@ -119,7 +111,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 {
   frc::SmartDashboard::PutNumber("Drive X", xSpeed.value());
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
-  frc::SmartDashboard::PutNumber("Drive Z", rot.value());
+frc::SmartDashboard::PutNumber("Drive Z", rot.value());
 
   if (!allianceColorBlue)
   {
@@ -136,7 +128,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-                          xSpeed, ySpeed, rot, GetHeading())
+                          xSpeed, ySpeed, rot, GetPose().Rotation())
                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot});
 
   kDriveKinematics.DesaturateWheelSpeeds(&states, AutoConstants::kMaxSpeed);
@@ -217,16 +209,16 @@ bool DriveSubsystem::atShootingAngle()
     return true;
   }
   return false;
-}
-
+  }
+  
 frc::Translation3d DriveSubsystem::GetSpeakerCenter()
 {
   frc::Translation3d speakerCenter;
   if (auto ally = frc::DriverStation::GetAlliance())
   {
-    if (ally.value() == frc::DriverStation::Alliance::kRed)
-    {
-      allianceColorBlue = false;
+  if (ally.value() == frc::DriverStation::Alliance::kRed)
+  {
+    allianceColorBlue = false;
       profiledAimController.SetGoal(180_deg);
     }
     else
@@ -254,15 +246,6 @@ std::pair<double, double> DriveSubsystem::getShootingValues()
   frc::SmartDashboard::PutNumber("Aim Angle", aimAngle);
   frc::SmartDashboard::PutNumber("Shooting Distance", shootingDistance);
   return std::pair<double, double>(shootingDistance, aimAngle);
-}
-
-void DriveSubsystem::UpdatePoseLimelight(frc::Translation2d pose)
-{
-  if (pose != ignorePose)
-  {
-    frc::Pose2d robotPose(pose, GetHeading());
-    m_odometry.AddVisionMeasurement(robotPose, frc::Timer::GetFPGATimestamp());
-  }
 }
 
 void DriveSubsystem::ResetOdometry(frc::Pose2d pose)

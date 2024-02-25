@@ -18,7 +18,7 @@
 #include <subsystems/ClimbSubsystem.h>
 #include <subsystems/ShooterSubsystem.h>
 #include <subsystems/VisionSubsystem.h>
-#include <subsystems/PDH.h>
+// #include <subsystems/PDH.h>
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -44,7 +44,7 @@ public:
   ClimbSubsystem m_climbSubsystem;
   ShooterSubsystem m_shooterSubsystem;
   VisionSubsystem m_visionSubsystem;
-  PDH m_PDH;
+  // PDH m_PDH;
 
 private:
   // The driver's controller

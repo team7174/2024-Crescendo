@@ -11,15 +11,17 @@
 #include "networktables/NetworkTableInstance.h"
 #include "networktables/NetworkTableEntry.h"
 #include "networktables/NetworkTableValue.h"
+#include <frc/estimator/SwerveDrivePoseEstimator.h>
 
 #include <iostream>
 
 class VisionSubsystem : public frc2::SubsystemBase {
  public:
   VisionSubsystem();
-  frc::Translation2d GetPoseLL3();
-  frc::Translation2d GetPoseLL2();
-  frc::Translation2d ConvertToTranslation2d(std::vector<double> pose);
+
+  void SetPose(std::string, frc::SwerveDrivePoseEstimator<4>*);
+  void SetPoseLL3(frc::SwerveDrivePoseEstimator<4>*);
+  void SetPoseLL2(frc::SwerveDrivePoseEstimator<4>*);
 
   private:
     std::shared_ptr<nt::NetworkTable> limelight2;

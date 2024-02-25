@@ -3,32 +3,59 @@
 VisionSubsystem::VisionSubsystem()
 {}
 
-frc::Translation2d VisionSubsystem::GetPoseLL3()
-{
-  limelight3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
-  auto limelight3BotPose = limelight3->GetNumberArray("botpose_wpiblue", {});
-  return ConvertToTranslation2d(limelight3BotPose);
+void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstimator<4>* m_odometry) { 
+  double xyStds;
+  units::angle::radian_t degStds;
+
+  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable(table_name);
+  auto llBotPoseEntry = ll->GetEntry("botpose_wpiblue");
+  auto llBotPose = llBotPoseEntry.GetDoubleArray({});
+
+  // weirdness
+  if(llBotPose.size() < 6) {
+    return;
+  }
+  frc::Pose2d visionBotPose = frc::Pose2d(
+        frc::Translation2d(units::length::meter_t(llBotPose[0]), units::length::meter_t(llBotPose[1])), 
+        frc::Rotation2d(units::angle::radian_t(llBotPose[5]*(M_PI/180.0))));
+
+  //getlastchange() in microseconds, ll latency in milliseconds
+  auto visionTime = units::time::second_t((llBotPoseEntry.GetLastChange() / 1000000.0) - (llBotPose[6]/1000.0));
+  // auto visionTime = frc::Timer::GetFPGATimestamp() - (llBotPose[6]/1000.0)
+
+  // distance from current pose to vision estimated pose
+  units::meter_t poseDifference = m_odometry->GetEstimatedPosition().Translation().Distance(visionBotPose.Translation());
+
+  int tagCount = (int)llBotPose[7];
+  double tagArea = llBotPose[10];
+  // multiple targets detected
+  if (tagCount >= 2) {
+    xyStds = 0.5;
+    degStds = units::angle::radian_t(6_deg);
+  }
+  // 1 target with large area and close to estimated pose
+  else if (tagArea > 0.8 && poseDifference < 0.5_m) {
+    xyStds = 1.0;
+    degStds = units::angle::radian_t(12_deg);
+  }
+  // 1 target farther away and estimated pose is close
+  else if (tagArea > 0.1 && poseDifference < 0.3_m) {
+    xyStds = 2.0;
+    degStds = units::angle::radian_t(30_deg);
+  }
+  // conditions don't match to add a vision measurement
+  else {
+    return;
+  }
+
+  m_odometry->SetVisionMeasurementStdDevs({xyStds, xyStds, degStds.value()});
+  m_odometry->AddVisionMeasurement(visionBotPose, visionTime);
 }
 
-frc::Translation2d VisionSubsystem::GetPoseLL2()
-{
-  limelight2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
-  auto limelight2BotPose = limelight2->GetNumberArray("botpose_wpiblue", {});
-  return ConvertToTranslation2d(limelight2BotPose);
+void VisionSubsystem::SetPoseLL3(frc::SwerveDrivePoseEstimator<4>* m_odometry) {
+  SetPose("limelight-llthree", m_odometry);
 }
 
-frc::Translation2d VisionSubsystem::ConvertToTranslation2d(std::vector<double> pose)
-{
-  if (pose.size() >= 2)
-  {
-    units::meter_t xMeters(pose[0]);
-    units::meter_t yMeters(pose[1]);
-    frc::Translation2d position(xMeters, yMeters);
-    return position;
-  }
-  else
-  {
-    frc::Translation2d position(0_m, 0_m);
-    return position;
-  }
+void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4>* m_odometry) {
+  SetPose("limelight-lltwo", m_odometry);
 }
