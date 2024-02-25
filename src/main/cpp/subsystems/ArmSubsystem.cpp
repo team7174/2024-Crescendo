@@ -25,12 +25,12 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   slot0ConfigsArm.kD = 0;    // No output for change in error
 
   auto &Armslot0ConfigsArmCurrLimit = ArmMotorConfig.CurrentLimits;
-  Armslot0ConfigsArmCurrLimit.StatorCurrentLimit = 35;
+  Armslot0ConfigsArmCurrLimit.StatorCurrentLimit = 15;
   Armslot0ConfigsArmCurrLimit.StatorCurrentLimitEnable = true;
 
   Armslot0ConfigsArmCurrLimit.SupplyCurrentLimitEnable = true;
-  Armslot0ConfigsArmCurrLimit.SupplyCurrentLimit = 35;
-  Armslot0ConfigsArmCurrLimit.SupplyCurrentThreshold = 40;
+  Armslot0ConfigsArmCurrLimit.SupplyCurrentLimit = 15;
+  Armslot0ConfigsArmCurrLimit.SupplyCurrentThreshold = 20;
   Armslot0ConfigsArmCurrLimit.SupplyTimeThreshold = 0.1;
 
   auto &Armslot0ConfigsArmVoltLimit = ArmMotorConfig.Voltage;

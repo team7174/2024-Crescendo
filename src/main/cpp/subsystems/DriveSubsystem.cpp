@@ -69,25 +69,15 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
       [this](frc::ChassisSpeeds speeds)
       { this->Drive(speeds.vx, speeds.vy, speeds.omega, true); },            // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       pathplanner::HolonomicPathFollowerConfig(                              // HolonomicPathFollowerConfig, this should likely live in your Constants class
-          pathplanner::PIDConstants(AutoConstants::kPXController, 0.0, 0.0), // Translation PID constants
-          pathplanner::PIDConstants(AutoConstants::kPYController, 0.0, 0.0), // Rotation PID constants
+          pathplanner::PIDConstants(AutoConstants::kPXController, 0.0, 0.0),
+          pathplanner::PIDConstants(AutoConstants::kPThetaController, 0.0, 0.0), // Rotation PID constants
           AutoConstants::kMaxSpeed,                                          // Max module speed, in m/s
           this->kModuleRadius,                                               // Drive base radius in meters. Distance from robot center to furthest module.
           pathplanner::ReplanningConfig()                                    // Default path replanning config. See the API for the options here
           ),
       []()
       {
-        // Boolean supplier that controls when the path will be mirrored for the red alliance
-        // This will flip the path being followed to the red side of the field.
-        // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         auto ally = frc::DriverStation::GetAlliance();
-        // frc::SmartDashboard::PutBoolean("Alliance Red Val", ally);
-        // frc::SmartDashboard::PutBoolean("Alliance Red", ally.value() == frc::DriverStation::Alliance::kRed);
-        // if (ally)
-        // {
-        //   return ally.value() == frc::DriverStation::Alliance::kRed;
-        // }
-        // return false;
         return ally.value() == frc::DriverStation::Alliance::kRed;
       },
       this // Reference to this subsystem to set requirements
@@ -104,18 +94,18 @@ void DriveSubsystem::Periodic()
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
 
-  if (m_visionSubsystem->GetPoseLL3() != ignorePose)
-  {
-    UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
-  }
-  else
-  {
-    UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
-  }
-
   if (m_desiredDriveState == aimDrive)
   {
     Drive(units::meters_per_second_t(0), units::meters_per_second_t(0), units::radians_per_second_t(0), true);
+
+    if (m_visionSubsystem->GetPoseLL3() != ignorePose)
+    {
+      UpdatePoseLimelight(m_visionSubsystem->GetPoseLL3());
+    }
+    else
+    {
+      UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
+    }
   }
 
   m_field.SetRobotPose(m_odometry.GetEstimatedPosition());
@@ -131,7 +121,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
   frc::SmartDashboard::PutNumber("Drive Z", rot.value());
 
-  if(!allianceColorBlue)
+  if (!allianceColorBlue)
   {
     xSpeed = -xSpeed;
     ySpeed = -ySpeed;

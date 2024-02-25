@@ -21,9 +21,9 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_intakeMotor.RestoreFactoryDefaults();
 
   // Limits
-  m_leftShooterMotor.SetSmartCurrentLimit(35);
-  m_rightShooterMotor.SetSmartCurrentLimit(35);
-  m_intakeMotor.SetSmartCurrentLimit(35);
+  m_leftShooterMotor.SetSmartCurrentLimit(30);
+  m_rightShooterMotor.SetSmartCurrentLimit(30);
+  m_intakeMotor.SetSmartCurrentLimit(30);
   // m_leftShooterMotor.EnableVoltageCompensation(12.0);
   // m_rightShooterMotor.EnableVoltageCompensation(12.0);
 
@@ -75,7 +75,7 @@ void ShooterSubsystem::Periodic()
   }
   bool atShootAngle = m_drive->atShootingAngle();
   frc::SmartDashboard::PutBoolean("Aim in shoot", atShootAngle);
-  if (currShooterState == shooterStates::shooterOn && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle())
+  if (currShooterState == shooterStates::shooterOn && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && (NoteInShooter() || NoteInIntake()))
   {
     shooterTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::shoot);

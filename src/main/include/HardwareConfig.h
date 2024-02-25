@@ -23,15 +23,15 @@ public:
         // // set Motion Magic Velocity settings
         auto &motionMagicConfigs = DriveMotorConfig.MotionMagic;
         motionMagicConfigs.MotionMagicAcceleration = 800; // Target acceleration of 400 rps/s (0.25 seconds to max)
-        motionMagicConfigs.MotionMagicJerk = 8000;        // Target jerk of 4000 rps/s/s (0.1 seconds)
+        motionMagicConfigs.MotionMagicJerk = 4000;        // Target jerk of 4000 rps/s/s (0.1 seconds)
 
         auto &DriveCurrLimit = DriveMotorConfig.CurrentLimits;
-        DriveCurrLimit.StatorCurrentLimit = 35;
+        DriveCurrLimit.StatorCurrentLimit = 30;
         DriveCurrLimit.StatorCurrentLimitEnable = true;
 
         DriveCurrLimit.SupplyCurrentLimitEnable = true;
-        DriveCurrLimit.SupplyCurrentLimit = 35;
-        DriveCurrLimit.SupplyCurrentThreshold = 40;
+        DriveCurrLimit.SupplyCurrentLimit = 30;
+        DriveCurrLimit.SupplyCurrentThreshold = 35;
         DriveCurrLimit.SupplyTimeThreshold = 0.1;
 
         auto &DriveVoltLimit = DriveMotorConfig.Voltage;
@@ -50,12 +50,12 @@ public:
         slot0ConfigsTurn.kD = 0;    // no output for error derivative
         
         auto &TurnCurrLimit = TurnMotorConfig.CurrentLimits;
-        TurnCurrLimit.StatorCurrentLimit = 20;
+        TurnCurrLimit.StatorCurrentLimit = 15;
         TurnCurrLimit.StatorCurrentLimitEnable = true;
 
         TurnCurrLimit.SupplyCurrentLimitEnable = true;
-        TurnCurrLimit.SupplyCurrentLimit = 20;
-        TurnCurrLimit.SupplyCurrentThreshold = 25;
+        TurnCurrLimit.SupplyCurrentLimit = 15;
+        TurnCurrLimit.SupplyCurrentThreshold = 20;
         TurnCurrLimit.SupplyTimeThreshold = 0.1;
 
         auto &TurnVoltLimit = TurnMotorConfig.Voltage;
