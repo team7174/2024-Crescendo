@@ -18,10 +18,12 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
 
   m_leftShooterMotor.RestoreFactoryDefaults();
   m_rightShooterMotor.RestoreFactoryDefaults();
+  m_intakeMotor.RestoreFactoryDefaults();
 
   // Limits
   m_leftShooterMotor.SetSmartCurrentLimit(35);
   m_rightShooterMotor.SetSmartCurrentLimit(35);
+  m_intakeMotor.SetSmartCurrentLimit(35);
   // m_leftShooterMotor.EnableVoltageCompensation(12.0);
   // m_rightShooterMotor.EnableVoltageCompensation(12.0);
 
@@ -39,11 +41,13 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   // Disable brake mode
   m_leftShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
   m_rightShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
+  m_intakeMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kBrake);
   m_rightShooterMotor.SetInverted(true);
   m_leftShooterMotor.SetInverted(true);
 
   m_leftShooterMotor.BurnFlash();
   m_rightShooterMotor.BurnFlash();
+  m_intakeMotor.BurnFlash();
 }
 
 void ShooterSubsystem::Periodic()
@@ -71,7 +75,7 @@ void ShooterSubsystem::Periodic()
   }
   bool atShootAngle = m_drive->atShootingAngle();
   frc::SmartDashboard::PutBoolean("Aim in shoot", atShootAngle);
-  if (currShooterState == shooterStates::shooterOn && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && NoteInShooter())
+  if (currShooterState == shooterStates::shooterOn && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle())
   {
     shooterTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::shoot);
@@ -125,13 +129,13 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
   switch (shooterState)
   {
   case shooterStates::shooterOn:
-    shooterSpeed = 6000;
+    shooterSpeed = 4500;
     break;
 
   case shooterStates::shooterStop:
     if (frc::DriverStation::IsAutonomous())
     {
-      shooterSpeed = 6000;
+      shooterSpeed = 4500;
     }
     else
     {

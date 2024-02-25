@@ -1,11 +1,15 @@
 #include "subsystems/VisionSubsystem.h"
 
+#include <frc/json>
 VisionSubsystem::VisionSubsystem()
 {}
 
 frc::Translation2d VisionSubsystem::GetPoseLL3()
 {
   limelight3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
+  auto limeJsonStr = limelight3->GetString("json", "{}");
+  // frc::json::parse
+  // frc::SmartDashboard::PutString("limejson", );
   auto limelight3BotPose = limelight3->GetNumberArray("botpose_wpiblue", {});
   return ConvertToTranslation2d(limelight3BotPose);
 }

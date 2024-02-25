@@ -47,7 +47,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           frc::TrapezoidProfile<units::radian>::Constraints(AutoConstants::kMaxAngularSpeed, AutoConstants::kMaxAngularAcceleration)),
 
       m_odometry{kDriveKinematics,
-                 m_gyro.GetRotation2d(),
+                 GetHeading(),
                  {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
                   m_rearLeft.GetPosition(), m_rearRight.GetPosition()},
                  frc::Pose2d{}}
@@ -67,7 +67,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
       [this]()
       { return this->kDriveKinematics.ToChassisSpeeds(this->GetModuleStates()); }, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
       [this](frc::ChassisSpeeds speeds)
-      { this->Drive(speeds.vx, speeds.vy, speeds.omega, false); },           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+      { this->Drive(speeds.vx, speeds.vy, speeds.omega, true); },            // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
       pathplanner::HolonomicPathFollowerConfig(                              // HolonomicPathFollowerConfig, this should likely live in your Constants class
           pathplanner::PIDConstants(AutoConstants::kPXController, 0.0, 0.0), // Translation PID constants
           pathplanner::PIDConstants(AutoConstants::kPYController, 0.0, 0.0), // Rotation PID constants
@@ -81,11 +81,14 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
         // This will flip the path being followed to the red side of the field.
         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         auto ally = frc::DriverStation::GetAlliance();
-        if (ally)
-        {
-          return ally.value() == frc::DriverStation::Alliance::kRed;
-        }
-        return false;
+        // frc::SmartDashboard::PutBoolean("Alliance Red Val", ally);
+        // frc::SmartDashboard::PutBoolean("Alliance Red", ally.value() == frc::DriverStation::Alliance::kRed);
+        // if (ally)
+        // {
+        //   return ally.value() == frc::DriverStation::Alliance::kRed;
+        // }
+        // return false;
+        return ally.value() == frc::DriverStation::Alliance::kRed;
       },
       this // Reference to this subsystem to set requirements
   );
@@ -97,7 +100,7 @@ void DriveSubsystem::Periodic()
 {
   atShootingAngle();
   // Implementation of subsystem periodic method goes here.
-  m_odometry.Update(m_gyro.GetRotation2d(),
+  m_odometry.Update(GetHeading(),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
                      m_frontRight.GetPosition(), m_rearRight.GetPosition()});
 
@@ -110,7 +113,7 @@ void DriveSubsystem::Periodic()
     UpdatePoseLimelight(m_visionSubsystem->GetPoseLL2());
   }
 
-  if(m_desiredDriveState == aimDrive)
+  if (m_desiredDriveState == aimDrive)
   {
     Drive(units::meters_per_second_t(0), units::meters_per_second_t(0), units::radians_per_second_t(0), true);
   }
@@ -128,6 +131,12 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   frc::SmartDashboard::PutNumber("Drive Y", ySpeed.value());
   frc::SmartDashboard::PutNumber("Drive Z", rot.value());
 
+  if(!allianceColorBlue)
+  {
+    xSpeed = -xSpeed;
+    ySpeed = -ySpeed;
+  }
+
   frc::SmartDashboard::PutNumber("Profiled Aim Rot", -std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
 
   if (m_desiredDriveState == DriveStates::aimDrive)
@@ -137,7 +146,7 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-                          xSpeed, ySpeed, rot, m_gyro.GetRotation2d())
+                          xSpeed, ySpeed, rot, GetHeading())
                     : frc::ChassisSpeeds{xSpeed, ySpeed, rot});
 
   kDriveKinematics.DesaturateWheelSpeeds(&states, AutoConstants::kMaxSpeed);
@@ -185,7 +194,14 @@ void DriveSubsystem::ResetEncoders()
 
 units::degree_t DriveSubsystem::GetHeading()
 {
-  return m_gyro.GetRotation2d().Degrees();
+  if (allianceColorBlue)
+  {
+    return m_gyro.GetRotation2d().Degrees();
+  }
+  else
+  {
+    return (m_gyro.GetRotation2d().Degrees() + 180_deg);
+  }
 }
 
 void DriveSubsystem::ZeroHeading()
@@ -205,7 +221,7 @@ frc::Pose2d DriveSubsystem::GetPose()
 
 bool DriveSubsystem::atShootingAngle()
 {
-  double angleOffset = 180 - abs(getShootingValues().second);
+  double angleOffset = abs(180 - abs(getShootingValues().second));
   if (angleOffset < 5)
   {
     return true;
@@ -221,10 +237,12 @@ frc::Translation3d DriveSubsystem::GetSpeakerCenter()
     if (ally.value() == frc::DriverStation::Alliance::kRed)
     {
       allianceColorBlue = false;
+      profiledAimController.SetGoal(180_deg);
     }
     else
     {
       allianceColorBlue = true;
+      profiledAimController.SetGoal(180_deg);
     }
   }
   units::meter_t X = 0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X());
@@ -252,7 +270,7 @@ void DriveSubsystem::UpdatePoseLimelight(frc::Translation2d pose)
 {
   if (pose != ignorePose)
   {
-    frc::Pose2d robotPose(pose, m_gyro.GetRotation2d());
+    frc::Pose2d robotPose(pose, GetHeading());
     m_odometry.AddVisionMeasurement(robotPose, frc::Timer::GetFPGATimestamp());
   }
 }

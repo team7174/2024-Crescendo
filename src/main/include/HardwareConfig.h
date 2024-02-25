@@ -50,12 +50,12 @@ public:
         slot0ConfigsTurn.kD = 0;    // no output for error derivative
         
         auto &TurnCurrLimit = TurnMotorConfig.CurrentLimits;
-        TurnCurrLimit.StatorCurrentLimit = 35;
+        TurnCurrLimit.StatorCurrentLimit = 20;
         TurnCurrLimit.StatorCurrentLimitEnable = true;
 
         TurnCurrLimit.SupplyCurrentLimitEnable = true;
-        TurnCurrLimit.SupplyCurrentLimit = 35;
-        TurnCurrLimit.SupplyCurrentThreshold = 40;
+        TurnCurrLimit.SupplyCurrentLimit = 20;
+        TurnCurrLimit.SupplyCurrentThreshold = 25;
         TurnCurrLimit.SupplyTimeThreshold = 0.1;
 
         auto &TurnVoltLimit = TurnMotorConfig.Voltage;
