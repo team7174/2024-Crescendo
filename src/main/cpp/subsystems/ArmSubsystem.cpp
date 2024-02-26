@@ -100,7 +100,7 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   }
   else if (DesiredArmState == ArmStates::upright)
   {
-    profiledController.SetGoal(90_deg);
+    profiledController.SetGoal(100_deg);
   }
   else if (DesiredArmState == ArmStates::autoAngle)
   {

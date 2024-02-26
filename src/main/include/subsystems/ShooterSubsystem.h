@@ -9,13 +9,16 @@
 #include <subsystems/ArmSubsystem.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/timer.h>
+#include <frc/XboxController.h>
 
 class ShooterSubsystem : public frc2::SubsystemBase
 {
 public:
-  ShooterSubsystem(ArmSubsystem *, DriveSubsystem *);
+  ShooterSubsystem(ArmSubsystem *, DriveSubsystem *, frc::XboxController *, frc::XboxController *);
   ArmSubsystem *m_armSubsystem;
   DriveSubsystem *m_drive;
+  frc::XboxController *m_secondaryController;
+  frc::XboxController *m_driveController;
 
   /**
    * Will be called periodically whenever the CommandScheduler runs.
@@ -28,7 +31,8 @@ public:
     slow,
     stop,
     eject,
-    intake
+    intake,
+    amp
   };
 
   enum shooterStates
@@ -46,6 +50,7 @@ public:
   bool ShooterAtSpeed();
   void runVelocity(double rpm);
   void setPID();
+  void rumbleController();
 
   intakeStates currIntakeState;
   shooterStates currShooterState;

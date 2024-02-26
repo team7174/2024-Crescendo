@@ -21,7 +21,7 @@
 
 using namespace DriveConstants;
 
-RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem, &m_drive)
+RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem, &m_drive, &m_secondaryController, &m_driverController)
 {
   // Initialize all of your commands and subsystems here
 
@@ -102,7 +102,8 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetXButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
+                                   m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); }));  
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftBumper(); }}
@@ -113,7 +114,8 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
+                                   m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::amp);}));
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftTriggerAxis(); }}
