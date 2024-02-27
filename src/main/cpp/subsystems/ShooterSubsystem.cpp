@@ -74,10 +74,9 @@ void ShooterSubsystem::Periodic()
     SetIntakeState(intakeStates::slow);
   }
 
-  rumbleController();
-  
   if (currIntakeState == intakeStates::slow)
   {
+    rumbleController();
     if (!NoteInShooter())
     {
       intakeSpeed = 0.2;
