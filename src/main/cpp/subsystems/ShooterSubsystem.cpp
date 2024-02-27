@@ -74,9 +74,10 @@ void ShooterSubsystem::Periodic()
     SetIntakeState(intakeStates::slow);
   }
 
+  rumbleController();
+  
   if (currIntakeState == intakeStates::slow)
   {
-    rumbleController();
     if (!NoteInShooter())
     {
       intakeSpeed = 0.2;
@@ -235,11 +236,4 @@ void ShooterSubsystem::setPID()
   leftShooterPID.SetFF(ShooterConstants::shooterkFF);
   rightShooterPID.SetFF(ShooterConstants::shooterkFF);
   intakePID.SetFF(ShooterConstants::intakekFF);
-}
-
-void ShooterSubsystem::Stop()
-{
-  m_leftShooterMotor.StopMotor();
-  m_rightShooterMotor.StopMotor();
-  m_intakeMotor.StopMotor();
 }
