@@ -83,7 +83,7 @@ units::angle::degree_t SwerveModule::FalconToDegrees(double turns)
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
 {
   // Optimize the reference state to avoid spinning further than 90 degrees
-  //const auto state = frc::SwerveModuleState::Optimize(referenceState, FalconToDegrees(m_turningMotor.GetPosition().GetValueAsDouble()));
+  // const auto state = frc::SwerveModuleState::Optimize(referenceState, FalconToDegrees(m_turningMotor.GetPosition().GetValueAsDouble()));
   const auto state = frc::SwerveModuleState::Optimize(referenceState, units::degree_t(getTurnEncoderDistance()));
 
   units::turns_per_second_t targetMotorSpeed((state.speed.value() / ModuleConstants::kWheelCircumference) * ModuleConstants::driveGearRatio);
@@ -91,18 +91,18 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState &referenceState)
   // Calculate the turning motor output from the turning PID controller.
   auto turnOutput = steerPID.Calculate(getTurnEncoderDistance(), double{state.angle.Degrees()});
 
-  units::degree_t Angle = state.angle.Degrees();
+  //units::degree_t Angle = state.angle.Degrees();
+  // m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
 
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Motor Speed", targetMotorSpeed.value());
-  frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Motor Speed", m_driveMotor.GetVelocity().GetValueAsDouble());
+  // frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Speed", double{state.speed.value()});
+  // frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Speed", getDriveEncoderRate());
+  // frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Desired Motor Speed", targetMotorSpeed.value());
+  // frc::SmartDashboard::PutNumber(std::to_string(m_driveMotor.GetDeviceID()) + "Curr Motor Speed", m_driveMotor.GetVelocity().GetValueAsDouble());
 
-  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Desired Pos", double{state.angle.Degrees()});
-  frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Pos", getTurnEncoderDistance());
+  // frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Desired Pos", double{state.angle.Degrees()});
+  // frc::SmartDashboard::PutNumber(std::to_string(m_turningMotor.GetDeviceID()) + "Curr Pos", getTurnEncoderDistance());
 
   m_turningMotor.Set(turnOutput);
-  //m_turningMotor.SetControl(m_turnRequest.WithPosition(DegreesToFalcon(Angle)));
   m_driveMotor.SetControl(m_driveRequest.WithVelocity(targetMotorSpeed));
 }
 

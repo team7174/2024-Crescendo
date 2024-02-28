@@ -55,7 +55,7 @@ void ArmSubsystem::Periodic()
   {
     brakeModeOff();
   }
-  else if(!armSwitch.Get() && brakeMode == false)
+  else if (!armSwitch.Get() && brakeMode == false)
   {
     brakeModeOn();
   }
@@ -105,7 +105,7 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
   else if (DesiredArmState == ArmStates::autoAngle)
   {
     profiledController.SetGoal(units::degree_t(CalculateAngle()));
-    //profiledController.SetGoal(units::degree_t(0));
+    // profiledController.SetGoal(units::degree_t(0));
   }
   profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 100.0)));
 }

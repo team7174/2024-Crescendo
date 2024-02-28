@@ -33,9 +33,8 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
                                        { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
                                         m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
 
-  auto aimDrive = frc2::cmd::WaitUntil([this]
-                                       { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); 
-                                       return m_drive.atShootingAngle(); });
+  auto aimDrive = frc2::cmd::RunOnce([this]
+                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); });
 
   auto regularDrive = frc2::cmd::RunOnce([this]
                                          { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); });

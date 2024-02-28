@@ -21,7 +21,7 @@
 class DriveSubsystem : public frc2::SubsystemBase
 {
 public:
-    DriveSubsystem(VisionSubsystem*);
+    DriveSubsystem(VisionSubsystem *);
 
     enum DriveStates
     {
@@ -33,7 +33,7 @@ public:
      * Will be called periodically whenever the CommandScheduler runs.
      */
     void Periodic() override;
-    VisionSubsystem* m_visionSubsystem;
+    VisionSubsystem *m_visionSubsystem;
 
     // Subsystem methods go here.
 
@@ -118,7 +118,7 @@ public:
         frc::Translation2d{-kWheelBase / 2, kTrackWidth / 2},
         frc::Translation2d{-kWheelBase / 2, -kTrackWidth / 2}};
 
-frc::Translation3d topRightSpeaker = frc::Translation3d(0.458597_m, 6.065901_m, 2.1105114_m);
+    frc::Translation3d topRightSpeaker = frc::Translation3d(0.458597_m, 6.065901_m, 2.1105114_m);
     frc::Translation3d topLeftSpeaker = frc::Translation3d(0.458597_m, 5.023231_m, 2.1105114_m);
 
     frc::Translation3d bottomRightSpeaker = frc::Translation3d(0_m, 6.065901_m, 1.9894296_m);
@@ -138,7 +138,7 @@ private:
 
     // The gyro sensor
     AHRS m_gyro{frc::SPI::kMXP};
-frc::ProfiledPIDController<units::radian> profiledAimController;
+    frc::ProfiledPIDController<units::radian> profiledAimController;
 
     // Odometry class for tracking robot pose
     // 4 defines the number of modules

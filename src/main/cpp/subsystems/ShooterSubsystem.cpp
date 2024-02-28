@@ -72,6 +72,7 @@ void ShooterSubsystem::Periodic()
   {
     intakeTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::slow);
+    SetShooterState(shooterStates::shooterMid);
   }
 
   if (currIntakeState == intakeStates::slow)
@@ -86,15 +87,6 @@ void ShooterSubsystem::Periodic()
       intakeSpeed = 0.0;
     }
   }
-
-  // if (currIntakeState == intakeStates::amp && (NoteInIntake() || NoteInShooter()) && m_armSubsystem->ReachedDesiredAngle())
-  // {
-  //   intakeSpeed = 1.0;
-  // }
-  // else
-  // {
-  //   intakeSpeed = 0.0;
-  // }
 
   bool atShootAngle = m_drive->atShootingAngle();
   bool driveMode = (m_drive->m_desiredDriveState == m_drive->aimDrive);
@@ -171,6 +163,10 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState)
     break;
 
   case shooterStates::shooterEject:
+    shooterSpeed = 4000;
+    break;
+
+  case shooterStates::shooterMid:
     shooterSpeed = 4000;
     break;
 

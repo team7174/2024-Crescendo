@@ -14,7 +14,6 @@ ClimbSubsystem::ClimbSubsystem()
 
 void ClimbSubsystem::Periodic()
 {
-    frc::SmartDashboard::PutNumber("Climb Speed", std::clamp(m_climbPIDController.Calculate(m_climbMotorLeft.GetPosition().GetValueAsDouble()), -1.0, 1.0));
     m_climbMotorLeft.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorLeft.GetPosition().GetValueAsDouble()), -1.0, 1.0));
     m_climbMotorRight.Set(std::clamp(m_climbPIDController.Calculate(m_climbMotorRight.GetPosition().GetValueAsDouble()), -1.0, 1.0));
 }

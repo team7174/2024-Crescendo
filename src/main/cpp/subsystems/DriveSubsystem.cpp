@@ -119,8 +119,6 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
     ySpeed = -ySpeed;
   }
 
-  frc::SmartDashboard::PutNumber("Profiled Aim Rot", -std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
-
   if (m_desiredDriveState == DriveStates::aimDrive)
   {
     rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.03));

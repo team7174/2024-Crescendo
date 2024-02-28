@@ -39,6 +39,7 @@ public:
   {
     shooterOn,
     shooterStop,
+    shooterMid,
     shooterEject
   };
 
@@ -66,7 +67,6 @@ private:
   rev::SparkPIDController leftShooterPID;
   rev::SparkPIDController rightShooterPID;
 
-  
   rev::SparkRelativeEncoder intakeEnc;
   rev::SparkPIDController intakePID;
 
