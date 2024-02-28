@@ -202,7 +202,8 @@ frc::Pose2d DriveSubsystem::GetPose()
 bool DriveSubsystem::atShootingAngle()
 {
   double angleOffset = abs(180 - abs(getShootingValues().second));
-  if (angleOffset < 5)
+  frc::SmartDashboard::PutBoolean("Speaker Aim", angleOffset < 2.5);
+  if (angleOffset < 2.5)
   {
     return true;
   }
