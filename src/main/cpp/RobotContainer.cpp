@@ -34,24 +34,24 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
                                         m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
 
   auto aimDrive = frc2::cmd::WaitUntil([this]
-                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); 
+                                       { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); 
                                        return m_drive.atShootingAngle(); });
 
   auto regularDrive = frc2::cmd::RunOnce([this]
-                                     { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); });
+                                         { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); });
 
   auto shootSpeaker = frc2::cmd::RunOnce([this]
                                          { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
-  auto waitShoot = frc2::cmd::WaitUntil([this] 
-                                          { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); });
+  auto waitShoot = frc2::cmd::WaitUntil([this]
+                                        { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); });
 
-  auto waitIntake = frc2::cmd::WaitUntil([this] 
-                                          { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); });
+  auto waitIntake = frc2::cmd::WaitUntil([this]
+                                         { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); });
 
-  auto waitAngle = frc2::cmd::WaitUntil([this] 
-                                          { return (m_armSubsystem.ReachedDesiredAngle()); });
+  auto waitAngle = frc2::cmd::WaitUntil([this]
+                                        { return (m_armSubsystem.ReachedDesiredAngle()); });
 
   // TODO: Test this
   pathplanner::NamedCommands::registerCommand("Reset Yaw", std::move(resetYaw)); // <- This example method returns CommandPtr
@@ -71,9 +71,9 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
       [this]
       {
         m_drive.Drive(
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.08) * AutoConstants::kMaxSpeed.value()},
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.08) * AutoConstants::kMaxSpeed.value()},
-            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.08) * AutoConstants::kMaxAngularSpeed.value()},
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.1) * AutoConstants::kMaxSpeed.value()},
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.1) * AutoConstants::kMaxSpeed.value()},
+            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.1) * AutoConstants::kMaxAngularSpeed.value()},
             true);
       },
       {&m_drive}));
@@ -102,7 +102,7 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetXButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));  
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftBumper(); }}
@@ -113,7 +113,7 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);}));
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftTriggerAxis(); }}
