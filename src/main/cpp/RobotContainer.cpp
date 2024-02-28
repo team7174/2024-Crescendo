@@ -102,8 +102,7 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetXButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
-                                   m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); }));  
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));  
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftBumper(); }}
@@ -114,8 +113,7 @@ void RobotContainer::ConfigureButtonBindings()
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this]
-                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
-                                   m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::amp);}));
+                                 { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);}));
 
   frc2::Trigger{[this]()
                 { return m_secondaryController.GetLeftTriggerAxis(); }}
