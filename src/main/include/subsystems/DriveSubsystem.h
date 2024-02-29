@@ -110,7 +110,7 @@ public:
     units::meter_t kWheelBase =
         0.5969_m; // Distance between centers of front and back wheels on robot
     units::meter_t kModuleRadius =
-        units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)));
+        units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)) / 2);
 
     frc::SwerveDriveKinematics<4> kDriveKinematics{
         frc::Translation2d{kWheelBase / 2, kTrackWidth / 2},
