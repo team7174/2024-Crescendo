@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <HardwareConfig.h>
 #include <frc/AnalogEncoder.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
@@ -14,6 +13,7 @@
 #include <ctre/phoenix6/signals/SpnEnums.hpp>
 
 #include "Constants.h"
+#include "HardwareConfig.h"
 
 class SwerveModule {
  public:

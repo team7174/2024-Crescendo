@@ -1,3 +1,6 @@
+#pragma once
+
+#include <ctre/phoenix6/TalonFX.hpp>
 #include <ctre/phoenix6/configs/Configs.hpp>
 #include <ctre/phoenix6/configs/Configurator.hpp>
 
