@@ -4,10 +4,9 @@
 
 #include "Constants.h"
 
-namespace AutoConstants
-{
+namespace AutoConstants {
 
-    const frc::TrapezoidProfile<units::radians>::Constraints
-        kThetaControllerConstraints{kMaxAngularSpeed, kMaxAngularAcceleration};
+const frc::TrapezoidProfile<units::radians>::Constraints
+    kThetaControllerConstraints{kMaxAngularSpeed, kMaxAngularAcceleration};
 
-} // namespace AutoConstants
+}  // namespace AutoConstants

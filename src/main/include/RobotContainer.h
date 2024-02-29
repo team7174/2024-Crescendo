@@ -6,18 +6,17 @@
 
 #include <frc/XboxController.h>
 #include <frc/smartdashboard/SendableChooser.h>
-
 #include <frc2/command/Commands.h>
 // #include <frc2/command/Command.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/RunCommand.h>
-
-#include "Constants.h"
-#include "subsystems/DriveSubsystem.h"
 #include <subsystems/ArmSubsystem.h>
 #include <subsystems/ClimbSubsystem.h>
 #include <subsystems/ShooterSubsystem.h>
 #include <subsystems/VisionSubsystem.h>
+
+#include "Constants.h"
+#include "subsystems/DriveSubsystem.h"
 // #include <subsystems/PDH.h>
 
 /**
@@ -27,9 +26,8 @@
  * scheduler calls).  Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-class RobotContainer
-{
-public:
+class RobotContainer {
+ public:
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
@@ -46,7 +44,7 @@ public:
   VisionSubsystem m_visionSubsystem;
   // PDH m_PDH;
 
-private:
+ private:
   // The driver's controller
   frc::XboxController m_driverController{OIConstants::kDriverControllerPort};
 

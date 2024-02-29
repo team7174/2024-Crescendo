@@ -1,28 +1,28 @@
 #include "subsystems/ArmSubsystem.h"
+
 #include <frc/smartdashboard/SmartDashboard.h>
 
 ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
-    : m_armMotorLeft(StormbreakerConstants::leftArmID),   // Replace with your TalonFX device ID
-      m_armMotorRight(StormbreakerConstants::rightArmID), // Replace with your TalonFX device ID
+    : m_armMotorLeft(StormbreakerConstants::leftArmID),    // Replace with your TalonFX device ID
+      m_armMotorRight(StormbreakerConstants::rightArmID),  // Replace with your TalonFX device ID
       m_armEncoder(StormbreakerConstants::armEncoderID),
       profiledController(
-          StormbreakerConstants::armkP, // Placeholder for proportional gain
-          StormbreakerConstants::armkI, // Placeholder for integral gain
-          StormbreakerConstants::armkD, // Placeholder for derivative gain
-          frc::TrapezoidProfile<units::degrees>::Constraints(ArmSubsystem::kMaxAngularSpeed, ArmSubsystem::kMaxAngularAcceleration))
-{
+          StormbreakerConstants::armkP,  // Placeholder for proportional gain
+          StormbreakerConstants::armkI,  // Placeholder for integral gain
+          StormbreakerConstants::armkD,  // Placeholder for derivative gain
+          frc::TrapezoidProfile<units::degrees>::Constraints(ArmSubsystem::kMaxAngularSpeed, ArmSubsystem::kMaxAngularAcceleration)) {
   m_driveSubsystem = passedDriveSubsystem;
 
   ctre::phoenix6::configs::TalonFXConfiguration ArmMotorConfig{};
 
   /*Arm Angle Motor Config*/
   auto &slot0ConfigsArm = ArmMotorConfig.Slot0;
-  slot0ConfigsArm.kS = 0.25; // Add 0.25 V output to overcome static friction
-  slot0ConfigsArm.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-  slot0ConfigsArm.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-  slot0ConfigsArm.kP = 1.2;  // An error of 1 rps results in 0.11 V output
-  slot0ConfigsArm.kI = 0;    // no output for integrated error
-  slot0ConfigsArm.kD = 0;    // No output for change in error
+  slot0ConfigsArm.kS = 0.25;  // Add 0.25 V output to overcome static friction
+  slot0ConfigsArm.kV = 0.15;  // A velocity target of 1 rps results in 0.12 V output
+  slot0ConfigsArm.kA = 0.01;  // An acceleration of 1 rps/s requires 0.01 V output
+  slot0ConfigsArm.kP = 1.2;   // An error of 1 rps results in 0.11 V output
+  slot0ConfigsArm.kI = 0;     // no output for integrated error
+  slot0ConfigsArm.kD = 0;     // No output for change in error
 
   auto &Armslot0ConfigsArmCurrLimit = ArmMotorConfig.CurrentLimits;
   Armslot0ConfigsArmCurrLimit.StatorCurrentLimit = 15;
@@ -49,18 +49,13 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   frc::SmartDashboard::PutNumber("Angle Offset", angleOffset);
 }
 
-void ArmSubsystem::Periodic()
-{
-  if (armSwitch.Get() && brakeMode == true)
-  {
+void ArmSubsystem::Periodic() {
+  if (armSwitch.Get() && brakeMode == true) {
     brakeModeOff();
-  }
-  else if (!armSwitch.Get() && brakeMode == false)
-  {
+  } else if (!armSwitch.Get() && brakeMode == false) {
     brakeModeOn();
   }
-  if (currArmState == ArmStates::autoAngle)
-  {
+  if (currArmState == ArmStates::autoAngle) {
     SetDesiredAngle(ArmStates::autoAngle);
   }
   double speed = std::clamp(profiledController.Calculate(units::degree_t(GetAbsArmAngle())), -1.0, 1.0);
@@ -71,47 +66,37 @@ void ArmSubsystem::Periodic()
   m_armMotorRight.Set(speed);
 }
 
-void ArmSubsystem::brakeModeOff()
-{
+void ArmSubsystem::brakeModeOff() {
   brakeMode = false;
   m_armMotorRight.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
   m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
 }
 
-void ArmSubsystem::brakeModeOn()
-{
+void ArmSubsystem::brakeModeOn() {
   brakeMode = true;
   m_armMotorRight.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
 }
 
-double ArmSubsystem::GetAbsArmAngle()
-{
+double ArmSubsystem::GetAbsArmAngle() {
   return abs((m_armEncoder.GetAbsolutePosition() - StormbreakerConstants::armEncoderOffset) * 360);
 }
 
-void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState)
-{
+void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState) {
   currArmState = DesiredArmState;
   // Update the setpoint of the PID controller
-  if (DesiredArmState == ArmStates::intake)
-  {
+  if (DesiredArmState == ArmStates::intake) {
     profiledController.SetGoal(0_deg);
-  }
-  else if (DesiredArmState == ArmStates::upright)
-  {
+  } else if (DesiredArmState == ArmStates::upright) {
     profiledController.SetGoal(100_deg);
-  }
-  else if (DesiredArmState == ArmStates::autoAngle)
-  {
+  } else if (DesiredArmState == ArmStates::autoAngle) {
     profiledController.SetGoal(units::degree_t(CalculateAngle()));
     // profiledController.SetGoal(units::degree_t(0));
   }
   profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 100.0)));
 }
 
-double ArmSubsystem::CalculateAngle()
-{
+double ArmSubsystem::CalculateAngle() {
   double distanceToSpeaker = m_driveSubsystem->getShootingValues().first - 0.2032;
   double speakerHeight = m_driveSubsystem->GetSpeakerCenter().Z().value() - 0.2032;
 
@@ -123,14 +108,12 @@ double ArmSubsystem::CalculateAngle()
   return shootingAngle;
 }
 
-bool ArmSubsystem::ReachedDesiredAngle()
-{
+bool ArmSubsystem::ReachedDesiredAngle() {
   frc::SmartDashboard::PutBoolean("At Desired Angle", profiledController.AtGoal());
   return profiledController.AtGoal();
 }
 
-void ArmSubsystem::Stop()
-{
+void ArmSubsystem::Stop() {
   m_armMotorLeft.StopMotor();
   m_armMotorRight.StopMotor();
 }

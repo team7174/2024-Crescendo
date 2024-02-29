@@ -1,11 +1,9 @@
 #include "subsystems/VisionSubsystem.h"
 
-VisionSubsystem::VisionSubsystem()
-{
+VisionSubsystem::VisionSubsystem() {
 }
 
-void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstimator<4> *m_odometry)
-{
+void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstimator<4> *m_odometry) {
   double xyStds;
   units::angle::radian_t degStds;
 
@@ -14,8 +12,7 @@ void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstima
   auto llBotPose = llBotPoseEntry.GetDoubleArray({});
 
   // weirdness
-  if (llBotPose.size() < 6)
-  {
+  if (llBotPose.size() < 6) {
     return;
   }
   frc::Pose2d visionBotPose = frc::Pose2d(
@@ -32,26 +29,22 @@ void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstima
   int tagCount = (int)llBotPose[7];
   double tagArea = llBotPose[10];
   // multiple targets detected
-  if (tagCount >= 2)
-  {
+  if (tagCount >= 2) {
     xyStds = 0.5;
     degStds = units::angle::radian_t(6_deg);
   }
   // 1 target with large area and close to estimated pose
-  else if (tagArea > 0.8 && poseDifference < 0.5_m)
-  {
+  else if (tagArea > 0.8 && poseDifference < 0.5_m) {
     xyStds = 1.0;
     degStds = units::angle::radian_t(12_deg);
   }
   // 1 target farther away and estimated pose is close
-  else if (tagArea > 0.1 && poseDifference < 0.3_m)
-  {
+  else if (tagArea > 0.1 && poseDifference < 0.3_m) {
     xyStds = 2.0;
     degStds = units::angle::radian_t(30_deg);
   }
   // conditions don't match to add a vision measurement
-  else
-  {
+  else {
     return;
   }
 
@@ -59,12 +52,10 @@ void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstima
   m_odometry->AddVisionMeasurement(visionBotPose, visionTime);
 }
 
-void VisionSubsystem::SetPoseLL3(frc::SwerveDrivePoseEstimator<4> *m_odometry)
-{
+void VisionSubsystem::SetPoseLL3(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
   SetPose("limelight-llthree", m_odometry);
 }
 
-void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4> *m_odometry)
-{
+void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
   SetPose("limelight-lltwo", m_odometry);
 }

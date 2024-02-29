@@ -4,34 +4,28 @@
 
 #include "Robot.h"
 
-#include <wpi/fs.h>
 #include <frc/Filesystem.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
+#include <wpi/fs.h>
 
-void Robot::RobotInit()
-{
+void Robot::RobotInit() {
   // Setup Auton Selector
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   deployDirectory = deployDirectory / "pathplanner/autos";
 
   auto firstOption = true;
   // Iterate over all files in the folder
-  for (const auto &entry : fs::directory_iterator(deployDirectory))
-  {
-    if (entry.path().extension() == ".auto")
-    {
+  for (const auto &entry : fs::directory_iterator(deployDirectory)) {
+    if (entry.path().extension() == ".auto") {
       // stem only returns name of file. filename is the filename with the ext.
       auto autoName = entry.path().stem().string();
       // // If the file has a ".auto" extension, create a command from it and add it to the possible auton paths
       // auto cmdPtr = pathplanner::PathPlannerAuto(autoName).ToPtr();
-      if (firstOption)
-      {
+      if (firstOption) {
         m_container.pathPlannerChooser.SetDefaultOption(autoName, autoName);
         firstOption = false;
-      }
-      else
-      {
+      } else {
         m_container.pathPlannerChooser.AddOption(autoName, autoName);
       }
     }
@@ -47,8 +41,7 @@ void Robot::RobotInit()
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic()
-{
+void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
 }
 
@@ -65,27 +58,23 @@ void Robot::DisabledPeriodic() {}
  * This autonomous runs the autonomous command selected by your {@link
  * RobotContainer} class.
  */
-void Robot::AutonomousInit()
-{
+void Robot::AutonomousInit() {
   // need to unwrap CommandPtr -> unique_ptr<Command>
   m_autonomousCommand = m_container.GetAutonomousCommand();
 
-  if (m_autonomousCommand)
-  {
+  if (m_autonomousCommand) {
     m_autonomousCommand->Schedule();
   }
 }
 
 void Robot::AutonomousPeriodic() {}
 
-void Robot::TeleopInit()
-{
+void Robot::TeleopInit() {
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
   // this line or comment it out.
-  if (m_autonomousCommand)
-  {
+  if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
 }
@@ -111,8 +100,7 @@ void Robot::SimulationInit() {}
 void Robot::SimulationPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
-int main()
-{
+int main() {
   return frc::StartRobot<Robot>();
 }
 #endif

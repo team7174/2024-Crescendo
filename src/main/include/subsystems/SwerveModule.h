@@ -4,69 +4,68 @@
 
 #pragma once
 
-#include <frc/smartdashboard/SmartDashboard.h>
+#include <HardwareConfig.h>
 #include <frc/AnalogEncoder.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
-#include <ctre/phoenix6/signals/SpnEnums.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
+#include <ctre/phoenix6/signals/SpnEnums.hpp>
 
-#include <HardwareConfig.h>
 #include "Constants.h"
 
-class SwerveModule
-{
-public:
-    SwerveModule(int driveMotorChannel, int turningMotorChannel,
-                 int turningEncoderPorts, double encoderOffset);
+class SwerveModule {
+ public:
+  SwerveModule(int driveMotorChannel, int turningMotorChannel,
+               int turningEncoderPorts, double encoderOffset);
 
-    frc::SwerveModuleState GetState();
+  frc::SwerveModuleState GetState();
 
-    frc::SwerveModulePosition GetPosition();
+  frc::SwerveModulePosition GetPosition();
 
-    double getTurnEncoderDistance();
+  double getTurnEncoderDistance();
 
-    double getDriveEncoderRate();
+  double getDriveEncoderRate();
 
-    double getDriveEncoderDistance();
+  double getDriveEncoderDistance();
 
-    void SetDesiredState(const frc::SwerveModuleState &state);
+  void SetDesiredState(const frc::SwerveModuleState &state);
 
-    void ResetEncoders();
+  void ResetEncoders();
 
-    units::angle::turn_t DegreesToFalcon(units::degree_t angle);
-    units::angle::degree_t FalconToDegrees(double turn);
+  units::angle::turn_t DegreesToFalcon(units::degree_t angle);
+  units::angle::degree_t FalconToDegrees(double turn);
 
-    HardwareConfig motorConfigs;
+  HardwareConfig motorConfigs;
 
-    ctre::phoenix6::controls::VelocityVoltage m_driveRequest = ctre::phoenix6::controls::VelocityVoltage{0_tps};
-    //    ctre::phoenix6::controls::MotionMagicVelocityVoltage m_driveRequest{0_tps};
-    ctre::phoenix6::controls::PositionVoltage m_turnRequest = ctre::phoenix6::controls::PositionVoltage{0_tr};
+  ctre::phoenix6::controls::VelocityVoltage m_driveRequest = ctre::phoenix6::controls::VelocityVoltage{0_tps};
+  //    ctre::phoenix6::controls::MotionMagicVelocityVoltage m_driveRequest{0_tps};
+  ctre::phoenix6::controls::PositionVoltage m_turnRequest = ctre::phoenix6::controls::PositionVoltage{0_tr};
 
-private:
-    // We have to use meters here instead of radians due to the fact that
-    // ProfiledPIDController's constraints only take in meters per second and
-    // meters per second squared.
+ private:
+  // We have to use meters here instead of radians due to the fact that
+  // ProfiledPIDController's constraints only take in meters per second and
+  // meters per second squared.
 
-    static constexpr auto kModuleMaxAngularVelocity =
-        units::radians_per_second_t{std::numbers::pi};
-    static constexpr auto kModuleMaxAngularAcceleration =
-        units::radians_per_second_squared_t{std::numbers::pi * 2.0};
+  static constexpr auto kModuleMaxAngularVelocity =
+      units::radians_per_second_t{std::numbers::pi};
+  static constexpr auto kModuleMaxAngularAcceleration =
+      units::radians_per_second_squared_t{std::numbers::pi * 2.0};
 
-    ctre::phoenix6::hardware::TalonFX m_driveMotor;
-    ctre::phoenix6::hardware::TalonFX m_turningMotor;
-    HardwareConfig m_Settings;
-    frc::AnalogEncoder m_turningEncoder;
+  ctre::phoenix6::hardware::TalonFX m_driveMotor;
+  ctre::phoenix6::hardware::TalonFX m_turningMotor;
+  HardwareConfig m_Settings;
+  frc::AnalogEncoder m_turningEncoder;
 
-    double absEnc;
+  double absEnc;
 
-    frc::PIDController m_drivePIDController{
-        ModuleConstants::kPModuleDriveController, 0, 0};
-    frc::PIDController steerPID{0.0075, 0, 0};
-    frc::ProfiledPIDController<units::radians> m_turningPIDController{
-        ModuleConstants::kPModuleTurningController,
-        0.0,
-        0.0,
-        {kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration}};
+  frc::PIDController m_drivePIDController{
+      ModuleConstants::kPModuleDriveController, 0, 0};
+  frc::PIDController steerPID{0.0075, 0, 0};
+  frc::ProfiledPIDController<units::radians> m_turningPIDController{
+      ModuleConstants::kPModuleTurningController,
+      0.0,
+      0.0,
+      {kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration}};
 };

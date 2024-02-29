@@ -1,19 +1,18 @@
 #pragma once
 
-#include <frc2/command/SubsystemBase.h>
-#include "rev/CANSparkFlex.h"
-#include "Constants.h"
+#include <frc/DigitalInput.h>
 #include <frc/XboxController.h>
 #include <frc/controller/PIDController.h>
-#include <frc/DigitalInput.h>
-#include <subsystems/ArmSubsystem.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/timer.h>
-#include <frc/XboxController.h>
+#include <frc2/command/SubsystemBase.h>
+#include <subsystems/ArmSubsystem.h>
 
-class ShooterSubsystem : public frc2::SubsystemBase
-{
-public:
+#include "Constants.h"
+#include "rev/CANSparkFlex.h"
+
+class ShooterSubsystem : public frc2::SubsystemBase {
+ public:
   ShooterSubsystem(ArmSubsystem *, DriveSubsystem *, frc::XboxController *, frc::XboxController *);
   ArmSubsystem *m_armSubsystem;
   DriveSubsystem *m_drive;
@@ -25,8 +24,7 @@ public:
    */
   void Periodic() override;
   void Stop();
-  enum intakeStates
-  {
+  enum intakeStates {
     shoot,
     slow,
     stop,
@@ -35,8 +33,7 @@ public:
     amp
   };
 
-  enum shooterStates
-  {
+  enum shooterStates {
     shooterOn,
     shooterStop,
     shooterMid,
@@ -56,7 +53,7 @@ public:
   intakeStates currIntakeState;
   shooterStates currShooterState;
 
-private:
+ private:
   rev::CANSparkFlex m_leftShooterMotor;
   rev::CANSparkFlex m_rightShooterMotor;
   rev::CANSparkFlex m_intakeMotor;

@@ -10,9 +10,8 @@
 
 #include "RobotContainer.h"
 
-class Robot : public frc::TimedRobot
-{
-public:
+class Robot : public frc::TimedRobot {
+ public:
   void RobotInit() override;
   void RobotPeriodic() override;
   void DisabledInit() override;
@@ -25,7 +24,7 @@ public:
   void SimulationInit() override;
   void SimulationPeriodic() override;
 
-private:
+ private:
   // Have it null by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.
   // Can't have CommandPtr as a class member? so instead use unique_ptr and cast to it later
