@@ -142,4 +142,6 @@ class DriveSubsystem : public frc2::SubsystemBase {
   // 4 defines the number of modules
   frc::SwerveDrivePoseEstimator<4> m_odometry;
   frc::Translation2d ignorePose{0_m, 0_m};
+
+  double aimThreshold = 2.5;
 };

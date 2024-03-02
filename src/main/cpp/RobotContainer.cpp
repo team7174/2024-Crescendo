@@ -78,14 +78,14 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return !m_driverController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
 
-  frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
+  frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject);
                                    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
 
-  frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}
+  frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}

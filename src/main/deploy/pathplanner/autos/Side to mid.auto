@@ -14,12 +14,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Reset Yaw"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Aim Drive"
           }
         },
@@ -56,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Note"
+            "pathName": "Side To Note"
           }
         },
         {
@@ -98,7 +92,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Go Middle"
+            "pathName": "Side to mid"
           }
         },
         {

@@ -58,7 +58,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_intakeMotor.BurnFlash();
 
   frc::SmartDashboard::PutNumber("Shooter Velocity Threshold", 150.0);
-  frc::SmartDashboard::PutNumber("Shooter Velocity", 5500.0);
+  frc::SmartDashboard::PutNumber("Shooter Velocity", 6000.0);
 }
 
 void ShooterSubsystem::Periodic() {
@@ -100,6 +100,7 @@ void ShooterSubsystem::Periodic() {
   if (!NoteInBoth() && currIntakeState == intakeStates::eject) {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
+    m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
   }
 
   runVelocity(shooterSpeed);
@@ -135,13 +136,12 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState) {
   currShooterState = shooterState;
   switch (shooterState) {
     case shooterStates::shooterOn:
-      shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 5500.0);
-      ;
+      shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6000.0);
       break;
 
     case shooterStates::shooterStop:
       if (frc::DriverStation::IsAutonomous()) {
-        shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 5500.0);
+        shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6000.0);
       } else {
         shooterSpeed = 2000;
       }

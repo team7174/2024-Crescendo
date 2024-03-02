@@ -57,7 +57,7 @@ constexpr int armEncoderID = 8;
 constexpr int leftArmID = 50;
 constexpr int rightArmID = 51;
 constexpr double armEncoderOffset = 0.5901480147537;
-constexpr double armkP = 0.025;
+constexpr double armkP = 0.02;
 constexpr double armkI = 0.0;
 constexpr double armkD = 0.0;
 constexpr double armGearRatio = 433.3333333333;
@@ -93,8 +93,8 @@ constexpr double shooterBeamBreakID = 2;
 namespace AutoConstants {
 constexpr auto kMaxSpeed = 5.5_mps;
 // constexpr auto kMaxAcceleration = 5_mps_sq;
-constexpr auto kMaxAngularSpeed = 18_rad_per_s;
-constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
+constexpr auto kMaxAngularSpeed = 10_rad_per_s;
+constexpr auto kMaxAngularAcceleration = 15_rad_per_s_sq;
 
 constexpr double kPXController = 8.0;
 constexpr double kPYController = 1.15;
