@@ -13,9 +13,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
       leftShooterPID(m_leftShooterMotor.GetPIDController()),
       rightShooterPID(m_rightShooterMotor.GetPIDController()),
       intakeEnc(m_intakeMotor.GetEncoder()),
-      intakePID(m_intakeMotor.GetPIDController()),
-      intakeBeamBreak(ShooterConstants::intakeBeamBreakID),
-      shooterBeamBreak(ShooterConstants::shooterBeamBreakID) {
+      intakePID(m_intakeMotor.GetPIDController()) {
   m_armSubsystem = passedArmSubsystem;
   m_drive = passedDriveSubsystem;
   m_secondaryController = passedSecondaryController;
@@ -58,7 +56,10 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_intakeMotor.BurnFlash();
 
   frc::SmartDashboard::PutNumber("Shooter Velocity Threshold", 150.0);
-  frc::SmartDashboard::PutNumber("Shooter Velocity", 6000.0);
+  frc::SmartDashboard::PutNumber("Shooter Velocity", 6500.0);
+  shooterIdleChooser.SetDefaultOption("On", "On");
+  shooterIdleChooser.AddOption("Off", "Off");
+  frc::SmartDashboard::PutData("Ignore Beam Break", &shooterIdleChooser);
 }
 
 void ShooterSubsystem::Periodic() {
@@ -67,6 +68,14 @@ void ShooterSubsystem::Periodic() {
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   NoteInIntake();
   NoteInShooter();
+
+  // if (currIntakeState == intakeStates::intake) {
+  //   if (shooterIdleChooser.GetSelected() == "On") {
+  //     shooterSpeed = 2000;
+  //   } else {
+  //     shooterSpeed = 0;
+  //   }
+  // }
 
   if (currIntakeState == intakeStates::intake && (NoteInIntake() || NoteInShooter())) {
     intakeTimeStamp = frc::Timer::GetFPGATimestamp();
@@ -97,7 +106,7 @@ void ShooterSubsystem::Periodic() {
     m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
   }
 
-  if (!NoteInBoth() && currIntakeState == intakeStates::eject) {
+  if (!NoteInShooter() && currIntakeState == intakeStates::eject) {
     SetIntakeState(intakeStates::stop);
     SetShooterState(shooterStates::shooterStop);
     m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
@@ -112,7 +121,11 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState) {
   currIntakeState = intakeState;
   switch (intakeState) {
     case intakeStates::intake:
-      intakeSpeed = 1;
+      if (shooterIdleChooser.GetSelected() == "On") {
+        intakeSpeed = 1;
+      } else {
+        intakeSpeed = 0.3;
+      }
       break;
 
     case intakeStates::shoot:
@@ -136,19 +149,19 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState) {
   currShooterState = shooterState;
   switch (shooterState) {
     case shooterStates::shooterOn:
-      shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6000.0);
+      shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6500.0);
       break;
 
     case shooterStates::shooterStop:
       if (frc::DriverStation::IsAutonomous()) {
-        shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6000.0);
+        shooterSpeed = frc::SmartDashboard::GetNumber("Shooter Velocity", 6500.0);
       } else {
         shooterSpeed = 2000;
       }
       break;
 
     case shooterStates::shooterEject:
-      shooterSpeed = 4000;
+      shooterSpeed = 1000;
       break;
 
     case shooterStates::shooterMid:

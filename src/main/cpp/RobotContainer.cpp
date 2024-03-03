@@ -34,11 +34,11 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   auto shootSpeaker = frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
-  auto waitShoot = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); });
+  auto waitShoot = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); }).WithTimeout(5_s);
 
-  auto waitIntake = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); });
+  auto waitIntake = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); }).WithTimeout(5_s);
 
-  auto waitAngle = frc2::cmd::WaitUntil([this] { return (m_armSubsystem.ReachedDesiredAngle()); });
+  auto waitAngle = frc2::cmd::WaitUntil([this] { return (m_armSubsystem.ReachedDesiredAngle()); }).WithTimeout(2_s);
 
   // TODO: Test this
   pathplanner::NamedCommands::registerCommand("Reset Yaw", std::move(resetYaw));  // <- This example method returns CommandPtr
@@ -57,9 +57,9 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   m_drive.SetDefaultCommand(frc2::RunCommand(
       [this] {
         m_drive.Drive(
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.1) * AutoConstants::kMaxSpeed.value()},
-            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.1) * AutoConstants::kMaxSpeed.value()},
-            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.1) * AutoConstants::kMaxAngularSpeed.value()},
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.1) * DriveConstants::kMaxSpeed.value()},
+            units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.1) * DriveConstants::kMaxSpeed.value()},
+            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.1) * 0.5 * AutoConstants::kMaxAngularSpeed.value()},
             true);
       },
       {&m_drive}));
@@ -82,18 +82,18 @@ void RobotContainer::ConfigureButtonBindings() {
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject);
-                                   m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
+      .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
+                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
-                                   m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
+                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
 
   // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
   frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}

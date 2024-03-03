@@ -30,7 +30,6 @@ class ArmSubsystem : public frc2::SubsystemBase {
   void SetDesiredAngle(ArmStates DesiredArmState);
   void Stop();
   double GetAbsArmAngle();
-  void UpdateDesiredAngleFromJoystick();
   double CalculateAngle();
   bool ReachedDesiredAngle();
   void brakeModeOff();

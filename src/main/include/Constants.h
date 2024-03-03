@@ -62,8 +62,8 @@ constexpr double armkI = 0.0;
 constexpr double armkD = 0.0;
 constexpr double armGearRatio = 433.3333333333;
 constexpr double armLength = 0.70377;
-constexpr auto kArmAngleSpeed = 18_deg_per_s;
-constexpr auto kArmAngleAcceleration = 15_deg_per_s_sq;
+constexpr auto kArmAngleSpeed = 15_deg_per_s;
+constexpr auto kArmAngleAcceleration = 10_deg_per_s_sq;
 }  // namespace StormbreakerConstants
 
 namespace ClimberConstants {
@@ -86,15 +86,15 @@ constexpr double intakekP = 0.0005;
 constexpr double intakekI = 0.0000003;
 constexpr double intakekD = 0.0;
 constexpr double intakekFF = 0.0001;
-constexpr double intakeBeamBreakID = 1;
-constexpr double shooterBeamBreakID = 2;
+constexpr int intakeBeamBreakID = 1;
+constexpr int shooterBeamBreakID = 2;
 }  // namespace ShooterConstants
 
 namespace AutoConstants {
 constexpr auto kMaxSpeed = 5.5_mps;
 // constexpr auto kMaxAcceleration = 5_mps_sq;
-constexpr auto kMaxAngularSpeed = 10_rad_per_s;
-constexpr auto kMaxAngularAcceleration = 15_rad_per_s_sq;
+constexpr auto kMaxAngularSpeed = 15_rad_per_s;
+constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
 
 constexpr double kPXController = 8.0;
 constexpr double kPYController = 1.15;
@@ -104,6 +104,21 @@ extern const frc::TrapezoidProfile<units::radians>::Constraints
     kThetaControllerConstraints;
 
 }  // namespace AutoConstants
+
+namespace DriveConstants {
+constexpr auto kMaxSpeed = 4.5_mps;
+// constexpr auto kMaxAcceleration = 5_mps_sq;
+constexpr auto kMaxAngularSpeed = 15_rad_per_s;
+constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
+
+constexpr double kPXController = 8.0;
+constexpr double kPYController = 1.15;
+constexpr double kPThetaController = 4.0;
+
+extern const frc::TrapezoidProfile<units::radians>::Constraints
+    kThetaControllerConstraints;
+
+}  // namespace DriveConstants
 
 namespace OIConstants {
 constexpr int kDriverControllerPort = 0;

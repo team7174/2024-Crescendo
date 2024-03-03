@@ -50,11 +50,11 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
 }
 
 void ArmSubsystem::Periodic() {
-  if (armSwitch.Get() && brakeMode == true) {
-    brakeModeOff();
-  } else if (!armSwitch.Get() && brakeMode == false) {
-    brakeModeOn();
-  }
+  // if (armSwitch.Get() && brakeMode == true) {
+  //   brakeModeOff();
+  // } else if (!armSwitch.Get() && brakeMode == false) {
+  //   brakeModeOn();
+  // }
   if (currArmState == ArmStates::autoAngle) {
     SetDesiredAngle(ArmStates::autoAngle);
   }

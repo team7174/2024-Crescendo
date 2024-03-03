@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 5.55
+      "x": 1.5,
+      "y": 7.0
     },
     "rotation": 0
   },
@@ -62,12 +62,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot Speaker"
           }
         },
@@ -105,12 +99,6 @@
           "type": "named",
           "data": {
             "name": "Aim Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Intake"
           }
         },
         {

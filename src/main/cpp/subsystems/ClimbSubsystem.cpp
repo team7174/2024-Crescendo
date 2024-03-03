@@ -20,7 +20,7 @@ void ClimbSubsystem::Periodic() {
 void ClimbSubsystem::SetClimbState(ClimbStates DesiredClimbState) {
   switch (DesiredClimbState) {
     case ClimbStates::extend:
-      m_climbPIDController.SetSetpoint(528.0);
+      m_climbPIDController.SetSetpoint(400.8);
       break;
 
     case ClimbStates::hold:
@@ -32,7 +32,7 @@ void ClimbSubsystem::SetClimbState(ClimbStates DesiredClimbState) {
       break;
   }
 
-  m_climbPIDController.SetSetpoint(std::clamp(m_climbPIDController.GetSetpoint(), 0.0, 825.0));
+  m_climbPIDController.SetSetpoint(std::clamp(m_climbPIDController.GetSetpoint(), 0.0, 400.8));
 }
 
 void ClimbSubsystem::Stop() {

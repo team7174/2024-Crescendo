@@ -4,6 +4,7 @@
 #include <frc/XboxController.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/smartdashboard/SendableChooser.h>
 #include <frc/timer.h>
 #include <frc2/command/SubsystemBase.h>
 #include <subsystems/ArmSubsystem.h>
@@ -73,6 +74,8 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   units::time::second_t shooterTimeStamp;
   units::time::second_t intakeTimeStamp;
 
-  frc::DigitalInput intakeBeamBreak;
-  frc::DigitalInput shooterBeamBreak;
+  frc::DigitalInput intakeBeamBreak{ShooterConstants::intakeBeamBreakID};
+  frc::DigitalInput shooterBeamBreak{ShooterConstants::shooterBeamBreakID};
+
+  frc::SendableChooser<std::string> shooterIdleChooser;
 };
