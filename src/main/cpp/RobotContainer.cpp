@@ -18,7 +18,7 @@
 
 using namespace DriveConstants;
 
-RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem, &m_drive, &m_secondaryController, &m_driverController) {
+RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&m_drive), m_shooterSubsystem(&m_armSubsystem, &m_drive, &m_visionSubsystem, &m_secondaryController, &m_driverController) {
   // Initialize all of your commands and subsystems here
 
   // Register Named Commands.
@@ -59,7 +59,7 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
         m_drive.Drive(
             units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftY(), 0.1) * DriveConstants::kMaxSpeed.value()},
             units::meters_per_second_t{frc::ApplyDeadband(-m_driverController.GetLeftX(), 0.1) * DriveConstants::kMaxSpeed.value()},
-            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.1) * 0.5 * AutoConstants::kMaxAngularSpeed.value()},
+            units::radians_per_second_t{frc::ApplyDeadband(-m_driverController.GetRightX(), 0.1) * DriveConstants::kMaxAngularSpeed.value()},
             true);
       },
       {&m_drive}));
@@ -89,7 +89,8 @@ void RobotContainer::ConfigureButtonBindings() {
                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); }));
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);

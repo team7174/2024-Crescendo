@@ -60,6 +60,7 @@ void ArmSubsystem::Periodic() {
   }
   double speed = std::clamp(profiledController.Calculate(units::degree_t(GetAbsArmAngle())), -1.0, 1.0);
   frc::SmartDashboard::PutNumber("Through Bore Angle", GetAbsArmAngle());
+  frc::SmartDashboard::PutNumber("Raw Angle", m_armEncoder.GetAbsolutePosition());
   frc::SmartDashboard::PutNumber("Desired Angle", profiledController.GetGoal().position());
   frc::SmartDashboard::PutNumber("Calculated Angle", CalculateAngle());
   m_armMotorLeft.Set(speed);
@@ -88,21 +89,26 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState) {
   if (DesiredArmState == ArmStates::intake) {
     profiledController.SetGoal(0_deg);
   } else if (DesiredArmState == ArmStates::upright) {
-    profiledController.SetGoal(100_deg);
+    profiledController.SetGoal(130_deg);
   } else if (DesiredArmState == ArmStates::autoAngle) {
     profiledController.SetGoal(units::degree_t(CalculateAngle()));
     // profiledController.SetGoal(units::degree_t(0));
   }
-  profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 100.0)));
+  profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 130.0)));
 }
 
 double ArmSubsystem::CalculateAngle() {
-  double distanceToSpeaker = m_driveSubsystem->getShootingValues().first - 0.2032;
-  double speakerHeight = m_driveSubsystem->GetSpeakerCenter().Z().value() - 0.2032;
+  double distanceToSpeaker = m_driveSubsystem->getShootingValues().first - StormbreakerConstants::pivotBack;
+  double speakerHeight = m_driveSubsystem->GetSpeakerCenter().Z().value() - StormbreakerConstants::pivotHeight;
 
-  double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * StormbreakerConstants::armLength) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
+  // double shootingAngle = atan(distanceToSpeaker / speakerHeight) + asin((sin(65 * M_PI / 180) * StormbreakerConstants::armLength) / (sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2)))) - (25 * M_PI / 180);
+  // shootingAngle = fmod(shootingAngle * (180 / M_PI), 360.0);
 
-  shootingAngle = fmod(shootingAngle * (180 / M_PI), 360.0);
+  double pivotToSpeaker = sqrt(pow(distanceToSpeaker, 2) + pow(speakerHeight, 2));
+  double pivotToSpeakerAngle = asin(distanceToSpeaker / pivotToSpeaker) * (180 / M_PI);
+  double shooterToSpeakerAngle = (asin((sin(StormbreakerConstants::shooterToArmAngle * M_PI / 180) * StormbreakerConstants::armLength) / pivotToSpeaker)) * (180 / M_PI);
+  double shootingAngle = 180 - (360 - (90 + pivotToSpeakerAngle + shooterToSpeakerAngle + StormbreakerConstants::shooterToArmAngle)) + StormbreakerConstants::armToRobotAngle;
+
   shootingAngle = shootingAngle - frc::SmartDashboard::GetNumber("Angle Offset", angleOffset);
 
   return shootingAngle;

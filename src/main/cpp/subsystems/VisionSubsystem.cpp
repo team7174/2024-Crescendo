@@ -59,3 +59,16 @@ void VisionSubsystem::SetPoseLL3(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
 void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
   SetPose("limelight-lltwo", m_odometry);
 }
+
+void VisionSubsystem::BlinkLEDs(bool blink) {
+  std::shared_ptr<nt::NetworkTable> ll2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
+  std::shared_ptr<nt::NetworkTable> ll3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
+
+  if (blink) {
+    ll2->PutNumber("ledMode", 2);
+    ll3->PutNumber("ledMode", 2);
+  } else {
+    ll2->PutNumber("ledMode", 1);
+    ll3->PutNumber("ledMode", 1);
+  }
+}

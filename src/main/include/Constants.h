@@ -56,12 +56,17 @@ namespace StormbreakerConstants {
 constexpr int armEncoderID = 8;
 constexpr int leftArmID = 50;
 constexpr int rightArmID = 51;
-constexpr double armEncoderOffset = 0.5901480147537;
+constexpr double armEncoderOffset = 0.811259520281488;
 constexpr double armkP = 0.02;
 constexpr double armkI = 0.0;
 constexpr double armkD = 0.0;
 constexpr double armGearRatio = 433.3333333333;
-constexpr double armLength = 0.70377;
+constexpr double armLength = 0.42957105644418;
+constexpr double shooterToArmAngle = 40.4869581224;
+constexpr double shooterDefaultAngle = 63.9978850202;
+constexpr double armToRobotAngle = 23.5133773239;
+constexpr double pivotHeight = 0.4826;
+constexpr double pivotBack = 0.2794;
 constexpr auto kArmAngleSpeed = 15_deg_per_s;
 constexpr auto kArmAngleAcceleration = 10_deg_per_s_sq;
 }  // namespace StormbreakerConstants
@@ -107,17 +112,8 @@ extern const frc::TrapezoidProfile<units::radians>::Constraints
 
 namespace DriveConstants {
 constexpr auto kMaxSpeed = 4.5_mps;
-// constexpr auto kMaxAcceleration = 5_mps_sq;
-constexpr auto kMaxAngularSpeed = 15_rad_per_s;
-constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
-
-constexpr double kPXController = 8.0;
-constexpr double kPYController = 1.15;
-constexpr double kPThetaController = 4.0;
-
-extern const frc::TrapezoidProfile<units::radians>::Constraints
-    kThetaControllerConstraints;
-
+constexpr auto kMaxAngularSpeed = 6_rad_per_s;
+constexpr auto kMaxAngularAcceleration = 5_rad_per_s_sq;
 }  // namespace DriveConstants
 
 namespace OIConstants {

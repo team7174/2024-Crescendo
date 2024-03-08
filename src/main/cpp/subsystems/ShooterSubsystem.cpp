@@ -4,7 +4,7 @@
 
 #include "rev/CANSparkFlex.h"
 
-ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsystem *passedDriveSubsystem, frc::XboxController *passedSecondaryController, frc::XboxController *passedDriveController)
+ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsystem *passedDriveSubsystem, VisionSubsystem *passedVisionSubsystem, frc::XboxController *passedSecondaryController, frc::XboxController *passedDriveController)
     : m_leftShooterMotor(ShooterConstants::leftShooterID, rev::CANSparkFlex::MotorType::kBrushless),    // Replace with your TalonFX device ID
       m_rightShooterMotor(ShooterConstants::rightShooterID, rev::CANSparkFlex::MotorType::kBrushless),  // Replace with your TalonFX device ID
       m_intakeMotor(ShooterConstants::intakeID, rev::CANSparkFlex::MotorType::kBrushless),              // Replace with your TalonFX device ID
@@ -18,6 +18,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_drive = passedDriveSubsystem;
   m_secondaryController = passedSecondaryController;
   m_driveController = passedDriveController;
+  m_visionSubsystem = passedVisionSubsystem;
 
   m_leftShooterMotor.RestoreFactoryDefaults();
   m_rightShooterMotor.RestoreFactoryDefaults();
@@ -177,9 +178,11 @@ void ShooterSubsystem::rumbleController() {
   if ((frc::Timer::GetFPGATimestamp() - intakeTimeStamp) < 1_s) {
     m_secondaryController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
     m_driveController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+    m_visionSubsystem->BlinkLEDs(true);
   } else {
     m_secondaryController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
     m_driveController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
+    m_visionSubsystem->BlinkLEDs(false);
   }
 }
 

@@ -42,7 +42,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           1.2,  // Placeholder for proportional gain
           0.0,  // Placeholder for integral gain
           0.0,  // Placeholder for derivative gain
-          frc::TrapezoidProfile<units::radian>::Constraints(AutoConstants::kMaxAngularSpeed, AutoConstants::kMaxAngularAcceleration)),
+          frc::TrapezoidProfile<units::radian>::Constraints(DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration)),
 
       m_odometry{kDriveKinematics,
                  GetHeading(),

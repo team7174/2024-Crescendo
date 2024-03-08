@@ -4,6 +4,7 @@
 
 #include "Robot.h"
 
+#include <cameraserver/CameraServer.h>
 #include <frc/Filesystem.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
@@ -13,6 +14,7 @@ void Robot::RobotInit() {
   // Setup Auton Selector
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   deployDirectory = deployDirectory / "pathplanner/autos";
+  // frc::CameraServer::StartAutomaticCapture();
 
   auto firstOption = true;
   // Iterate over all files in the folder
