@@ -39,7 +39,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
                   kRearRightEncoderOffset},
 
       profiledAimController(
-          1.2,  // Placeholder for proportional gain
+          4.0,  // Placeholder for proportional gain
           0.0,  // Placeholder for integral gain
           0.0,  // Placeholder for derivative gain
           frc::TrapezoidProfile<units::radian>::Constraints(DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration)),
@@ -109,7 +109,8 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   }
 
   if (m_desiredDriveState == DriveStates::aimDrive) {
-    rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.03));
+    rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
+    // rot = units::radians_per_second_t(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(

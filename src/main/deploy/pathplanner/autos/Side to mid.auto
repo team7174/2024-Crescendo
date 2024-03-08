@@ -126,9 +126,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Wait Intake"
+            "pathName": "Last Path"
           }
         }
       ]
