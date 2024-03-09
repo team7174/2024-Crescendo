@@ -101,14 +101,14 @@ void ShooterSubsystem::Periodic() {
     SetIntakeState(intakeStates::shoot);
   }
 
-  if (currShooterState == shooterStates::shooterOn && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - shooterTimeStamp) > 0.5_s) {
-    SetIntakeState(intakeStates::stop);
+  if (currShooterState == shooterStates::shooterOn && currIntakeState != intakeStates::stop && currIntakeState == intakeStates::shoot && (frc::Timer::GetFPGATimestamp() - shooterTimeStamp) > 0.5_s) {
+    SetIntakeState(intakeStates::intake);
     SetShooterState(shooterStates::shooterStop);
     m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
   }
 
-  if (!NoteInShooter() && currIntakeState == intakeStates::eject) {
-    SetIntakeState(intakeStates::stop);
+  if (!NoteInShooter() && currIntakeState == intakeStates::eject && currIntakeState != intakeStates::stop) {
+    SetIntakeState(intakeStates::intake);
     SetShooterState(shooterStates::shooterStop);
     m_armSubsystem->SetDesiredAngle(ArmSubsystem::ArmStates::intake);
   }

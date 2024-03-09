@@ -98,7 +98,8 @@ void RobotContainer::ConfigureButtonBindings() {
 
   // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
   frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); }));
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop);
+                                          m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetYButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::extend); }));
