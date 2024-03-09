@@ -62,12 +62,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Wait Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot Speaker"
           }
         },
@@ -99,12 +93,6 @@
           "type": "named",
           "data": {
             "name": "Aim Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Intake"
           }
         },
         {
