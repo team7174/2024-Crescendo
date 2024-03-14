@@ -56,7 +56,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_rightShooterMotor.BurnFlash();
   m_intakeMotor.BurnFlash();
 
-  frc::SmartDashboard::PutNumber("Shooter Velocity Threshold", 150.0);
+  frc::SmartDashboard::PutNumber("Shooter Velocity Threshold", 500.0);
   frc::SmartDashboard::PutNumber("Shooter Velocity", 6500.0);
   shooterIdleChooser.SetDefaultOption("On", "On");
   shooterIdleChooser.AddOption("Off", "Off");
@@ -201,7 +201,7 @@ bool ShooterSubsystem::NoteInBoth() {
 }
 
 bool ShooterSubsystem::ShooterAtSpeed() {
-  double shooterThreshold = shooterSpeed - frc::SmartDashboard::GetNumber("Shooter Velocity Threshold", 150.0);
+  double shooterThreshold = shooterSpeed - frc::SmartDashboard::GetNumber("Shooter Velocity Threshold", 500.0);
   return (leftShooterEnc.GetVelocity() > shooterThreshold && rightShooterEnc.GetVelocity() > shooterThreshold);
 }
 
