@@ -7,7 +7,7 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
       m_armMotorRight(StormbreakerConstants::rightArmID),  // Replace with your TalonFX device ID
       m_armEncoder(StormbreakerConstants::armEncoderID),
       profiledController(
-          StormbreakerConstants::armkP,  // Placeholder for proportional gain
+          0.03,                          // Placeholder for proportional gain
           StormbreakerConstants::armkI,  // Placeholder for integral gain
           StormbreakerConstants::armkD,  // Placeholder for derivative gain
           frc::TrapezoidProfile<units::degrees>::Constraints(ArmSubsystem::kMaxAngularSpeed, ArmSubsystem::kMaxAngularAcceleration)) {

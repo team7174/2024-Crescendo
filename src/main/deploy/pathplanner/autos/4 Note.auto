@@ -42,15 +42,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Wait Angle"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Middle Note"
+            "pathName": "Initial To Stage Note"
           }
         },
         {
@@ -86,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Mid to Stage"
+            "pathName": "Stage To Mid Note"
           }
         },
         {
@@ -122,13 +116,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Stage to Mid"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage Shoot"
+            "pathName": "Middle to Left"
           }
         },
         {
@@ -159,6 +147,12 @@
           "type": "named",
           "data": {
             "name": "Intake Drop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Last Path"
           }
         }
       ]
