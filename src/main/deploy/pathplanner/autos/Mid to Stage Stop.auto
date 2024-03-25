@@ -50,55 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Initial To Stage Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Speaker"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Regular Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Drop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage to Mid"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage Shoot"
+            "pathName": "Middle Note"
           }
         },
         {
@@ -134,7 +86,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Stage End"
+            "pathName": "Mid to Stage"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
           }
         }
       ]

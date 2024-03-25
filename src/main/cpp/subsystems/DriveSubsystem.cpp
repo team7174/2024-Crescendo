@@ -66,7 +66,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           pathplanner::PIDConstants(AutoConstants::kPThetaController, 0.0, 0.0),  // Rotation PID constants
           AutoConstants::kMaxSpeed,                                               // Max module speed, in m/s
           this->kModuleRadius,                                                    // Drive base radius in meters. Distance from robot center to furthest module.
-          pathplanner::ReplanningConfig()                                         // Default path replanning config. See the API for the options here
+          pathplanner::ReplanningConfig(true, true, 1.0_m, 0.25_m)                // Default path replanning config. See the API for the options here
           ),
       []() {
         auto ally = frc::DriverStation::GetAlliance();
@@ -88,7 +88,7 @@ void DriveSubsystem::Periodic() {
 
   m_visionSubsystem->SetPoseLL3(&m_odometry);
   // m_visionSubsystem->SetPoseLL2(&m_odometry);
-  if (m_desiredDriveState == aimDrive) {
+  if (m_desiredDriveState == aimDrive && frc::DriverStation::IsAutonomous()) {
     Drive(units::meters_per_second_t(0), units::meters_per_second_t(0), units::radians_per_second_t(0), true);
   }
   m_field.SetRobotPose(GetPose());
@@ -110,7 +110,13 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
 
   if (m_desiredDriveState == DriveStates::aimDrive) {
     rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
-    // rot = units::radians_per_second_t(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()));
+  }
+
+  if (m_desiredDriveState == DriveStates::noteDrive) {
+    fieldRelative = false;
+    auto notePose = m_visionSubsystem->GetNoteLocation();
+    ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(notePID.Calculate(double(notePose.X()), 0.0), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+    xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(notePID.Calculate(double(notePose.Y()), 0.0), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(

@@ -22,6 +22,7 @@ class VisionSubsystem : public frc2::SubsystemBase {
   void SetPoseLL3(frc::SwerveDrivePoseEstimator<4>*);
   void SetPoseLL2(frc::SwerveDrivePoseEstimator<4>*);
   void BlinkLEDs(bool blink);
+  frc::Pose2d GetNoteLocation();
 
  private:
   std::shared_ptr<nt::NetworkTable> limelight2;

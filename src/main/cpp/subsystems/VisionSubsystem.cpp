@@ -60,6 +60,13 @@ void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
   SetPose("limelight-lltwo", m_odometry);
 }
 
+frc::Pose2d VisionSubsystem::GetNoteLocation() {
+  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
+  auto noteX = units::meter_t(ll->GetNumber("tx", 0.0));
+  auto noteY = units::meter_t(ll->GetNumber("ty", 0.0));
+  return frc::Pose2d(noteX, noteY, 0_deg);
+}
+
 void VisionSubsystem::BlinkLEDs(bool blink) {
   std::shared_ptr<nt::NetworkTable> ll2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
   std::shared_ptr<nt::NetworkTable> ll3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");

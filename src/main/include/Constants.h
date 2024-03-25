@@ -111,7 +111,7 @@ extern const frc::TrapezoidProfile<units::radians>::Constraints
 }  // namespace AutoConstants
 
 namespace DriveConstants {
-constexpr auto kMaxSpeed = 5.5_mps;
+constexpr auto kMaxSpeed = 5.0_mps;
 constexpr auto kMaxAngularSpeed = 6_rad_per_s;
 constexpr auto kMaxAngularAcceleration = 5_rad_per_s_sq;
 }  // namespace DriveConstants

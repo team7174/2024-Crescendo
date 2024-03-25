@@ -34,9 +34,11 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   auto shootSpeaker = frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
-  auto waitShoot = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn); }).WithTimeout(5_s);
+  auto waitShoot = frc2::cmd::Sequence(
+      frc2::cmd::Wait(1_s),
+      frc2::cmd::WaitUntil([this] { return ((m_shooterSubsystem.currShooterState != ShooterSubsystem::shooterStates::shooterOn) || (!m_shooterSubsystem.NoteInShooter() && !m_shooterSubsystem.NoteInIntake())); }).WithTimeout(2_s));
 
-  auto waitIntake = frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.currIntakeState != ShooterSubsystem::intakeStates::intake); }).WithTimeout(5_s);
+  // auto waitIntake = frc2::cmd::Wait(1_s).AndThen(std::move(waitShoot));
 
   auto waitAngle = frc2::cmd::WaitUntil([this] { return (m_armSubsystem.ReachedDesiredAngle()); }).WithTimeout(2_s);
 
@@ -46,7 +48,7 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   pathplanner::NamedCommands::registerCommand("Aim Drive", std::move(aimDrive));
   pathplanner::NamedCommands::registerCommand("Shoot Speaker", std::move(shootSpeaker));
   pathplanner::NamedCommands::registerCommand("Wait Shoot", std::move(waitShoot));
-  pathplanner::NamedCommands::registerCommand("Wait Intake", std::move(waitIntake));
+  // pathplanner::NamedCommands::registerCommand("Wait Intake", std::move(waitIntake));
   pathplanner::NamedCommands::registerCommand("Wait Angle", std::move(waitAngle));
   pathplanner::NamedCommands::registerCommand("Regular Drive", std::move(regularDrive));
 
@@ -75,7 +77,10 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return m_driverController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); }));
 
-  frc2::Trigger{[this]() { return !m_driverController.GetRightTriggerAxis(); }}
+  //   frc2::Trigger{[this]() { return m_driverController.GetLeftTriggerAxis(); }}
+  //       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
+
+  frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis() && !m_driverController.GetLeftTriggerAxis()); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}

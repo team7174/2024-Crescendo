@@ -24,7 +24,8 @@ class DriveSubsystem : public frc2::SubsystemBase {
 
   enum DriveStates {
     joyStickDrive,
-    aimDrive
+    aimDrive,
+    noteDrive
   };
 
   /**
@@ -137,11 +138,12 @@ class DriveSubsystem : public frc2::SubsystemBase {
   // The gyro sensor
   AHRS m_gyro{frc::SPI::kMXP};
   frc::ProfiledPIDController<units::radian> profiledAimController;
+  frc::PIDController notePID{0.03, 0.0, 0.0};
 
   // Odometry class for tracking robot pose
   // 4 defines the number of modules
   frc::SwerveDrivePoseEstimator<4> m_odometry;
   frc::Translation2d ignorePose{0_m, 0_m};
 
-  double aimThreshold = 5;
+  double aimThreshold = 3;
 };
