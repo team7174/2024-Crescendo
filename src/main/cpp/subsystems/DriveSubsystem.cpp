@@ -21,22 +21,26 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
     : m_frontLeft{kFrontLeftDriveMotorPort,
                   kFrontLeftTurningMotorPort,
                   kFrontLeftTurningEncoderPorts,
-                  kFrontLeftEncoderOffset},
+                  kFrontLeftEncoderOffset,
+                  flipFL},
 
       m_rearLeft{kRearLeftDriveMotorPort,
                  kRearLeftTurningMotorPort,
                  kRearLeftTurningEncoderPorts,
-                 kRearLeftEncoderOffset},
+                 kRearLeftEncoderOffset,
+                 flipBL},
 
       m_frontRight{kFrontRightDriveMotorPort,
                    kFrontRightTurningMotorPort,
                    kFrontRightTurningEncoderPorts,
-                   kFrontRightEncoderOffset},
+                   kFrontRightEncoderOffset,
+                   flipFR},
 
       m_rearRight{kRearRightDriveMotorPort,
                   kRearRightTurningMotorPort,
                   kRearRightTurningEncoderPorts,
-                  kRearRightEncoderOffset},
+                  kRearRightEncoderOffset,
+                  flipBR},
 
       profiledAimController(
           4.0,  // Placeholder for proportional gain
@@ -180,7 +184,15 @@ double DriveSubsystem::GetTurnRate() {
 }
 
 frc::Pose2d DriveSubsystem::GetPose() {
-  return m_odometry.GetEstimatedPosition();
+  frc::Pose2d pose = m_odometry.GetEstimatedPosition();
+
+  // Adjust position based on the front wheel offset
+  double angle = pose.Rotation().Radians().value();
+  double posX = pose.X().value() + (frontWheelOffset * cos(angle));
+  double posY = pose.Y().value() + (frontWheelOffset * sin(angle));
+
+  pose = frc::Pose2d(units::meter_t(posX), units::meter_t(posY), pose.Rotation());
+  return pose;
 }
 
 bool DriveSubsystem::atShootingAngle() {

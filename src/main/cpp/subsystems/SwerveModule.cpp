@@ -11,7 +11,7 @@
 #include "Constants.h"
 
 SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
-                           int turningEncoderPorts, double encoderOffset)
+                           int turningEncoderPorts, double encoderOffset, bool flipDrive)
     : m_driveMotor(driveMotorChannel),
       m_turningMotor(turningMotorChannel),
       m_turningEncoder(turningEncoderPorts) {
@@ -22,7 +22,7 @@ SwerveModule::SwerveModule(int driveMotorChannel, int turningMotorChannel,
 
   m_driveMotor.GetConfigurator().Apply(ctre::phoenix6::configs::TalonFXConfiguration{});
   m_driveMotor.GetConfigurator().Apply(motorConfigs.DriveMotorConfig, 50_ms);
-  m_driveMotor.SetInverted(false);
+  m_driveMotor.SetInverted(flipDrive);
   m_driveMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_driveMotor.SetPosition(units::angle::turn_t(0));
 

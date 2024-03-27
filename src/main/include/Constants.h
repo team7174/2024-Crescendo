@@ -35,10 +35,16 @@ constexpr int kRearLeftTurningEncoderPorts = 2;
 constexpr int kFrontRightTurningEncoderPorts = 0;
 constexpr int kRearRightTurningEncoderPorts = 3;
 
-constexpr double kFrontLeftEncoderOffset = 0.01107894677394;
+constexpr double kFrontLeftEncoderOffset = 0.752273773483039;
 constexpr double kRearLeftEncoderOffset = 0.34623807543156;
-constexpr double kFrontRightEncoderOffset = 0.0924851208955030;
+constexpr double kFrontRightEncoderOffset = 0.0924851208955030 + 0.25;
 constexpr double kRearRightEncoderOffset = 0.922683588934038;
+constexpr bool flipFL = true;
+constexpr bool flipFR = true;
+constexpr bool flipBL = false;
+constexpr bool flipBR = false;
+
+constexpr double frontWheelOffset = 0.1016;
 
 }  // namespace DriveConstants
 
@@ -83,6 +89,7 @@ namespace ShooterConstants {
 constexpr int leftShooterID = 55;
 constexpr int rightShooterID = 56;
 constexpr int intakeID = 57;
+constexpr int rollerID = 58;
 constexpr double shooterkP = 0.0001;
 constexpr double shooterkI = 0.0000003;
 constexpr double shooterkD = 0.0;

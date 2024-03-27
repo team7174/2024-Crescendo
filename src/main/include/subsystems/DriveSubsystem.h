@@ -107,7 +107,7 @@ class DriveSubsystem : public frc2::SubsystemBase {
   units::meter_t kTrackWidth =
       0.5969_m;  // Distance between centers of right and left wheels on robot
   units::meter_t kWheelBase =
-      0.5969_m;  // Distance between centers of front and back wheels on robot
+      0.4953_m;  // Distance between centers of front and back wheels on robot
   units::meter_t kModuleRadius =
       units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)) / 2);
 

@@ -8,6 +8,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
     : m_leftShooterMotor(ShooterConstants::leftShooterID, rev::CANSparkFlex::MotorType::kBrushless),    // Replace with your TalonFX device ID
       m_rightShooterMotor(ShooterConstants::rightShooterID, rev::CANSparkFlex::MotorType::kBrushless),  // Replace with your TalonFX device ID
       m_intakeMotor(ShooterConstants::intakeID, rev::CANSparkFlex::MotorType::kBrushless),              // Replace with your TalonFX device ID
+      m_rollerMotor(ShooterConstants::rollerID, rev::CANSparkMax::MotorType::kBrushless),               // Replace with your TalonFX device ID
       rightShooterEnc(m_rightShooterMotor.GetEncoder()),
       leftShooterEnc(m_leftShooterMotor.GetEncoder()),
       leftShooterPID(m_leftShooterMotor.GetPIDController()),
@@ -23,6 +24,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_leftShooterMotor.RestoreFactoryDefaults();
   m_rightShooterMotor.RestoreFactoryDefaults();
   m_intakeMotor.RestoreFactoryDefaults();
+  m_rollerMotor.RestoreFactoryDefaults();
 
   // Limits
   m_leftShooterMotor.SetSmartCurrentLimit(30);
@@ -49,12 +51,14 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
   m_leftShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
   m_rightShooterMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
   m_intakeMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kBrake);
+  m_rollerMotor.SetIdleMode(rev::CANSparkBase::IdleMode::kCoast);
   m_rightShooterMotor.SetInverted(true);
   m_leftShooterMotor.SetInverted(true);
 
   m_leftShooterMotor.BurnFlash();
   m_rightShooterMotor.BurnFlash();
   m_intakeMotor.BurnFlash();
+  m_rollerMotor.BurnFlash();
 
   frc::SmartDashboard::PutNumber("Shooter Velocity Threshold", 500.0);
   frc::SmartDashboard::PutNumber("Shooter Velocity", 6500.0);
@@ -115,6 +119,7 @@ void ShooterSubsystem::Periodic() {
 
   runVelocity(shooterSpeed);
   m_intakeMotor.Set(intakeSpeed);
+  m_rollerMotor.Set(intakeSpeed);
   // intakePID.SetReference(intakeSpeed, rev::CANSparkBase::ControlType::kVelocity);
 }
 
