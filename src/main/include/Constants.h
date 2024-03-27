@@ -39,8 +39,8 @@ constexpr double kFrontLeftEncoderOffset = 0.752273773483039;
 constexpr double kRearLeftEncoderOffset = 0.34623807543156;
 constexpr double kFrontRightEncoderOffset = 0.0924851208955030 + 0.25;
 constexpr double kRearRightEncoderOffset = 0.922683588934038;
-constexpr bool flipFL = true;
-constexpr bool flipFR = true;
+constexpr bool flipFL = false;
+constexpr bool flipFR = false;
 constexpr bool flipBL = false;
 constexpr bool flipBR = false;
 
