@@ -60,9 +60,9 @@ void ArmSubsystem::Periodic() {
   }
   double speed = std::clamp(profiledController.Calculate(units::degree_t(GetAbsArmAngle())), -1.0, 1.0);
   frc::SmartDashboard::PutNumber("Through Bore Angle", GetAbsArmAngle());
-  frc::SmartDashboard::PutNumber("Raw Angle", m_armEncoder.GetAbsolutePosition());
   frc::SmartDashboard::PutNumber("Desired Angle", profiledController.GetGoal().position());
   frc::SmartDashboard::PutNumber("Calculated Angle", CalculateAngle());
+  frc::SmartDashboard::PutBoolean("AT ANGLE", ReachedDesiredAngle());
   m_armMotorLeft.Set(speed);
   m_armMotorRight.Set(speed);
 }
@@ -87,7 +87,7 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState) {
   currArmState = DesiredArmState;
   // Update the setpoint of the PID controller
   if (DesiredArmState == ArmStates::intake) {
-    profiledController.SetGoal(0_deg);
+    profiledController.SetGoal(2.5_deg);
   } else if (DesiredArmState == ArmStates::upright) {
     profiledController.SetGoal(130_deg);
   } else if (DesiredArmState == ArmStates::autoAngle) {
@@ -115,7 +115,6 @@ double ArmSubsystem::CalculateAngle() {
 }
 
 bool ArmSubsystem::ReachedDesiredAngle() {
-  frc::SmartDashboard::PutBoolean("At Desired Angle", profiledController.AtGoal());
   return profiledController.AtGoal();
 }
 

@@ -77,14 +77,17 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return m_driverController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); }));
 
-  //   frc2::Trigger{[this]() { return m_driverController.GetLeftTriggerAxis(); }}
-  //       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
+  frc2::Trigger{[this]() { return m_driverController.GetLeftTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
 
   frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis() && !m_driverController.GetLeftTriggerAxis()); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
+
+  frc2::Trigger{[this]() { return m_secondaryController.GetPOV(0); }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::spit); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));

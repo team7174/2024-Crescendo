@@ -138,7 +138,8 @@ class DriveSubsystem : public frc2::SubsystemBase {
   // The gyro sensor
   AHRS m_gyro{frc::SPI::kMXP};
   frc::ProfiledPIDController<units::radian> profiledAimController;
-  frc::PIDController notePID{0.03, 0.0, 0.0};
+  frc::ProfiledPIDController<units::meter> profiledNoteController;
+  frc::PIDController notePID{1.0, 0.0, 0.0};
 
   // Odometry class for tracking robot pose
   // 4 defines the number of modules

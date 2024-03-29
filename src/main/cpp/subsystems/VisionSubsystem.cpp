@@ -67,6 +67,18 @@ frc::Pose2d VisionSubsystem::GetNoteLocation() {
   return frc::Pose2d(noteX, noteY, 0_deg);
 }
 
+bool VisionSubsystem::SpeakerTags() {
+  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
+  auto llBotPoseEntry = ll->GetEntry("botpose");
+  auto targetID = ll->GetEntry("tid").GetDouble(0.0);
+  if ((targetID == 3 || targetID == 4 || targetID == 7 || targetID == 8) && llBotPoseEntry.GetDoubleArray({})[7] >= 2.0) {
+    frc::SmartDashboard::PutBoolean("Speaker Tags", true);
+    return true;
+  }
+  frc::SmartDashboard::PutBoolean("Speaker Tags", false);
+  return false;
+}
+
 void VisionSubsystem::BlinkLEDs(bool blink) {
   std::shared_ptr<nt::NetworkTable> ll2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
   std::shared_ptr<nt::NetworkTable> ll3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");

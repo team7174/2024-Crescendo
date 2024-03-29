@@ -6,12 +6,15 @@
 
 #include <cameraserver/CameraServer.h>
 #include <frc/Filesystem.h>
+#include <frc/Timer.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 #include <wpi/fs.h>
 
 void Robot::RobotInit() {
   // Setup Auton Selector
+  timer.Start();
+
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   deployDirectory = deployDirectory / "pathplanner/autos";
   // frc::CameraServer::StartAutomaticCapture();
@@ -45,6 +48,13 @@ void Robot::RobotInit() {
  */
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
+
+  int minutes = static_cast<int>(timer.GetMatchTime()) / 60;
+  int seconds = static_cast<int>(timer.GetMatchTime()) % 60;
+
+  // Display match time in mm:ss format on SmartDashboard
+  std::string timeString = std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
+  frc::SmartDashboard::PutString("Match Time", timeString);
 }
 
 /**

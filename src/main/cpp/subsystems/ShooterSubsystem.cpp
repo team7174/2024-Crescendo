@@ -69,7 +69,6 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
 
 void ShooterSubsystem::Periodic() {
   frc::SmartDashboard::PutNumber("Left Shooter Velocity", double(leftShooterEnc.GetVelocity()));
-  frc::SmartDashboard::PutBoolean("AT ANGLE", m_armSubsystem->ReachedDesiredAngle());
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   NoteInIntake();
   NoteInShooter();
@@ -99,8 +98,9 @@ void ShooterSubsystem::Periodic() {
 
   bool atShootAngle = m_drive->atShootingAngle();
   bool driveMode = (m_drive->m_desiredDriveState == m_drive->aimDrive);
+  bool tagsVisible = m_visionSubsystem->SpeakerTags();
 
-  if (currShooterState == shooterStates::shooterOn && driveMode && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && (NoteInShooter() || NoteInIntake())) {
+  if (tagsVisible && currShooterState == shooterStates::shooterOn && driveMode && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && (NoteInShooter() || NoteInIntake())) {
     shooterTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::shoot);
   }
@@ -128,22 +128,26 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState) {
   switch (intakeState) {
     case intakeStates::intake:
       if (shooterIdleChooser.GetSelected() == "On") {
-        intakeSpeed = 1;
+        intakeSpeed = 1.0;
       } else {
         intakeSpeed = 0.3;
       }
       break;
 
     case intakeStates::shoot:
-      intakeSpeed = 1;
+      intakeSpeed = 1.0;
       break;
 
     case intakeStates::eject:
-      intakeSpeed = 1;
+      intakeSpeed = 1.0;
       break;
 
     case intakeStates::stop:
       intakeSpeed = 0;
+      break;
+
+    case intakeStates::spit:
+      intakeSpeed = -1.0;
       break;
 
     default:

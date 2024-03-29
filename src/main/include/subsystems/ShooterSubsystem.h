@@ -33,7 +33,8 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     stop,
     eject,
     intake,
-    amp
+    amp,
+    spit
   };
 
   enum shooterStates {

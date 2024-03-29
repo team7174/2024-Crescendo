@@ -48,6 +48,12 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           0.0,  // Placeholder for derivative gain
           frc::TrapezoidProfile<units::radian>::Constraints(DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration)),
 
+      profiledNoteController(
+          1.0,
+          0.0,
+          0.0,
+          frc::TrapezoidProfile<units::meter>::Constraints(DriveConstants::kMaxSpeed, units::meters_per_second_squared_t(100))),
+
       m_odometry{kDriveKinematics,
                  GetHeading(),
                  {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
@@ -84,6 +90,7 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
 }
 
 void DriveSubsystem::Periodic() {
+  // frc::SmartDashboard::PutNumber("Match Time", double(frc::Timer::GetMatchTime()));
   atShootingAngle();
   // Implementation of subsystem periodic method goes here.
   m_odometry.Update(GetHeading(),
@@ -119,8 +126,8 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   if (m_desiredDriveState == DriveStates::noteDrive) {
     fieldRelative = false;
     auto notePose = m_visionSubsystem->GetNoteLocation();
-    ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(notePID.Calculate(double(notePose.X()), 0.0), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
-    xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(notePID.Calculate(double(notePose.Y()), 0.0), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+    ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+    xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.Y(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
@@ -228,7 +235,6 @@ std::pair<double, double> DriveSubsystem::getShootingValues() {
   double shootingDistance = robotToSpeakerTranslation.Norm().value();
   double aimAngle = robotToSpeakerTranslation.Angle().Degrees().value();
   frc::SmartDashboard::PutNumber("Aim Angle", aimAngle);
-  frc::SmartDashboard::PutNumber("Shooting Distance", shootingDistance);
   return std::pair<double, double>(shootingDistance, aimAngle);
 }
 

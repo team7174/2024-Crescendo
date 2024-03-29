@@ -29,6 +29,7 @@ class Robot : public frc::TimedRobot {
   // doesn't have undefined behavior and potentially crash.
   // Can't have CommandPtr as a class member? so instead use unique_ptr and cast to it later
   std::optional<frc2::CommandPtr> m_autonomousCommand;
+  frc::Timer timer;
 
   RobotContainer m_container;
 };
