@@ -49,10 +49,10 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
           frc::TrapezoidProfile<units::radian>::Constraints(DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration)),
 
       profiledNoteController(
-          1.0,
+          2.0,
           0.0,
           0.0,
-          frc::TrapezoidProfile<units::meter>::Constraints(DriveConstants::kMaxSpeed, units::meters_per_second_squared_t(100))),
+          frc::TrapezoidProfile<units::radian>::Constraints(DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration)),
 
       m_odometry{kDriveKinematics,
                  GetHeading(),
@@ -126,8 +126,11 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   if (m_desiredDriveState == DriveStates::noteDrive) {
     fieldRelative = false;
     auto notePose = m_visionSubsystem->GetNoteLocation();
-    ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
-    xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.Y(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+    rot = units::radians_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(units::degree_t(notePose.X().value())), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
+    xSpeed = units::meters_per_second_t(sqrt(pow(xSpeed.value(), 2) + pow(ySpeed.value(), 2)));
+    ySpeed = 0_mps;
+    // ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+    // xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.Y(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
   }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
@@ -244,4 +247,31 @@ void DriveSubsystem::ResetOdometry(frc::Pose2d pose) {
       {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
        m_rearLeft.GetPosition(), m_rearRight.GetPosition()},
       pose);
+}
+
+frc2::CommandPtr DriveSubsystem::GeneratedPath(frc::Pose2d targetPose) {
+  // Create the constraints to use while pathfinding
+  pathplanner::PathConstraints constraints = pathplanner::PathConstraints(
+      5.0_mps, 4.5_mps_sq,
+      1050_deg_per_s, 1000_deg_per_s_sq);
+
+  // Since AutoBuilder is configured, we can use it to build pathfinding commands
+  frc2::CommandPtr pathfindingCommand = pathplanner::AutoBuilder::pathfindToPose(
+      targetPose,
+      constraints,
+      0.0_mps,  // Goal end velocity in meters/sec
+      0.0_m     // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+  );
+
+  return pathfindingCommand;
+}
+
+frc::Pose2d DriveSubsystem::FlipPose(frc::Pose2d pose) {
+  if (auto ally = frc::DriverStation::GetAlliance()) {
+    if (ally.value() == frc::DriverStation::Alliance::kRed) {
+      pose = pose == stageRight ? stageLeft : stageRight;
+      pose = frc::Pose2d(16.5410642_m - pose.X(), pose.Y(), -pose.Rotation());
+    }
+  }
+  return pose;
 }

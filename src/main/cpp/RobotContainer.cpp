@@ -89,25 +89,38 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return m_secondaryController.GetPOV(0); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::spit); }));
 
+  frc2::Trigger{[this]() { return m_driverController.GetPOV(0); }}
+      .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageFront))));
+
+  //   frc2::Trigger{[this]() { return m_driverController.GetPOV(2); }}
+  //       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageRight))));
+
+  //   frc2::Trigger{[this]() { return m_driverController.GetPOV(6); }}
+  //       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageLeft))));
+
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
-                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
+    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
-                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetRightTriggerAxis(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
-                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
 
   // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
   frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop);
-                                          m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop);
+    m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetYButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::extend); }));

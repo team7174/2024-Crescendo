@@ -11,7 +11,6 @@
 
 #include "Constants.h"
 #include "rev/CANSparkFlex.h"
-#include "rev/CANSparkMax.h"
 
 class ShooterSubsystem : public frc2::SubsystemBase {
  public:
@@ -61,7 +60,6 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   rev::CANSparkFlex m_leftShooterMotor;
   rev::CANSparkFlex m_rightShooterMotor;
   rev::CANSparkFlex m_intakeMotor;
-  rev::CANSparkMax m_rollerMotor;
 
   rev::SparkRelativeEncoder rightShooterEnc;
   rev::SparkRelativeEncoder leftShooterEnc;

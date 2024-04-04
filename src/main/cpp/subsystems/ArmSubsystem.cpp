@@ -47,6 +47,7 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_armMotorLeft.SetInverted(true);
   frc::SmartDashboard::PutNumber("Angle Offset", angleOffset);
+  profiledController.EnableContinuousInput(0_deg, 360_deg);
 }
 
 void ArmSubsystem::Periodic() {
@@ -80,14 +81,23 @@ void ArmSubsystem::brakeModeOn() {
 }
 
 double ArmSubsystem::GetAbsArmAngle() {
-  return abs((m_armEncoder.GetAbsolutePosition() - StormbreakerConstants::armEncoderOffset) * 360);
+  double rawEncoderValue = m_armEncoder.GetAbsolutePosition();                            // Get raw encoder value
+  double degrees = (rawEncoderValue - StormbreakerConstants::armEncoderOffset) * -360.0;  // Convert to degrees, inverted
+
+  // Handle wrap-around
+  degrees = fmod(degrees, 360.0);  // Ensure angle is within 0 to 360 degrees
+  if (degrees < 0) {
+    degrees += 360.0;  // Adjust negative angles
+  }
+  return degrees;
+  // return abs((m_armEncoder.GetAbsolutePosition() - StormbreakerConstants::armEncoderOffset) * 360);
 }
 
 void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState) {
   currArmState = DesiredArmState;
   // Update the setpoint of the PID controller
   if (DesiredArmState == ArmStates::intake) {
-    profiledController.SetGoal(2.5_deg);
+    profiledController.SetGoal(0.0_deg);
   } else if (DesiredArmState == ArmStates::upright) {
     profiledController.SetGoal(130_deg);
   } else if (DesiredArmState == ArmStates::autoAngle) {

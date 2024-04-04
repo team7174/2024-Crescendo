@@ -97,6 +97,10 @@ class DriveSubsystem : public frc2::SubsystemBase {
   DriveStates m_desiredDriveState;
   std::pair<double, double> getShootingValues();
 
+  frc2::CommandPtr GeneratedPath(frc::Pose2d targetPose);
+
+  frc::Pose2d FlipPose(frc::Pose2d);
+
   /**
    * Resets the odometry to the specified pose.
    *
@@ -123,6 +127,10 @@ class DriveSubsystem : public frc2::SubsystemBase {
   frc::Translation3d bottomRightSpeaker = frc::Translation3d(0_m, 6.065901_m, 1.9894296_m);
   frc::Translation3d bottomLeftSpeaker = frc::Translation3d(0_m, 5.023231_m, 1.9894296_m);
 
+  frc::Pose2d stageRight = frc::Pose2d(4.4_m, 3.2_m, frc::Rotation2d(-120_deg));
+  frc::Pose2d stageLeft = frc::Pose2d(4.4_m, 5_m, frc::Rotation2d(120_deg));
+  frc::Pose2d stageFront = frc::Pose2d(5.85_m, 4.1_m, frc::Rotation2d(0_deg));
+
   bool allianceColorBlue;
 
  private:
@@ -138,8 +146,7 @@ class DriveSubsystem : public frc2::SubsystemBase {
   // The gyro sensor
   AHRS m_gyro{frc::SPI::kMXP};
   frc::ProfiledPIDController<units::radian> profiledAimController;
-  frc::ProfiledPIDController<units::meter> profiledNoteController;
-  frc::PIDController notePID{1.0, 0.0, 0.0};
+  frc::ProfiledPIDController<units::radian> profiledNoteController;
 
   // Odometry class for tracking robot pose
   // 4 defines the number of modules
