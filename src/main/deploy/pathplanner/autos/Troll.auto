@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.8,
+      "y": 3.0
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Troll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Troll"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

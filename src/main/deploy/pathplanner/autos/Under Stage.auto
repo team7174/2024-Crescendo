@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.8,
-      "y": 3.0
+      "x": 1.5,
+      "y": 5.55
     },
-    "rotation": -45.24187910938297
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -44,13 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage Shoot"
+            "pathName": "Initial To Stage Note"
           }
         },
         {
@@ -86,13 +80,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Stage End"
+            "pathName": "Stage To Mid Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Stage End Shoot"
+            "pathName": "Under Stage"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Under Stage Shoot"
           }
         },
         {

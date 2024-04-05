@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.8,
-      "y": 3.0
+      "x": 0.75,
+      "y": 4.35
     },
-    "rotation": -45.24187910938297
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -42,9 +42,57 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Wait Angle"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Side to Stage"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage to Mid"
           }
         },
         {
@@ -87,42 +135,6 @@
           "type": "path",
           "data": {
             "pathName": "Stage End"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Stage End Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Speaker"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Regular Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Drop"
           }
         }
       ]

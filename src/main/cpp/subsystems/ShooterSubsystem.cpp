@@ -143,6 +143,10 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState) {
       intakeSpeed = -1.0;
       break;
 
+    case intakeStates::troll:
+      intakeSpeed = 1.0;
+      break;
+
     default:
       intakeSpeed = 0.0;
   }
@@ -169,6 +173,10 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState) {
 
     case shooterStates::shooterMid:
       shooterSpeed = 4000;
+      break;
+
+    case shooterStates::shooterTroll:
+      shooterSpeed = 2000;
       break;
 
     default:

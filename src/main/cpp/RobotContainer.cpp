@@ -25,14 +25,18 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   auto resetYaw = frc2::cmd::RunOnce([this] { m_drive.ZeroHeading(); });
 
   auto intakeDrop = frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
-                                        m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
+                                                m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake); });
+
+  auto troll = frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake);
+                                           m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterTroll);
+                                           m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::troll); });
 
   auto aimDrive = frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); });
 
   auto regularDrive = frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); });
 
   auto shootSpeaker = frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle);
-                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
+                                                  m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn); });
 
   auto waitShoot = frc2::cmd::Sequence(
       frc2::cmd::Wait(1_s),
@@ -51,6 +55,7 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
   // pathplanner::NamedCommands::registerCommand("Wait Intake", std::move(waitIntake));
   pathplanner::NamedCommands::registerCommand("Wait Angle", std::move(waitAngle));
   pathplanner::NamedCommands::registerCommand("Regular Drive", std::move(regularDrive));
+  pathplanner::NamedCommands::registerCommand("Troll", std::move(troll));
 
   // pathplanner::NamedCommands::registerCommand("NewTest", std::move(eventCmd));
   //  Set up default drive command
@@ -77,10 +82,10 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return m_driverController.GetRightTriggerAxis(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); }));
 
-  frc2::Trigger{[this]() { return m_driverController.GetLeftTriggerAxis(); }}
+  frc2::Trigger{[this]() { return (m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake()); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
 
-  frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis() && !m_driverController.GetLeftTriggerAxis()); }}
+  frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis() && !(m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake())); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
 
   frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}

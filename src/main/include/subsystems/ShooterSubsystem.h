@@ -33,14 +33,16 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     eject,
     intake,
     amp,
-    spit
+    spit,
+    troll
   };
 
   enum shooterStates {
     shooterOn,
     shooterStop,
     shooterMid,
-    shooterEject
+    shooterEject,
+    shooterTroll
   };
 
   void SetIntakeState(intakeStates intakeState);

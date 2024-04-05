@@ -69,9 +69,9 @@ frc::Pose2d VisionSubsystem::GetNoteLocation() {
 
 bool VisionSubsystem::SpeakerTags() {
   std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
-  auto llBotPoseEntry = ll->GetEntry("botpose");
+  // auto llBotPoseEntry = ll->GetEntry("botpose");
   auto targetID = ll->GetEntry("tid").GetDouble(0.0);
-  if ((targetID == 3 || targetID == 4 || targetID == 7 || targetID == 8) && llBotPoseEntry.GetDoubleArray({})[7] >= 2.0) {
+  if ((targetID == 3 || targetID == 4 || targetID == 7 || targetID == 8)) {  //&& llBotPoseEntry.GetDoubleArray({})[7] >= 2.0
     frc::SmartDashboard::PutBoolean("Speaker Tags", true);
     return true;
   }

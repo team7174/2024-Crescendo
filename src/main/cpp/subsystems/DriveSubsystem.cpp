@@ -62,8 +62,6 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
   m_visionSubsystem = passedVisionSubsystem;
 
   profiledAimController.EnableContinuousInput(-180_deg, 180.0_deg);
-  profiledAimController.SetTolerance(5.0_deg);
-  profiledAimController.SetGoal(180_deg);
 
   // Configure the AutoBuilder last
   pathplanner::AutoBuilder::configureHolonomic(
@@ -120,13 +118,13 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
   }
 
   if (m_desiredDriveState == DriveStates::aimDrive) {
-    rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second)), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
+    rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second), 180_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
   }
 
   if (m_desiredDriveState == DriveStates::noteDrive) {
     fieldRelative = false;
     auto notePose = m_visionSubsystem->GetNoteLocation();
-    rot = units::radians_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(units::degree_t(notePose.X().value())), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
+    rot = units::radians_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(units::degree_t(notePose.X().value()), 0_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
     xSpeed = units::meters_per_second_t(sqrt(pow(xSpeed.value(), 2) + pow(ySpeed.value(), 2)));
     ySpeed = 0_mps;
     // ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
@@ -196,12 +194,12 @@ double DriveSubsystem::GetTurnRate() {
 frc::Pose2d DriveSubsystem::GetPose() {
   frc::Pose2d pose = m_odometry.GetEstimatedPosition();
 
-  // Adjust position based on the front wheel offset
-  double angle = pose.Rotation().Radians().value();
-  double posX = pose.X().value() + (frontWheelOffset * cos(angle));
-  double posY = pose.Y().value() + (frontWheelOffset * sin(angle));
+  // // Adjust position based on the front wheel offset
+  // double angle = pose.Rotation().Radians().value();
+  // double posX = pose.X().value() + (frontWheelOffset.value() * cos(angle));
+  // double posY = pose.Y().value() + (frontWheelOffset.value() * sin(angle));
 
-  pose = frc::Pose2d(units::meter_t(posX), units::meter_t(posY), pose.Rotation());
+  // pose = frc::Pose2d(units::meter_t(posX), units::meter_t(posY), pose.Rotation());
   return pose;
 }
 
@@ -217,10 +215,8 @@ frc::Translation3d DriveSubsystem::GetSpeakerCenter() {
   if (auto ally = frc::DriverStation::GetAlliance()) {
     if (ally.value() == frc::DriverStation::Alliance::kRed) {
       allianceColorBlue = false;
-      profiledAimController.SetGoal(180_deg);
     } else {
       allianceColorBlue = true;
-      profiledAimController.SetGoal(180_deg);
     }
   }
   units::meter_t X = 0.5 * (topLeftSpeaker.X() + bottomRightSpeaker.X());

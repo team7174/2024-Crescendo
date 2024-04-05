@@ -44,7 +44,7 @@ constexpr bool flipFR = false;
 constexpr bool flipBL = false;
 constexpr bool flipBR = false;
 
-constexpr double frontWheelOffset = 0.1016;
+constexpr units::meter_t frontWheelOffset = 0.1016_m;
 
 }  // namespace DriveConstants
 

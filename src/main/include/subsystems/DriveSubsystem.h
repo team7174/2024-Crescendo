@@ -110,14 +110,16 @@ class DriveSubsystem : public frc2::SubsystemBase {
 
   units::meter_t kTrackWidth =
       0.5969_m;  // Distance between centers of right and left wheels on robot
+  units::meter_t kChassisLength =
+      0.5969_m;  // Distance between centers of right and left wheels on robot
   units::meter_t kWheelBase =
       0.4953_m;  // Distance between centers of front and back wheels on robot
   units::meter_t kModuleRadius =
       units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)) / 2);
 
   frc::SwerveDriveKinematics<4> kDriveKinematics{
-      frc::Translation2d{kWheelBase / 2, kTrackWidth / 2},
-      frc::Translation2d{kWheelBase / 2, -kTrackWidth / 2},
+      frc::Translation2d{(kWheelBase / 2) - DriveConstants::frontWheelOffset, kTrackWidth / 2},
+      frc::Translation2d{(kWheelBase / 2) - DriveConstants::frontWheelOffset, -kTrackWidth / 2},
       frc::Translation2d{-kWheelBase / 2, kTrackWidth / 2},
       frc::Translation2d{-kWheelBase / 2, -kTrackWidth / 2}};
 

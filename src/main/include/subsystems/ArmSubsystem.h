@@ -42,7 +42,7 @@ class ArmSubsystem : public frc2::SubsystemBase {
   ctre::phoenix6::hardware::TalonFX m_armMotorRight;
   frc::DutyCycleEncoder m_armEncoder;
   frc::ProfiledPIDController<units::degrees> profiledController;
-  double angleOffset = 3.5;
+  double angleOffset = 2.5;
   frc::DigitalInput armSwitch{5};
   bool brakeMode = true;
 };
