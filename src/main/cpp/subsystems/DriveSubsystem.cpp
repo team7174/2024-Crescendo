@@ -90,6 +90,9 @@ DriveSubsystem::DriveSubsystem(VisionSubsystem *passedVisionSubsystem)
 void DriveSubsystem::Periodic() {
   // frc::SmartDashboard::PutNumber("Match Time", double(frc::Timer::GetMatchTime()));
   atShootingAngle();
+
+  frc::SmartDashboard::PutNumber("Field Y", GetPose().Y().value());
+
   // Implementation of subsystem periodic method goes here.
   m_odometry.Update(GetHeading(),
                     {m_frontLeft.GetPosition(), m_rearLeft.GetPosition(),
@@ -121,15 +124,15 @@ void DriveSubsystem::Drive(units::meters_per_second_t xSpeed,
     rot = units::radians_per_second_t(frc::ApplyDeadband(-std::clamp(profiledAimController.Calculate(units::degree_t(getShootingValues().second), 180_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
   }
 
-  if (m_desiredDriveState == DriveStates::noteDrive) {
-    fieldRelative = false;
-    auto notePose = m_visionSubsystem->GetNoteLocation();
-    rot = units::radians_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(units::degree_t(notePose.X().value()), 0_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
-    xSpeed = units::meters_per_second_t(sqrt(pow(xSpeed.value(), 2) + pow(ySpeed.value(), 2)));
-    ySpeed = 0_mps;
-    // ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
-    // xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.Y(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
-  }
+  // if (m_desiredDriveState == DriveStates::noteDrive) {
+  //   fieldRelative = false;
+  //   auto notePose = m_visionSubsystem->GetNoteLocation();
+  //   rot = units::radians_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(units::degree_t(notePose.X().value()), 0_deg), -AutoConstants::kMaxAngularSpeed.value(), AutoConstants::kMaxAngularSpeed.value()), 0.025));
+  //   xSpeed = units::meters_per_second_t(sqrt(pow(xSpeed.value(), 2) + pow(ySpeed.value(), 2)));
+  //   ySpeed = 0_mps;
+  //   // ySpeed = units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.X(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+  //   // xSpeed = -units::meters_per_second_t(frc::ApplyDeadband(std::clamp(profiledNoteController.Calculate(notePose.Y(), 0.0_m), -DriveConstants::kMaxSpeed.value(), DriveConstants::kMaxSpeed.value()), 0.075));
+  // }
 
   auto states = kDriveKinematics.ToSwerveModuleStates(
       fieldRelative ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(

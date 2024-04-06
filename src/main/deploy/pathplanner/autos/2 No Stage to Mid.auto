@@ -1,0 +1,133 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.25,
+      "y": 4.0
+    },
+    "rotation": -45.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage End"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage End Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

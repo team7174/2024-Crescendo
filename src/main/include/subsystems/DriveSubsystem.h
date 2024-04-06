@@ -118,10 +118,10 @@ class DriveSubsystem : public frc2::SubsystemBase {
       units::meter_t(sqrt(pow(kTrackWidth.value(), 2) + pow(kWheelBase.value(), 2)) / 2);
 
   frc::SwerveDriveKinematics<4> kDriveKinematics{
-      frc::Translation2d{(kWheelBase / 2) - DriveConstants::frontWheelOffset, kTrackWidth / 2},
-      frc::Translation2d{(kWheelBase / 2) - DriveConstants::frontWheelOffset, -kTrackWidth / 2},
-      frc::Translation2d{-kWheelBase / 2, kTrackWidth / 2},
-      frc::Translation2d{-kWheelBase / 2, -kTrackWidth / 2}};
+      frc::Translation2d{(kChassisLength / 2) - DriveConstants::frontWheelOffset, kTrackWidth / 2},
+      frc::Translation2d{(kChassisLength / 2) - DriveConstants::frontWheelOffset, -kTrackWidth / 2},
+      frc::Translation2d{-kChassisLength / 2, kTrackWidth / 2},
+      frc::Translation2d{-kChassisLength / 2, -kTrackWidth / 2}};
 
   frc::Translation3d topRightSpeaker = frc::Translation3d(0.458597_m, 6.065901_m, 2.1105114_m);
   frc::Translation3d topLeftSpeaker = frc::Translation3d(0.458597_m, 5.023231_m, 2.1105114_m);

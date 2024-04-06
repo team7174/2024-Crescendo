@@ -103,6 +103,8 @@ void ArmSubsystem::SetDesiredAngle(ArmStates DesiredArmState) {
   } else if (DesiredArmState == ArmStates::autoAngle) {
     profiledController.SetGoal(units::degree_t(CalculateAngle()));
     // profiledController.SetGoal(units::degree_t(0));
+  } else if (DesiredArmState == ArmStates::speaker) {
+    profiledController.SetGoal(12_deg);
   }
   profiledController.SetGoal(units::degree_t(std::clamp(profiledController.GetGoal().position(), 0.0, 130.0)));
 }

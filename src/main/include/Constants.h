@@ -107,9 +107,9 @@ constexpr auto kMaxSpeed = 5.5_mps;
 constexpr auto kMaxAngularSpeed = 15_rad_per_s;
 constexpr auto kMaxAngularAcceleration = 30_rad_per_s_sq;
 
-constexpr double kPXController = 8.0;
-constexpr double kPYController = 1.15;
-constexpr double kPThetaController = 4.0;
+constexpr double kPXController = 6.0;
+// constexpr double kPYController = 1.0;
+constexpr double kPThetaController = 2.0;
 
 extern const frc::TrapezoidProfile<units::radians>::Constraints
     kThetaControllerConstraints;

@@ -140,6 +140,10 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState) {
       break;
 
     case intakeStates::spit:
+      intakeSpeed = 1.0;
+      break;
+
+    case intakeStates::floor:
       intakeSpeed = -1.0;
       break;
 

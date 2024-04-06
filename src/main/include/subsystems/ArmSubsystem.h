@@ -24,7 +24,8 @@ class ArmSubsystem : public frc2::SubsystemBase {
   enum ArmStates {
     intake,
     autoAngle,
-    upright
+    upright,
+    speaker
   };
   ArmStates currArmState;
   void SetDesiredAngle(ArmStates DesiredArmState);
@@ -42,7 +43,7 @@ class ArmSubsystem : public frc2::SubsystemBase {
   ctre::phoenix6::hardware::TalonFX m_armMotorRight;
   frc::DutyCycleEncoder m_armEncoder;
   frc::ProfiledPIDController<units::degrees> profiledController;
-  double angleOffset = 2.5;
+  double angleOffset = 1.5;
   frc::DigitalInput armSwitch{5};
   bool brakeMode = true;
 };

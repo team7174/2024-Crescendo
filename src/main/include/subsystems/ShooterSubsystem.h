@@ -34,7 +34,8 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     intake,
     amp,
     spit,
-    troll
+    troll,
+    floor
   };
 
   enum shooterStates {
