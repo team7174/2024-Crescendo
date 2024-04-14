@@ -76,75 +76,100 @@ RobotContainer::RobotContainer() : m_drive(&m_visionSubsystem), m_armSubsystem(&
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-  // frc2::Trigger{[this]() { return m_driverController.GetYButtonPressed(); }}
-  //     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.ZeroHeading(); }));
-
-  frc2::Trigger{[this]() { return m_driverController.GetRightTriggerAxis(); }}
+  // Aim to Speaker - Driver right trigger
+  frc2::Trigger{[this]() { return m_driverController.GetRightTriggerAxis() || m_driverController.GetRightBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::aimDrive); }))
       .OnFalse(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
 
-  // frc2::Trigger{[this]() { return (m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake()); }}
-  //     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
+  // Pass notes to speaker - Driver right bumper
+  frc2::Trigger{[this]() { return m_driverController.GetRightBumper(); }}
+      .OnTrue(
+          frc2::cmd::Sequence(
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::pass); }),
+              frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.ShooterAtSpeed() && m_drive.atShootingAngle()); }),
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::shoot); }),
+              frc2::cmd::WaitUntil([this] { return !(m_shooterSubsystem.NoteInIntake() || m_shooterSubsystem.NoteInShooter()); }),
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop);
+                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); })));
 
-  // frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis()); }}  //&& !(m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake())
-  //     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
+  // Put arm to intake angle and turn on intake - Operator left trigger
+  frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
+  // Shoot note with auto angle and full speed shooter - Operator right trigger
+  frc2::Trigger{[this]() { return m_secondaryController.GetRightTriggerAxis(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
+
+  // Put arm to amp angle and slow down shooter - Operator X button
+  frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] {
+    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
+    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
+
+  // Eject note out of shooter side - Operator left bumper
+  frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
+
+  // Put arm to intake angle - Operator B Button
   frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
 
-  frc2::Trigger{[this]() { return m_secondaryController.GetPOV(0); }}
+  // Eject note out of intake side - Operator d-pad down
+  frc2::Trigger{[this]() { return m_secondaryController.GetPOV() == 180; }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::floor); }));
+
+  // Shoot when touching speaker - Operator d-pad up
+  frc2::Trigger{[this]() { return m_secondaryController.GetPOV() == 0; }}
       .OnTrue(
           frc2::cmd::Sequence(
               frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::speaker); }),
               frc2::cmd::Wait(1_s),
               frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::spit); })));
 
-  // frc2::Trigger{[this]() { return m_driverController.GetPOV(0); }}
-  //     .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageFront))));
-
-  //   frc2::Trigger{[this]() { return m_driverController.GetPOV(2); }}
-  //       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageRight))));
-
-  //   frc2::Trigger{[this]() { return m_driverController.GetPOV(6); }}
-  //       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageLeft))));
-
-  frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
-
-  frc2::Trigger{[this]() { return m_secondaryController.GetXButtonPressed(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] {
-    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright);
-    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
-
-  frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] {
-    m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
-    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
-
-  frc2::Trigger{[this]() { return m_secondaryController.GetRightTriggerAxis(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] {
-    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
-    m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::autoAngle); }));
-
-  // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
-  frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
-      .OnTrue(frc2::cmd::RunOnce([this] {
-    m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop);
-    m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
-
+  // Climb up
   frc2::Trigger{[this]() { return m_secondaryController.GetYButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::extend); }));
 
+  // Climb down
   frc2::Trigger{[this]() { return m_secondaryController.GetAButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::retract); }));
-  // amp code - were trying to figure out which controller to put it on
-  // frc2::Trigger{[this]()
-  //               { return m_secondaryController.GetRightBumper(); }}
-  //     .OnTrue(frc2::cmd::RunOnce([this]
-  //                                { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
-  //                                  m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   return pathplanner::PathPlannerAuto(pathPlannerChooser.GetSelected()).ToPtr();
 }
+
+// // mahdi figured right trigger would be better for amp so we decided to put this on D-pad? not sure where else it could go
+// frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
+//     .OnTrue(frc2::cmd::RunOnce([this] {
+//   m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop);
+//   m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
+
+// amp code - were trying to figure out which controller to put it on
+// frc2::Trigger{[this]()
+//               { return m_secondaryController.GetRightBumper(); }}
+//     .OnTrue(frc2::cmd::RunOnce([this]
+//                                { m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterOn);
+//                                  m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::upright); }));
+
+// frc2::Trigger{[this]() { return m_driverController.GetYButtonPressed(); }}
+//     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.ZeroHeading(); }));
+
+// frc2::Trigger{[this]() { return (m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake()); }}
+//     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::noteDrive); }));
+
+// frc2::Trigger{[this]() { return (!m_driverController.GetRightTriggerAxis()); }}  //&& !(m_driverController.GetLeftTriggerAxis() && !m_shooterSubsystem.NoteInIntake())
+//     .OnTrue(frc2::cmd::RunOnce([this] { m_drive.SetDriveState(DriveSubsystem::DriveStates::joyStickDrive); }));
+
+// frc2::Trigger{[this]() { return m_driverController.GetPOV(0); }}
+//     .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageFront))));
+
+//   frc2::Trigger{[this]() { return m_driverController.GetPOV(2); }}
+//       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageRight))));
+
+//   frc2::Trigger{[this]() { return m_driverController.GetPOV(6); }}
+//       .WhileTrue(std::move(m_drive.GeneratedPath(m_drive.FlipPose(m_drive.stageLeft))));

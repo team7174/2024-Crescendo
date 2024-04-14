@@ -9,15 +9,17 @@
 #include <frc/Filesystem.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
 #include <wpi/fs.h>
 
 void Robot::RobotInit() {
   // Setup Auton Selector
   timer.Start();
 
+  // m_container.pathPlannerChooser = pathplanner::AutoBuilder::buildAutoChooser();
+
   fs::path deployDirectory = frc::filesystem::GetDeployDirectory();
   deployDirectory = deployDirectory / "pathplanner/autos";
-  // frc::CameraServer::StartAutomaticCapture();
 
   auto firstOption = true;
   // Iterate over all files in the folder

@@ -43,7 +43,8 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     shooterStop,
     shooterMid,
     shooterEject,
-    shooterTroll
+    shooterTroll,
+    pass
   };
 
   void SetIntakeState(intakeStates intakeState);
@@ -55,6 +56,7 @@ class ShooterSubsystem : public frc2::SubsystemBase {
   void runVelocity(double rpm);
   void setPID();
   void rumbleController();
+  double passingShooterSpeed();
 
   intakeStates currIntakeState;
   shooterStates currShooterState;

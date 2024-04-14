@@ -75,6 +75,10 @@ void ShooterSubsystem::Periodic() {
   //   }
   // }
 
+  if (currShooterState == shooterStates::pass) {
+    shooterSpeed = passingShooterSpeed();
+  }
+
   if (currIntakeState == intakeStates::intake && (NoteInIntake() || NoteInShooter())) {
     intakeTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::slow);
@@ -183,6 +187,10 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState) {
       shooterSpeed = 2000;
       break;
 
+    case shooterStates::pass:
+      shooterSpeed = passingShooterSpeed();
+      break;
+
     default:
       shooterSpeed = 0.0;
   }
@@ -200,6 +208,31 @@ void ShooterSubsystem::rumbleController() {
   }
 }
 
+double ShooterSubsystem::passingShooterSpeed() {
+  double hori_offset = StormbreakerConstants::pivotBack;  // meter, distance from midline of robot to pivot point of arm
+  // double vert_offset = StormbreakerConstants::pivotHeight;                                                                                // meter, distance from ground to pivot point of arm
+  double default_release_point_angle = -(StormbreakerConstants::shooterDefaultAngle - StormbreakerConstants::shooterToArmAngle - 6.279);  // angle from horizon down to release point
+  double arm_radius = 0.3799586;                                                                                                          // meter, distance from note release point to pivot point
+  double deg_to_rad = 0.0174533;                                                                                                          // radians equal to one degree
+  double gravity = 9.807;
+  double default_firing_angle = StormbreakerConstants::shooterDefaultAngle;  // firing angle when arm is in loweset position
+  double flywheel_radius = 0.0381;                                           // meter
+  double rpm_correction_multiplier = 1 / 0.6;
+
+  double hori = m_drive->getShootingValues().first - hori_offset + cos(default_release_point_angle * deg_to_rad) * arm_radius;
+  // double starting_height = 0.349588;  // vert_offset + sin(default_release_point_angle * deg_to_rad) * arm_radius;
+
+  double divider = 0.0883068;  // sin(2 * (default_firing_angle * deg_to_rad)) / gravity;
+
+  double velocity = sqrt(hori / divider);
+
+  double radian_per_second = velocity / flywheel_radius;
+  double rpm = radian_per_second * (60 / 2 / M_PI);
+  double corrected_rpm = rpm * rpm_correction_multiplier;
+
+  return corrected_rpm;
+}
+
 bool ShooterSubsystem::NoteInIntake() {
   frc::SmartDashboard::PutBoolean("Intake Beam Break", !intakeBeamBreak.Get());
   return (!intakeBeamBreak.Get());
@@ -215,8 +248,15 @@ bool ShooterSubsystem::NoteInBoth() {
 }
 
 bool ShooterSubsystem::ShooterAtSpeed() {
-  double shooterThreshold = shooterSpeed - frc::SmartDashboard::GetNumber("Shooter Velocity Threshold", 500.0);
-  return (leftShooterEnc.GetVelocity() > shooterThreshold && rightShooterEnc.GetVelocity() > shooterThreshold);
+  double threshold = frc::SmartDashboard::GetNumber("Shooter Velocity Threshold", 500.0);
+  if (currShooterState == shooterStates::pass) {
+    threshold = 200;
+  }
+  double minThresh = shooterSpeed - threshold;
+  double maxThresh = shooterSpeed + threshold;
+  bool leftAtSpeed = (leftShooterEnc.GetVelocity() > minThresh && leftShooterEnc.GetVelocity() < maxThresh);
+  bool rightAtSpeed = (rightShooterEnc.GetVelocity() > minThresh && rightShooterEnc.GetVelocity() < maxThresh);
+  return (leftAtSpeed && rightAtSpeed);
 }
 
 void ShooterSubsystem::runVelocity(double rpm) {
