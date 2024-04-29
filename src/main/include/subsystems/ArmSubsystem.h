@@ -37,13 +37,13 @@ class ArmSubsystem : public frc2::SubsystemBase {
   void brakeModeOn();
   static constexpr units::degrees_per_second_t kMaxAngularSpeed = 360.0_deg_per_s;
   static constexpr units::degrees_per_second_squared_t kMaxAngularAcceleration = 720.0_deg_per_s_sq;
+  double angleOffset = 0.75;
 
  private:
   ctre::phoenix6::hardware::TalonFX m_armMotorLeft;
   ctre::phoenix6::hardware::TalonFX m_armMotorRight;
   frc::DutyCycleEncoder m_armEncoder;
   frc::ProfiledPIDController<units::degrees> profiledController;
-  double angleOffset = 1.5;
   frc::DigitalInput armSwitch{5};
   bool brakeMode = true;
 };

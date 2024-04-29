@@ -16,7 +16,7 @@ class HardwareConfig {
     slot0Configs.kS = 0.6;                                                                                                                         // Add 0.25 V output to overcome static friction
     slot0Configs.kV = 11.0 / (AutoConstants::kMaxSpeed.value() / ((1 / ModuleConstants::driveGearRatio) * ModuleConstants::kWheelCircumference));  // A velocity target of 1 rps results in 0.12 V output
     // slot0Configs.kA = 0.025;                                                                                                                              // An acceleration of 1 rps/s requires 0.01 V output
-    slot0Configs.kP = (0.0015 / ((1 / ModuleConstants::driveGearRatio) * ModuleConstants::kWheelCircumference)) * 10;    // An error of 1 rps results in 0.11 V output
+    slot0Configs.kP = (0.001 / ((1 / ModuleConstants::driveGearRatio) * ModuleConstants::kWheelCircumference)) * 10;     // An error of 1 rps results in 0.11 V output
     slot0Configs.kI = 0;                                                                                                 // no output for integrated error
     slot0Configs.kD = (0.000004 / ((1 / ModuleConstants::driveGearRatio) * ModuleConstants::kWheelCircumference)) * 10;  // no output for error derivative
 

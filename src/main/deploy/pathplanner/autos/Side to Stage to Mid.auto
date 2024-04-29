@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.75,
-      "y": 4.35
+      "x": 1.25,
+      "y": 4.1
     },
-    "rotation": -60.0
+    "rotation": -45.0
   },
   "command": {
     "type": "sequential",
@@ -57,12 +57,6 @@
           "type": "named",
           "data": {
             "name": "Aim Drive"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait Intake"
           }
         },
         {
@@ -135,6 +129,42 @@
           "type": "path",
           "data": {
             "pathName": "Stage End"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Stage End Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Regular Drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Drop"
           }
         }
       ]

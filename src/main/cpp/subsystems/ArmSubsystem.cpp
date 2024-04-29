@@ -46,11 +46,12 @@ ArmSubsystem::ArmSubsystem(DriveSubsystem *passedDriveSubsystem)
   m_armMotorRight.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_armMotorLeft.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Brake);
   m_armMotorLeft.SetInverted(true);
-  frc::SmartDashboard::PutNumber("Angle Offset", angleOffset);
   profiledController.EnableContinuousInput(0_deg, 360_deg);
 }
 
 void ArmSubsystem::Periodic() {
+  frc::SmartDashboard::PutNumber("Angle Offset", angleOffset);
+
   // if (armSwitch.Get() && brakeMode == true) {
   //   brakeModeOff();
   // } else if (!armSwitch.Get() && brakeMode == false) {
@@ -121,8 +122,8 @@ double ArmSubsystem::CalculateAngle() {
   double shooterToSpeakerAngle = (asin((sin(StormbreakerConstants::shooterToArmAngle * M_PI / 180) * StormbreakerConstants::armLength) / pivotToSpeaker)) * (180 / M_PI);
   double shootingAngle = 180 - (360 - (90 + pivotToSpeakerAngle + shooterToSpeakerAngle + StormbreakerConstants::shooterToArmAngle)) + StormbreakerConstants::armToRobotAngle;
 
-  shootingAngle = shootingAngle - frc::SmartDashboard::GetNumber("Angle Offset", angleOffset);
-
+  // shootingAngle = shootingAngle - frc::SmartDashboard::GetNumber("Angle Offset", angleOffset);
+  shootingAngle = shootingAngle - angleOffset;
   return shootingAngle;
 }
 

@@ -89,8 +89,10 @@ void RobotContainer::ConfigureButtonBindings() {
               frc2::cmd::WaitUntil([this] { return (m_shooterSubsystem.ShooterAtSpeed() && m_drive.atShootingAngle()); }),
               frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::shoot); }),
               frc2::cmd::WaitUntil([this] { return !(m_shooterSubsystem.NoteInIntake() || m_shooterSubsystem.NoteInShooter()); }),
-              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop);
-                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); })));
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); })))
+      .OnFalse(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+                                          m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterStop); }));
 
   // Put arm to intake angle and turn on intake - Operator left trigger
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftTriggerAxis(); }}
@@ -114,6 +116,10 @@ void RobotContainer::ConfigureButtonBindings() {
   frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
 
+  // Eject note out of shooter side - Operator left bumper
+  frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
+
   // Put arm to intake angle - Operator B Button
   frc2::Trigger{[this]() { return m_secondaryController.GetBButtonPressed(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); }));
@@ -128,7 +134,10 @@ void RobotContainer::ConfigureButtonBindings() {
           frc2::cmd::Sequence(
               frc2::cmd::RunOnce([this] { m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::speaker); }),
               frc2::cmd::Wait(1_s),
-              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::spit); })));
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::spit); }),
+              frc2::cmd::Wait(1_s),
+              frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::intake);
+                                          m_armSubsystem.SetDesiredAngle(ArmSubsystem::ArmStates::intake); })));
 
   // Climb up
   frc2::Trigger{[this]() { return m_secondaryController.GetYButton(); }}
@@ -137,6 +146,13 @@ void RobotContainer::ConfigureButtonBindings() {
   // Climb down
   frc2::Trigger{[this]() { return m_secondaryController.GetAButton(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_climbSubsystem.SetClimbState(ClimbSubsystem::ClimbStates::retract); }));
+
+  // angle offset up
+  frc2::Trigger{[this]() { return m_secondaryController.GetPOV() == 90; }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.angleOffset = m_armSubsystem.angleOffset + 0.05; }));
+  // angle offset up
+  frc2::Trigger{[this]() { return m_secondaryController.GetPOV() == 270; }}
+      .OnTrue(frc2::cmd::RunOnce([this] { m_armSubsystem.angleOffset = m_armSubsystem.angleOffset - 0.05; }));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

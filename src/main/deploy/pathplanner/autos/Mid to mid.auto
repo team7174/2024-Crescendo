@@ -124,12 +124,6 @@
           "data": {
             "name": "Intake Drop"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Last Path"
-          }
         }
       ]
     }

@@ -127,7 +127,7 @@ void ShooterSubsystem::SetIntakeState(intakeStates intakeState) {
       if (shooterIdleChooser.GetSelected() == "On") {
         intakeSpeed = 1.0;
       } else {
-        intakeSpeed = 0.3;
+        intakeSpeed = 0.5;
       }
       break;
 
@@ -214,9 +214,7 @@ double ShooterSubsystem::passingShooterSpeed() {
   double default_release_point_angle = -(StormbreakerConstants::shooterDefaultAngle - StormbreakerConstants::shooterToArmAngle - 6.279);  // angle from horizon down to release point
   double arm_radius = 0.3799586;                                                                                                          // meter, distance from note release point to pivot point
   double deg_to_rad = 0.0174533;                                                                                                          // radians equal to one degree
-  double gravity = 9.807;
-  double default_firing_angle = StormbreakerConstants::shooterDefaultAngle;  // firing angle when arm is in loweset position
-  double flywheel_radius = 0.0381;                                           // meter
+  double flywheel_radius = 0.0381;                                                                                                        // meter
   double rpm_correction_multiplier = 1 / 0.6;
 
   double hori = m_drive->getShootingValues().first - hori_offset + cos(default_release_point_angle * deg_to_rad) * arm_radius;
