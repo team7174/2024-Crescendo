@@ -63,6 +63,7 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
 
 void ShooterSubsystem::Periodic() {
   frc::SmartDashboard::PutNumber("Left Shooter Velocity", double(leftShooterEnc.GetVelocity()));
+  frc::SmartDashboard::PutNumber("Right Shooter Velocity", double(rightShooterEnc.GetVelocity()));
   frc::SmartDashboard::PutBoolean("AT SPEED", ShooterAtSpeed());
   NoteInIntake();
   NoteInShooter();
@@ -97,6 +98,7 @@ void ShooterSubsystem::Periodic() {
   bool atShootAngle = m_drive->atShootingAngle();
   bool driveMode = (m_drive->m_desiredDriveState == m_drive->aimDrive);
   bool tagsVisible = m_visionSubsystem->SpeakerTags();
+  frc::SmartDashboard::PutBoolean("Speaker Tags", tagsVisible);
 
   if (tagsVisible && currShooterState == shooterStates::shooterOn && driveMode && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && (NoteInShooter() || NoteInIntake())) {
     shooterTimeStamp = frc::Timer::GetFPGATimestamp();

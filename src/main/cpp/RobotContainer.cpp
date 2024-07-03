@@ -113,11 +113,11 @@ void RobotContainer::ConfigureButtonBindings() {
     m_shooterSubsystem.SetShooterState(ShooterSubsystem::shooterStates::shooterEject); }));
 
   // Eject note out of shooter side - Operator left bumper
-  frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
+  frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::eject); }));
 
   // Eject note out of shooter side - Operator left bumper
-  frc2::Trigger{[this]() { return m_secondaryController.GetRightBumper(); }}
+  frc2::Trigger{[this]() { return m_secondaryController.GetLeftBumper(); }}
       .OnTrue(frc2::cmd::RunOnce([this] { m_shooterSubsystem.SetIntakeState(ShooterSubsystem::intakeStates::stop); }));
 
   // Put arm to intake angle - Operator B Button

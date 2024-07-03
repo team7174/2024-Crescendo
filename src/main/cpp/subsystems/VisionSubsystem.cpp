@@ -53,41 +53,39 @@ void VisionSubsystem::SetPose(std::string table_name, frc::SwerveDrivePoseEstima
 }
 
 void VisionSubsystem::SetPoseLL3(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
-  SetPose("limelight-llthree", m_odometry);
+  SetPose("limelight-threeg", m_odometry);
 }
 
 void VisionSubsystem::SetPoseLL2(frc::SwerveDrivePoseEstimator<4> *m_odometry) {
-  SetPose("limelight-lltwo", m_odometry);
+  SetPose("limelight-two", m_odometry);
 }
 
 frc::Pose2d VisionSubsystem::GetNoteLocation() {
-  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
+  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-two");
   auto noteX = units::meter_t(ll->GetNumber("tx", 0.0));
   auto noteY = units::meter_t(ll->GetNumber("ty", 0.0));
   return frc::Pose2d(noteX, noteY, 0_deg);
 }
 
 bool VisionSubsystem::SpeakerTags() {
-  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
+  std::shared_ptr<nt::NetworkTable> ll = nt::NetworkTableInstance::GetDefault().GetTable("limelight-threeg");
   // auto llBotPoseEntry = ll->GetEntry("botpose");
   auto targetID = ll->GetEntry("tid").GetDouble(0.0);
   if ((targetID == 3 || targetID == 4 || targetID == 7 || targetID == 8)) {  //&& llBotPoseEntry.GetDoubleArray({})[7] >= 2.0
-    frc::SmartDashboard::PutBoolean("Speaker Tags", true);
     return true;
   }
-  frc::SmartDashboard::PutBoolean("Speaker Tags", false);
   return false;
 }
 
 void VisionSubsystem::BlinkLEDs(bool blink) {
-  std::shared_ptr<nt::NetworkTable> ll2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-lltwo");
-  std::shared_ptr<nt::NetworkTable> ll3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-llthree");
+  std::shared_ptr<nt::NetworkTable> ll2 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-two");
+  //std::shared_ptr<nt::NetworkTable> ll3 = nt::NetworkTableInstance::GetDefault().GetTable("limelight-threeg");
 
   if (blink) {
     ll2->PutNumber("ledMode", 2);
-    ll3->PutNumber("ledMode", 2);
+    //ll3->PutNumber("ledMode", 2);
   } else {
     ll2->PutNumber("ledMode", 1);
-    ll3->PutNumber("ledMode", 1);
+    //ll3->PutNumber("ledMode", 1);
   }
 }
