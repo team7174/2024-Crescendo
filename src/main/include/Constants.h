@@ -124,5 +124,5 @@ constexpr auto kMaxAngularAcceleration = 5_rad_per_s_sq;
 
 namespace OIConstants {
 constexpr int kDriverControllerPort = 0;
-constexpr int kSecondaryControllerPort = 1;
+//constexpr int kSecondaryControllerPort = 1;
 }  // namespace OIConstants

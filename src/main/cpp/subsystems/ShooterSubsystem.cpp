@@ -2,7 +2,7 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
-ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsystem *passedDriveSubsystem, VisionSubsystem *passedVisionSubsystem, frc::XboxController *passedSecondaryController, frc::XboxController *passedDriveController)
+ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsystem *passedDriveSubsystem, VisionSubsystem *passedVisionSubsystem, frc::XboxController *passedDriveController)
     : m_leftShooterMotor(ShooterConstants::leftShooterID, rev::CANSparkFlex::MotorType::kBrushless),    // Replace with your TalonFX device ID
       m_rightShooterMotor(ShooterConstants::rightShooterID, rev::CANSparkFlex::MotorType::kBrushless),  // Replace with your TalonFX device ID
       m_intakeMotor(ShooterConstants::intakeID, rev::CANSparkFlex::MotorType::kBrushless),              // Replace with your TalonFX device ID
@@ -14,7 +14,6 @@ ShooterSubsystem::ShooterSubsystem(ArmSubsystem *passedArmSubsystem, DriveSubsys
       intakePID(m_intakeMotor.GetPIDController()) {
   m_armSubsystem = passedArmSubsystem;
   m_drive = passedDriveSubsystem;
-  m_secondaryController = passedSecondaryController;
   m_driveController = passedDriveController;
   m_visionSubsystem = passedVisionSubsystem;
 
@@ -76,10 +75,6 @@ void ShooterSubsystem::Periodic() {
   //   }
   // }
 
-  if (currShooterState == shooterStates::pass) {
-    shooterSpeed = passingShooterSpeed();
-  }
-
   if (currIntakeState == intakeStates::intake && (NoteInIntake() || NoteInShooter())) {
     intakeTimeStamp = frc::Timer::GetFPGATimestamp();
     SetIntakeState(intakeStates::slow);
@@ -87,7 +82,6 @@ void ShooterSubsystem::Periodic() {
   }
 
   if (currIntakeState == intakeStates::slow) {
-    rumbleController();
     if (!NoteInShooter()) {
       intakeSpeed = 0.2;
     } else {
@@ -95,10 +89,22 @@ void ShooterSubsystem::Periodic() {
     }
   }
 
+  if ((!NoteInIntake() || !NoteInShooter()) && currIntakeState != intakeStates::stop) {
+    SetIntakeState(intakeStates::intake);
+    SetShooterState(shooterStates::shooterStop);
+  }
+
   bool atShootAngle = m_drive->atShootingAngle();
   bool driveMode = (m_drive->m_desiredDriveState == m_drive->aimDrive);
   bool tagsVisible = m_visionSubsystem->SpeakerTags();
   frc::SmartDashboard::PutBoolean("Speaker Tags", tagsVisible);
+
+  if (currShooterState == shooterStates::pass) {
+    shooterSpeed = passingShooterSpeed();
+    if(atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle()){
+      SetIntakeState(intakeStates::shoot);
+    }
+  }
 
   if (tagsVisible && currShooterState == shooterStates::shooterOn && driveMode && atShootAngle && ShooterAtSpeed() && m_armSubsystem->ReachedDesiredAngle() && (NoteInShooter() || NoteInIntake())) {
     shooterTimeStamp = frc::Timer::GetFPGATimestamp();
@@ -119,6 +125,7 @@ void ShooterSubsystem::Periodic() {
 
   runVelocity(shooterSpeed);
   m_intakeMotor.Set(intakeSpeed);
+  rumbleController();
   // intakePID.SetReference(intakeSpeed, rev::CANSparkBase::ControlType::kVelocity);
 }
 
@@ -200,11 +207,9 @@ void ShooterSubsystem::SetShooterState(shooterStates shooterState) {
 
 void ShooterSubsystem::rumbleController() {
   if ((frc::Timer::GetFPGATimestamp() - intakeTimeStamp) < 1_s) {
-    m_secondaryController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
     m_driveController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
     m_visionSubsystem->BlinkLEDs(true);
   } else {
-    m_secondaryController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
     m_driveController->SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
     m_visionSubsystem->BlinkLEDs(false);
   }

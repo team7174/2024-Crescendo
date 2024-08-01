@@ -14,11 +14,10 @@
 
 class ShooterSubsystem : public frc2::SubsystemBase {
  public:
-  ShooterSubsystem(ArmSubsystem *, DriveSubsystem *, VisionSubsystem *, frc::XboxController *, frc::XboxController *);
+  ShooterSubsystem(ArmSubsystem *, DriveSubsystem *, VisionSubsystem *, frc::XboxController *);
   ArmSubsystem *m_armSubsystem;
   DriveSubsystem *m_drive;
   VisionSubsystem *m_visionSubsystem;
-  frc::XboxController *m_secondaryController;
   frc::XboxController *m_driveController;
 
   /**

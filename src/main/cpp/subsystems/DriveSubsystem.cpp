@@ -213,6 +213,16 @@ bool DriveSubsystem::atShootingAngle() {
   return atAim;
 }
 
+bool DriveSubsystem::ShootOrPass() {
+  if (allianceColorBlue && GetPose().X() < 231.20_in) {
+    return true;
+  }
+  if (!allianceColorBlue && GetPose().X() > (16.5410642_m - 231.20_in)) {
+    return true;
+  }
+  return false;
+}
+
 frc::Translation3d DriveSubsystem::GetSpeakerCenter() {
   frc::Translation3d speakerCenter;
   if (auto ally = frc::DriverStation::GetAlliance()) {

@@ -48,8 +48,5 @@ class RobotContainer {
   // The driver's controller
   frc::XboxController m_driverController{OIConstants::kDriverControllerPort};
 
-  // The secondary controller
-  frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
-
   void ConfigureButtonBindings();
 };

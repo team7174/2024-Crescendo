@@ -101,6 +101,8 @@ class DriveSubsystem : public frc2::SubsystemBase {
 
   frc::Pose2d FlipPose(frc::Pose2d);
 
+  bool ShootOrPass();
+
   /**
    * Resets the odometry to the specified pose.
    *
